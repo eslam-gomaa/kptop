@@ -1,0 +1,4 @@
+rich
+requests
+tabulate
+argparse
