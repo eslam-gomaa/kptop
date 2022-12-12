@@ -1,0 +1,5 @@
+__pycache__
+kubePtop/__pycache__
+build
+dist
+opmcli.egg-info
