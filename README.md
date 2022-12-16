@@ -68,7 +68,13 @@ pip3 install kptop --upgrade
 ## CLI Arguments
 
 
-
+| ENV                   | Description                     | Default |
+| --------------------- | ------------------------------- | ------- |
+| --namespace,  -n      | Specify a Kubernetes Namespace  | default |
+| --all-namespaces,  -A |                                 |         |
+| --container,  -c      | Specify a container             |         |
+| --interval,  -i       | Live monitoring update interval | 8       |
+| --debug,  -d          | Enable debugging logging mode   | False   |
 
 
 
