@@ -53,11 +53,11 @@ pip3 install kptop --upgrade
 
 | ENV                         | Description                                                  | Default | Required |
 | --------------------------- | ------------------------------------------------------------ | ------- | -------- |
-| KUBE_PTOP_PROMETHEUS_SERVER | Prometheus server URL                                        |         | Yes      |
-| KPTOP_BASIC_AUTH_ENABLED    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| KPTOP_PROMETHEUS_USERNAME   | Prometheus username                                          |         | No       |
-| KPTOP_PROMETHEUS_PASSWORD   | Prometheus password                                          |         | No       |
-| KPTOP_INSECURE              | Verify SSL certificate                                       | False   | No       |
+| `KUBE_PTOP_PROMETHEUS_SERVER` | Prometheus server URL                                        |         | Yes      |
+| `KPTOP_BASIC_AUTH_ENABLED`    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| `KPTOP_PROMETHEUS_USERNAME`   | Prometheus username                                          |         | No       |
+| `KPTOP_PROMETHEUS_PASSWORD`   | Prometheus password                                          |         | No       |
+| `KPTOP_INSECURE`              | Verify SSL certificate                                       | False   | No       |
 
 
 
@@ -70,11 +70,11 @@ pip3 install kptop --upgrade
 
 | ENV                   | Description                     | Default |
 | --------------------- | ------------------------------- | ------- |
-| --namespace,  -n      | Specify a Kubernetes Namespace  | default |
-| --all-namespaces,  -A |                                 |         |
-| --container,  -c      | Specify a container             |         |
-| --interval,  -i       | Live monitoring update interval | 8       |
-| --debug,  -d          | Enable debugging logging mode   | False   |
+| `--namespace`,  `-n`      | Specify a Kubernetes Namespace  | default |
+| `--all-namespaces`,  `-A` |                                 |         |
+| `--container`,  `-c`      | Specify a container             |         |
+| `--interval`,  `-i`       | Live monitoring update interval | 8       |
+| `--debug`,  `-d`          | Enable debugging logging mode   | False   |
 
 
 
