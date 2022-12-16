@@ -65,6 +65,30 @@ class Helper:
             unit = "hour/s"
         return f"{out} {unit}"
 
+    
+    def sec_to_m_h_d(self, total_seconds):
+        """
+        Converts seconds to Minutes, Hours or Days
+        INPUT: seconds
+        """
+        out = '%.2f' % total_seconds
+        unit = "s"
+        if (total_seconds > 60) and (total_seconds < 3600):
+            n = total_seconds / 60
+            out = '%.2f' % n
+            unit = "m"
+        elif total_seconds > 3600:
+            n = total_seconds / 60 / 60
+            out = '%.2f' % n
+            unit = "h"
+        if total_seconds >= 86400:
+            n = (total_seconds / 60 / 60) / 24
+            day =  int(n)
+            hour_percentage =  int(str('%.2f' % n).split(".")[1])
+            hour = (24 * hour_percentage // 100)
+            out = f"{day}d{hour}h"
+            return out
+        return f"{out}{unit}"
 
     def millisec_to_sec_m_h(self, milliseconds):
         """
