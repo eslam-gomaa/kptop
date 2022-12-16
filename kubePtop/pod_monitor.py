@@ -17,6 +17,8 @@ from rich.text import Text
 import traceback
 from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.ascii_graph import AsciiGraph
+from kubePtop.colors import Bcolors
+bcolors = Bcolors()
 
 
 # from kubePtop.global_attrs import GlobalAttrs
@@ -30,7 +32,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
     def __init__(self):
         super().__init__()
 
-    def pod_monitor(self, pod, node=".*", container=".*"):
+    def pod_monitor(self, pod, node=".*", container=".*", namespace="default"):
         # Print loading because the layout may take few seconds to start (Probably due to slow connection)
         rich.print("[blink]Loading ...", end="\r")
         
@@ -70,7 +72,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 grid.add_column(justify="center", ratio=1)
                 grid.add_column(justify="right")
                 grid.add_row(
-                    f"[b]Pod: [/b] {pod}     [b]Container: [/b] {container}",
+                    f"[b]Pod: [/b] {pod}   [b]Namespace: [/b] {namespace}   [b]Container: [/b] {container}",
                     datetime.now().ctime().replace(":", "[blink]:[/]"),
                 )
                 return Panel(grid, style="green")
@@ -89,7 +91,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                     # TextColumn("[progress.percentage]{task.percentage:>3.0f}"),
                     TextColumn("{task.fields[status]}"),
                 )
-                self.task_thread_refresh = self.progress_threads_status.add_task(description=f"[white]Interval Refresh", status=f"unknown")
+                self.task_thread_refresh = self.progress_threads_status.add_task(description=f"[white]Metrics Refresh", status=f"unknown")
                 self.task_prometheus_server_connection = self.progress_threads_status.add_task(description=f"[white]Prometheus", status=f"unknown")
 
 
@@ -126,18 +128,28 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                                                         TaskProgressColumn(),
                                                         TextColumn("{task.fields[status]}"),
                                                         )
-                self.task_cpu_used = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used TOTAL AVG[10m]   ", total=100, status="Loading")
-                self.task_cpu_used_system = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used SYS   AVG[10m]   ", total=100, status="Loading")                
-                self.task_cpu_used_user = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used USER  AVG[10m]   ", total=100, status="Loading")
+                self.task_cpu_used = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used TOTAL   ", total=100, status="Loading")
+                self.task_cpu_used_system = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used SYS   ", total=100, status="Loading")                
+                self.task_cpu_used_user = self.progress_cpu.add_task(completed=0, description=f"[white]CPU used USER   ", total=100, status="Loading")
                 
-
-                self.progress_pvc = Progress(TextColumn("[progress.description]{task.description}"),
-                                                        BarColumn(bar_width=20), 
-                                                        TaskProgressColumn(),
+                self.progress_extra = Progress(TextColumn("[progress.description]{task.description}"),
+                                                        BarColumn(bar_width=16), 
+                                                        # TaskProgressColumn(),
                                                         TextColumn("{task.fields[status]}"),
                                                         )
+                self.extra_uptime = self.progress_extra.add_task(completed=0, description=f"[white]UP Time   ", total=100, status="Loading")
+                self.extra_start_time = self.progress_extra.add_task(completed=0, description=f"[white]Start Time   ", total=100, status="Loading")
+                self.extra_file_discriptors = self.progress_extra.add_task(completed=0, description=f"[white]File Descriptors   ", total=100, status="Loading")
+                self.extra_file_threads = self.progress_extra.add_task(completed=0, description=f"[white]Threads   ", total=100, status="Loading")
+                self.extra_file_processes = self.progress_extra.add_task(completed=0, description=f"[white]Processes   ", total=100, status="Loading")
 
-                self.task_pvc_i = self.progress_pvc.add_task(completed=0, description=f"[white]PVC Used   ", total=100, status="Loading")
+                # self.progress_pvc = Progress(TextColumn("[progress.description]{task.description}"),
+                #                                         BarColumn(bar_width=20), 
+                #                                         TaskProgressColumn(),
+                #                                         TextColumn("{task.fields[status]}"),
+                #                                         )
+
+                # self.task_pvc_i = self.progress_pvc.add_task(completed=0, description=f"[white]PVC Used   ", total=100, status="Loading")
 
 
 
@@ -158,7 +170,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 time.sleep(3)
                 while True:
                     try:
-                        pod_metrics_json = self.podMetrics(pod, node, container)
+                        pod_metrics_json = self.podMetrics(pod, node, container, namespace)
                         pod_mem_metrics_json = pod_metrics_json.get('memory')
                         pod_cpu_metrics_json = pod_metrics_json.get('cpu')
 
@@ -170,28 +182,28 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                             else:
                                 self.progress_mem_total.update(task_id=self.task_mem_total, description=f"[white]Mem Limit      ", status=f"    NO_LIMIT")
                         else:
-                            self.progress_mem_total.update(task_id=self.task_mem_total, description=f"[white]Mem Limit      ", status=pod_mem_metrics_json.get('MemLimitBytes').get('fail_reason')[:30] + "...")
+                            self.progress_mem_total.update(task_id=self.task_mem_total, description=f"[white]Mem Limit      ", status=pod_mem_metrics_json.get('MemLimitBytes').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
 
 
                         if pod_mem_metrics_json.get('MemUsageBytes').get('success'):
                             self.progress_mem.update(task_id=self.task_mem_used, completed=pod_mem_metrics_json.get('MemUsageBytes').get('result'), description=f"[white]Mem used   ", total=self.mem_total_bytes, status=f"{helper_.bytes_to_kb_mb_gb(pod_mem_metrics_json.get('MemUsageBytes').get('result'))}")
                         else:
-                            self.progress_mem.update(task_id=self.task_mem_used, completed=0, description=f"[white]Mem used   ", total=100, status=pod_mem_metrics_json.get('MemUsageBytes').get('fail_reason')[:30] + "...")
+                            self.progress_mem.update(task_id=self.task_mem_used, completed=0, description=f"[white]Mem used   ", total=100, status=pod_mem_metrics_json.get('MemUsageBytes').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
 
 
                         if pod_mem_metrics_json.get('MemUsageMaxBytes').get('success'):
                             self.progress_mem.update(task_id=self.task_mem_used_max, completed=pod_mem_metrics_json.get('MemUsageMaxBytes').get('result'), description=f"[white]Mem used max   ", total=self.mem_total_bytes, status=f"{helper_.bytes_to_kb_mb_gb(pod_mem_metrics_json.get('MemUsageMaxBytes').get('result'))}")
                         else:
-                            self.progress_mem.update(task_id=self.task_mem_used_max, completed=0, description=f"[white]Mem used max   ", total=100, status=pod_mem_metrics_json.get('MemUsageMaxBytes').get('fail_reason')[:30] + "...")
+                            self.progress_mem.update(task_id=self.task_mem_used_max, completed=0, description=f"[white]Mem used max   ", total=100, status=pod_mem_metrics_json.get('MemUsageMaxBytes').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1               
 
 
                         if pod_mem_metrics_json.get('MemCachedBytes').get('success'):
                             self.progress_mem.update(task_id=self.task_mem_cached, completed=pod_mem_metrics_json.get('MemCachedBytes').get('result'), description=f"[white]Mem cached   ", total=self.mem_total_bytes, status=f"{helper_.bytes_to_kb_mb_gb(pod_mem_metrics_json.get('MemCachedBytes').get('result'))}")
                         else:
-                            self.progress_mem.update(task_id=self.task_mem_cached, completed=0, description=f"[white]Mem cached   ", total=100, status=pod_mem_metrics_json.get('MemCachedBytes').get('fail_reason')[:30] + "...")
+                            self.progress_mem.update(task_id=self.task_mem_cached, completed=0, description=f"[white]Mem cached   ", total=100, status=pod_mem_metrics_json.get('MemCachedBytes').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
                 
                         
@@ -200,7 +212,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                         if pod_cpu_metrics_json.get('cpuLoadAvg10s').get('success'):
                             self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", status=f" {pod_cpu_metrics_json.get('cpuLoadAvg10s').get('result')}")
                         else:
-                            self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", status=pod_cpu_metrics_json.get('cpuLoadAvg10s').get('fail_reason')[:30] + "...")
+                            self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", status=pod_cpu_metrics_json.get('cpuLoadAvg10s').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
 
                         if pod_cpu_metrics_json.get('cpuQuotaMilicores').get('success'):
@@ -212,26 +224,26 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                         if pod_cpu_metrics_json.get('cpuLoadAvg10s').get('success'):
                             self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", total=self.cpu_limit, status=f" {pod_cpu_metrics_json.get('cpuLoadAvg10s').get('result')}")
                         else:
-                            self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", total=self.cpu_limit, status=pod_cpu_metrics_json.get('cpuLoadAvg10s').get('fail_reason')[:30] + "...")
+                            self.progress_cpu_load_avg.update(task_id=self.task_cpu_load_avg_10s, description=f"[white]CPU load avg 10s", total=self.cpu_limit, status=pod_cpu_metrics_json.get('cpuLoadAvg10s').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
                                     
 
                         if pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('success'):
-                            self.progress_cpu.update(task_id=self.task_cpu_used, completed=pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('result'), description=f"[white]CPU used TOTAL AVG[10m]   ", total=self.cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('result')}m")
+                            self.progress_cpu.update(task_id=self.task_cpu_used, completed=pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('result'), description=f"[white]CPU used TOTAL   ", total=self.cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('result')}m")
                         else:
-                            self.progress_cpu.update(task_id=self.task_cpu_used, completed=0, description=f"[white]CPU used TOTAL AVG[10m]   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('fail_reason')[:30] + "...")
+                            self.progress_cpu.update(task_id=self.task_cpu_used, completed=0, description=f"[white]CPU used TOTAL   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageAVG10mMilicores').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
                         
                         if pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('success'):
-                            self.progress_cpu.update(task_id=self.task_cpu_used_system, completed=pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('result'), description=f"[white]CPU used SYS   AVG[10m]   ", total=self.task_cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('result')}m")
+                            self.progress_cpu.update(task_id=self.task_cpu_used_system, completed=pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('result'), description=f"[white]CPU used SYS   ", total=self.task_cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('result')}m")
                         else:
-                            self.progress_cpu.update(task_id=self.task_cpu_used_system, completed=0, description=f"[white]CPU used SYS   AVG[10m]   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('fail_reason')[:30] + "...")
+                            self.progress_cpu.update(task_id=self.task_cpu_used_system, completed=0, description=f"[white]CPU used SYS   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageSystemAVG10mMilicores').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
                         
                         if pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('success'):
-                            self.progress_cpu.update(task_id=self.task_cpu_used_user, completed=pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('result'), description=f"[white]CPU used USER  AVG[10m]   ", total=self.task_cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('result')}m")
+                            self.progress_cpu.update(task_id=self.task_cpu_used_user, completed=pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('result'), description=f"[white]CPU used USER   ", total=self.task_cpu_limit, status=f"{pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('result')}m")
                         else:
-                            self.progress_cpu.update(task_id=self.task_cpu_used_user, completed=0, description=f"[white]CPU used USER  AVG[10m]   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('fail_reason')[:30] + "...")
+                            self.progress_cpu.update(task_id=self.task_cpu_used_user, completed=0, description=f"[white]CPU used USER   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
 
 
@@ -323,7 +335,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 Panel(pod_resources_progress.group_memory, title="[b]Memory", padding=(1, 2)),
             )
             progress_table.add_row(
-                Panel("", title='[b]Inodes"/"', padding=(1, 2)),
+                Panel(pod_resources_progress.progress_extra, title='[b]Extra', padding=(1, 2)),
             )
             progress_table.add_row(
                 Panel(pod_resources_progress.progress_threads_status, title="[b]Threads Status",padding=(1, 2), subtitle=""),
@@ -332,27 +344,81 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             layout = make_layout()
             layout["header"].update(Header())
             layout["body1_a"].update(progress_table)
+            layout['body1_b'].update(Panel("Made with [red]❤️[/red]", title='[b]Unused Space', padding=(1, 2),))
 
             pod_resources_progress.start_threads()
             pod_resources_progress.watch_threads()
 
-            # update_disk_written_bytes_graph = True
-            # disk_written_bytes_graph = AsciiGraph()
-            # disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
-            # if disk_written_bytes.get('success'):
-            #     disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+            update_network_received_bytes_graph = True
+            network_received_bytes_graph =  AsciiGraph()
+            update_network_transmit_bytes_graph = True
+            network_transmit_bytes_graph =  AsciiGraph()
+            network_received_bytes = self.podNetworkReceiveBytes(pod, namespace=namespace)
+            Logging.log.info("Getting Pod 'network_received_bytes' metrics")
+            Logging.log.info(network_received_bytes)
+            if network_received_bytes.get('success'):
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
+
+            else:
+                network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
+                update_network_received_bytes_graph = False
+                network_transmit_bytes_graph.graph = network_received_bytes.get('fail_reason')
+                update_network_transmit_bytes_graph = False
+                
+
+            # update_network_transmit_bytes_graph = True
+            # network_transmit_bytes_graph =  AsciiGraph()
+            # network_transmit_bytes = self.podNetworkTransmitBytes(pod, namespace=namespace)
+            # Logging.log.info("Getting Pod 'network_transmit_bytes' metrics")
+            # Logging.log.info(network_transmit_bytes)
+            # if network_transmit_bytes.get('success'):
+            #     network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
             # else:
-            #     disk_written_bytes_graph.graph = disk_written_bytes.get('fail_reason')[:30] + "..."
-            #     update_disk_written_bytes_graph = False
-            
+            #     network_transmit_bytes_graph.graph = network_transmit_bytes.get('fail_reason')
+            #     update_network_transmit_bytes_graph = False
+
+
+            update_disk_read_bytes_graph = True
+            update_disk_write_bytes_graph = True
+            disk_read_bytes_graph = AsciiGraph()
+            disk_write_bytes_graph = AsciiGraph()
+            disk_read_bytes = self.podDiskReadBytes(pod=pod, container=container, namespace=namespace)
+            Logging.log.info("Getting Pod 'disk_read_bytes' metrics")
+            Logging.log.info(disk_read_bytes)
+            if disk_read_bytes.get('success'):
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=42, format='{:8.0f} kb/s')
+                disk_write_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=4, format='{:8.0f} kb/s')
+            else:
+                disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
+                disk_write_bytes_graph.graph = disk_read_bytes.get('fail_reason')
+                update_disk_read_bytes_graph = False
+                update_disk_write_bytes_graph = False
+
+            # update_disk_write_bytes_graph = True
+            # disk_write_bytes_graph = AsciiGraph()
+            # disk_write_bytes = self.podDiskWriteBytes(pod=pod, container=container, namespace=namespace)
+            # Logging.log.info("Getting Pod 'disk_write_bytes' metrics")
+            # Logging.log.info(disk_write_bytes)
+            # if disk_write_bytes.get('success'):
+            #     disk_write_bytes_graph.create_graph(disk_write_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+            # else:
+            #     disk_write_bytes_graph.graph = disk_write_bytes.get('fail_reason')
+            #     update_disk_write_bytes_graph = False
+
+
+            layout["body2_b_b"].update(Panel(Markdown("Loading ..."), title="[b]Network IO", padding=(1, 1)))
+            layout["body2_b_a"].update(Panel(Markdown("Loading ..."), title="[b]Disk IO", padding=(1, 1)))
 
             update_containers_mem_usage = True
             containers_mem_usage_graph = AsciiGraph()
-            containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container)
+            containers_mem_usage_range_graph = AsciiGraph()
+            containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container, namespace=namespace)
             if containers_mem_usage.get('success'):
-                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=40, format='{:8.0f} mb')
+                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
+                containers_mem_usage_range_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
             else:
-                containers_mem_usage_graph.graph = containers_mem_usage.get('fail_reason')[:30] + "..."
+                containers_mem_usage_graph.graph = containers_mem_usage.get('fail_reason')
                 update_containers_mem_usage = False
 
 
@@ -365,18 +431,29 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 Markdown("[LAST 3 HOURS]", justify='center'),
             )
 
-            
+        
             update_pod_pvcs_usage = True
             pod_pvcs_usage_graph = AsciiGraph()
-            pod_pvcs = self.podPVC(pod)
+            pod_pvcs = self.podPVC(pod, namespace)
             if pod_pvcs.get('success'):
-                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=5, width=45, format='{:8.0f} mb')
+                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=6, width=45, format='{:8.0f} mb')
             else:
-                pod_pvcs_usage_graph.graph = pod_pvcs.get('fail_reason')
+                pod_pvcs_usage_graph.graph = f"{bcolors.BOLD + bcolors.WARNING} [ No PVCs found ]{bcolors.ENDC}\n{bcolors.GRAY}{pod_pvcs.get('fail_reason')}"
                 update_pod_pvcs_usage = False
 
             layout["body2_a_b"].update(Panel(Markdown("Loading..."), title="[b]PVCs used by the pod", padding=(1, 1)))
 
+
+            def return_pod_uptime():
+                time.sleep(GlobalAttrs.live_update_interval)
+                pod_uptime = "unknown"
+                pod_uptime_json = self.podUpTime(pod=pod, namespace=namespace, container=container)
+                if pod_uptime_json.get('success'):
+                    # if pod_uptime_json.get('result') != 0:
+                    pod_uptime = helper_.sec_to_m_h_d(pod_uptime_json.get('result'))
+                else:
+                    pod_uptime = "could not get metric value"
+                return pod_uptime
 
 
             Logging.log.info("Starting the Layout.")
@@ -384,33 +461,87 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 while True:
 
                     if update_containers_mem_usage:
-                        containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container)
-                        for device, value in containers_mem_usage.get('result').items():
-                            containers_mem_usage_graph.update_lst(device, helper_.bytes_to_mb(value))
+                        containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container, namespace=namespace)
+                        for c, value in containers_mem_usage.get('result').items():
+                            containers_mem_usage_graph.update_lst(c, helper_.bytes_to_mb(value))
+                            containers_mem_usage_range = self.podMemUsagePerContainers_range(pod=pod, container=c, namespace=namespace)
+                            containers_mem_usage_range_graph.replace_lst(c, containers_mem_usage_range.get('result'))
 
                     group_mem_usage_per_containers = Group(
                         Markdown("[CURRENT]", justify='center'),
                         Text.from_ansi(containers_mem_usage_graph.graph + f"\n {containers_mem_usage_graph.colors_description_str}"),
                         Rule(style='#AAAAAA'),
                         Markdown("[LAST 3 HOURS]", justify='center'),
+                        Text.from_ansi(containers_mem_usage_range_graph.graph + f"\n {containers_mem_usage_range_graph.colors_description_str}"),
+
                     )
+                    layout["body2_a_a"].update(Panel(group_mem_usage_per_containers, title="[b]Memory Usage per Containers", padding=(1, 1)))
+
 
                     if update_pod_pvcs_usage:
-                        pod_pvcs = self.podPVC(pod)
+                        pod_pvcs = self.podPVC(pod, namespace)
                         for pvc, value in pod_pvcs.get('result').items():
                             pod_pvcs_usage_graph.update_lst(pvc, helper_.bytes_to_mb(value.get('used')))
 
                     group_pod_pvcs = Group(
                         Text.from_ansi(pod_pvcs_usage_graph.graph + f"\n {pod_pvcs_usage_graph.colors_description_str}"),
                         Rule(style='#AAAAAA'),
-                        self.podPVC_table(pod)
+                        self.podPVC_table(pod, namespace)
+                    )
+                    layout["body2_a_b"].update(Panel(group_pod_pvcs, title="[b]PVCs used by the pod", padding=(1, 1)))
+                    
+                    
+                    if update_network_received_bytes_graph:
+                        network_received_bytes = self.podNetworkReceiveBytes(pod, namespace)
+                        Logging.log.info("Updating Node 'network_received_bytes' metrics")
+                        Logging.log.info(network_received_bytes)
+                        for device, value in network_received_bytes.get('result').items():
+                            network_received_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
+
+                    if update_network_transmit_bytes_graph:
+                        network_transmit_bytes = self.podNetworkTransmitBytes(pod, namespace)
+                        Logging.log.info("Updating Node 'network_transmit_bytes' metrics")
+                        Logging.log.info(network_transmit_bytes)
+                        for device, value in network_transmit_bytes.get('result').items():
+                            network_transmit_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
+
+                    group_network_io = Group(
+                        Markdown("Bytes Received", justify='center'),
+                        Text.from_ansi(network_received_bytes_graph.graph + f"\n {network_received_bytes_graph.colors_description_str}"),
+                        Rule(style='#AAAAAA'),
+                        Markdown("Bytes Transmitted", justify='center'),
+                        Text.from_ansi(network_transmit_bytes_graph.graph + f"\n {network_transmit_bytes_graph.colors_description_str}"),
                     )
                     
-                    layout["body2_a_a"].update(Panel(group_mem_usage_per_containers, title="[b]Memory Usage per Containers", padding=(1, 1)))
-                    layout["body2_a_b"].update(Panel(group_pod_pvcs, title="[b]PVCs used by the pod", padding=(1, 1)))
+                    layout["body2_b_b"].update(Panel(group_network_io, title="[b]Network IO", padding=(1, 1)))
 
-                     
-                 
+
+                    if update_disk_read_bytes_graph:
+                        disk_read_bytes = self.podDiskReadBytes(pod=pod, container=container, namespace=namespace)
+                        Logging.log.info("Updating Pod 'disk_read_bytes' metrics")
+                        Logging.log.info(disk_read_bytes)
+                        for device, value in disk_read_bytes.get('result').items():
+                            disk_read_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
+
+                    if update_disk_write_bytes_graph:
+                        disk_write_bytes = self.podDiskWriteBytes(pod=pod, container=container, namespace=namespace)
+                        Logging.log.info("Updating Pod 'disk_write_bytes' metrics")
+                        Logging.log.info(disk_write_bytes)
+                        for device, value in disk_write_bytes.get('result').items():
+                            disk_write_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
+
+                    group_disk_io = Group(
+                        Markdown("Bytes Read", justify='center'),
+                        Text.from_ansi(disk_read_bytes_graph.graph + f"\n {disk_read_bytes_graph.colors_description_str}"),
+                        Rule(style='#AAAAAA'),
+                        Markdown("Bytes Write", justify='center'),
+                        Text.from_ansi(disk_write_bytes_graph.graph + f"\n {disk_write_bytes_graph.colors_description_str}"),
+                    )
+                    layout["body2_b_a"].update(Panel(group_disk_io, title="[b]Network IO", padding=(1, 1)))
+
+
+
+
                     
                     time.sleep(GlobalAttrs.live_update_interval)
         except Exception as e:
@@ -422,7 +553,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             print("                 ", end="\r")
             rich.print("Ok")
             if GlobalAttrs.exceptions_num > 0:
-                print(f"Found {GlobalAttrs.exceptions_num} Exception/s, you can find the errors in the log file: {GlobalAttrs.log_file_path}")
+                print(f"Found {GlobalAttrs.exceptions_num} Exceptions, you can find the errors in the log file: {GlobalAttrs.log_file_path}")
             exit(0)
 
 
