@@ -15,10 +15,11 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 <br>
 
 >  [[ In the Development Phase ]]
+- [ ] Top nodes
 - [x] Live monitoring for a Node [ 95% done ]
-- [x] Live monitoring for a Pod / Containers [ 60% done ]
-- [ ] top pods & nodes
-    - [ ] sort by: memory_usage, cpu_usage, fs_usage
+- [ ] Top pods
+- [x] Live monitoring for a Pod / Containers [ 90% done ]
+- [ ] sort by: memory_usage, cpu_usage, fs_usage
 - [ ] top pvcs
 
 
@@ -28,7 +29,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 <br>
 
-## Installation [not ready]
+## Installation [not ready yet]
 
 > Compatible with Python 3.6+
 
@@ -44,6 +45,32 @@ pip3 install kptop --upgrade
 # 
 ```
 
+<br>
+
+---
+
+## Environment Variables
+
+| ENV                         | Description                                                  | Default | Required |
+| --------------------------- | ------------------------------------------------------------ | ------- | -------- |
+| KUBE_PTOP_PROMETHEUS_SERVER | Prometheus server URL                                        |         | Yes      |
+| KPTOP_BASIC_AUTH_ENABLED    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| KPTOP_PROMETHEUS_USERNAME   | Prometheus username                                          |         | No       |
+| KPTOP_PROMETHEUS_PASSWORD   | Prometheus password                                          |         | No       |
+| KPTOP_INSECURE              | Verify SSL certificate                                       | False   | No       |
+
+
+
+
+
+<br>
+
+## CLI Arguments
+
+
+
+
+
 
 
 
@@ -53,19 +80,36 @@ pip3 install kptop --upgrade
 
 ## Examples
 
+### Top nodes
+
+```bash
+kptop nodes
+```
+
+<br>
+
 
 ### Live monitoring for Nodes
 
-```
+```bash
 kptop node <NODE>
 ```
 
 
 <br>
 
+
+### Top nodes
+
+```bash
+kptop pods
+```
+
+<br>
+
 ### Live monitoring for Pods
 
-```
+```bash
 kptop pod <POD>
 ```
 
@@ -74,12 +118,19 @@ kptop pod <POD>
 
 ### Live monitoring for Containers
 
-```
+```bash
 kptop pod <POD> --container <CONTAINER>
 ```
 
 <br>
 
+### Top PVCs
+
+```bash
+kptop pvcs
+```
+
+<br>
 
 
 
