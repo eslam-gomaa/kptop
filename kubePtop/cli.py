@@ -4,6 +4,7 @@ from kubePtop.session import PrometheusAPI
 from kubePtop.node_monitor import Node_Monitoring
 from kubePtop.pod_monitor import Pod_Monitoring
 from kubePtop.pod_metrics import PrometheusPodsMetrics
+from kubePtop.pod_metrics import PrometheusPodsMetrics
 import rich
 from kubePtop.global_attrs import GlobalAttrs
 
@@ -12,6 +13,7 @@ read_environment_variables = ReadEnv()
 
 node_monitor = Node_Monitoring()
 pod_monitor = Pod_Monitoring()
+pod_metrics = PrometheusPodsMetrics()
 prometheus_api = PrometheusAPI()
 from kubePtop.logging import Logging
 
@@ -59,10 +61,17 @@ class Cli():
             # pod_metrics = PrometheusPodsMetrics()
             # print(pod_metrics.podPVC_table("strimzi-kafka-cluster-aws-prod-kafka-1"))
             # exit(1)
-            pod_monitor.pod_monitor(pod=self.pod)
+            check_pod = pod_metrics.podExists(pod=self.pod, namespace=self.namespace)
+            if not check_pod.get('result'):
+                print(f"pod/{self.pod} not found in the '{self.namespace}' namespace")
+                rich.print(f"[yellow]{check_pod.get('fail_reason')}")
+                exit(1)
+            # rich.print(pod_metrics.podMemUsagePerContainers_range(pod=self.pod, namespace=self.namespace))
+            # exit(1)
+            pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace)
 
         if (self.pod) and (self.container):
-            pod_monitor.pod_monitor(pod=self.pod, container=self.container)
+            pod_monitor.pod_monitor(pod=self.pod, container=self.container, namespace=self.namespace)
 
 
         # Print help if no args are provided.
