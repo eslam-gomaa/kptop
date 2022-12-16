@@ -15,12 +15,13 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 <br>
 
 >  [[ In the Development Phase ]]
-- [ ] Top nodes
-- [x] Live monitoring for a Node [ 95% done ]
-- [ ] Top pods
-- [x] Live monitoring for a Pod / Containers [ 90% done ]
+- [ ] Top Nodes
+- [x] [Live monitoring for Nodes](https://github.com/eslam-gomaa/kptop/blob/main/README.md#live-monitoring-for-nodes)
+- [ ] Top Pods
+- [x] [Live monitoring for Pods](https://github.com/eslam-gomaa/kptop/blob/main/README.md#live-monitoring-for-nodes)
+- [ ] [Top PVCs](https://github.com/eslam-gomaa/kptop/blob/main/README.md#top-pvcs)
+
 - [ ] sort by: memory_usage, cpu_usage, fs_usage
-- [ ] top pvcs
 
 
 <br>
