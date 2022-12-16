@@ -337,6 +337,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             layout = make_layout()
             layout["header"].update(Header())
             layout["body1_a"].update(progress_table)
+            layout['body1_b'].update(Panel("Made with [red]❤️[/red]", title='[b]Unused Space', padding=(1, 2),))
 
 
             layout["body2_a"].update(Panel("Loading ...", title="[b]Top Pods in Memory Usage", padding=(1, 1)))
@@ -532,7 +533,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     # TextColumn("[progress.percentage]{task.percentage:>3.0f}"),
                     TextColumn("{task.fields[status]}"),
                 )
-                self.task_thread_refresh = self.progress_threads_status.add_task(description=f"[white]Interval Refresh", status=f"unknown")
+                self.task_thread_refresh = self.progress_threads_status.add_task(description=f"[white]Metrics Refresh", status=f"unknown")
                 self.task_prometheus_server_connection = self.progress_threads_status.add_task(description=f"[white]Prometheus", status=f"unknown")
 
                 self.progress_mem_total = Progress(
@@ -753,6 +754,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             progress_table.add_row(
                 Panel(node_resources_progress.progress_threads_status, title="[b]Threads Status",padding=(1, 2), subtitle=""),
             )
+            
 
 
             layout = make_layout()

@@ -13,9 +13,10 @@ class GlobalAttrs:
     exceptions_num = 0
     session = None
 
-    node_exporter_node_label = "kubernetes_node"
+    node_exporter_node_label = "node" #"kubernetes_node"
     kubernetes_exporter_node_label = "instance"
     live_update_interval = 8
+    start_graphs_with_zero = True
     
     debug = False
 
