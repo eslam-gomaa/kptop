@@ -1,4 +1,5 @@
 import asciichartpy
+from kubePtop.global_attrs import GlobalAttrs
 
 class AsciiGraph:
     """
@@ -37,6 +38,7 @@ class AsciiGraph:
         self.graph = ""
         self.series = []
         self.used_colors = []
+        self.init_first_lst_done = False 
 
     def pick_color(self):
         """
@@ -74,7 +76,7 @@ class AsciiGraph:
                 "color": color
             }
             self.used_colors.append(color)
-
+    
         self.colors_description()
 
         self.config = {
@@ -84,15 +86,31 @@ class AsciiGraph:
         "height":  self.hight,   ## any height you want
         "format": format
         }
-        graph =  asciichartpy.plot(self.series, self.config)
+        graph =  asciichartpy.plot(series=self.series, cfg=self.config)
         self.graph = graph
     
+    def replace_lst(self, name, lst):
+        if name not in self.names:
+            raise Exception("List name not found")
+
+        # Replace the list
+        self.colors_lst_map[name]['lst'] = lst[-self.width:] # Keep the width
+
+        # Update the series list
+        self.series = []
+        for name, info in self.colors_lst_map.items():
+            self.series.append(info['lst'])
+        
+        # Update the graph with list update
+        graph =  asciichartpy.plot(self.series, self.config)
+        self.graph = graph
+        return graph
+
     def update_lst(self, name, item):
         """
         """
         if name not in self.names:
-            raise Exception("List name not found"
-)
+            raise Exception("List name not found")
         # if (not isinstance(item, int)) or (not isinstance(item, float)):
             # raise Exception("List item should be int or float only")
 
@@ -106,6 +124,16 @@ class AsciiGraph:
         # Update the series list
         for name, info in self.colors_lst_map.items():
             self.series.append(info['lst'])
+        
+        # Put a "0" at the begining to show the full hight of the chart
+        if GlobalAttrs.start_graphs_with_zero:
+            if not self.init_first_lst_done:
+                if len(self.colors_lst_map) > 0:
+                    self.init_first_lst_done = True
+                    self.series[0].insert(0,0)
+            ## Maybe can have a counter to remove the inserted '0' [if needed.]
+            # else:
+            #     self.series[0].pop(0)
         
         # Update the graph with list update
         graph =  asciichartpy.plot(self.series, self.config)
