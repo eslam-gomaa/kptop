@@ -101,11 +101,14 @@ kptop nodes
 kptop node <NODE>
 ```
 
+![image](https://user-images.githubusercontent.com/33789516/208190533-cb719cef-e76c-4c6d-8686-2f32edae15c6.png)
+
+
 
 <br>
 
 
-### Top nodes
+### Top pods
 
 ```bash
 kptop pods
