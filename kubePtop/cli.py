@@ -1,15 +1,15 @@
-import argparse
+from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.read_env import ReadEnv
+# Read environment variables
+read_environment_variables = ReadEnv()
+import argparse
 from kubePtop.session import PrometheusAPI
 from kubePtop.node_monitor import Node_Monitoring
 from kubePtop.pod_monitor import Pod_Monitoring
 from kubePtop.pod_metrics import PrometheusPodsMetrics
 from kubePtop.pod_metrics import PrometheusPodsMetrics
 import rich
-from kubePtop.global_attrs import GlobalAttrs
 
-# Read environment variables
-read_environment_variables = ReadEnv()
 
 node_monitor = Node_Monitoring()
 pod_monitor = Pod_Monitoring()
@@ -36,10 +36,7 @@ class Cli():
 
         # Read CLI arguments
         self.argparse()
-            
-        # if self.verify_prometheus:
-        #     prometheus_api.verify_exporters()
-        #     exit(0)
+
 
         if self.debug:
             GlobalAttrs.debug = True
@@ -51,23 +48,16 @@ class Cli():
                 exit(0)
             # Check if the node found.
             node_monitor.display_dashboard(dashboard=self.dashboard, node_name=self.node)
-            # node_monitor.node_monitor_dashboard_default(node_name=self.node)
 
         if self.pod and (self.container is None):
             # Check if the pod found.
             self.container = ".*"
-            # rich.print(pod_monitor.podMetrics(pod=self.pod, container=self.container))
-            
-            # pod_metrics = PrometheusPodsMetrics()
-            # print(pod_metrics.podPVC_table("strimzi-kafka-cluster-aws-prod-kafka-1"))
-            # exit(1)
             check_pod = pod_metrics.podExists(pod=self.pod, namespace=self.namespace)
             if not check_pod.get('result'):
                 print(f"pod/{self.pod} not found in the '{self.namespace}' namespace")
                 rich.print(f"[yellow]{check_pod.get('fail_reason')}")
                 exit(1)
-            # rich.print(pod_metrics.podMemUsagePerContainers_range(pod=self.pod, namespace=self.namespace))
-            # exit(1)
+
             pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace)
 
         if (self.pod) and (self.container):
@@ -100,12 +90,8 @@ class Cli():
 
         if results.debug:
             self.debug = True
-            # GlobalAttrs.debug = True
-            # print(GlobalAttrs.debug)
-            # exit(1)
 
         if results.verify_prometheus:
-            # self.verify_prometheus = True
             prometheus_api.verify_exporters()
             exit(0)
 
