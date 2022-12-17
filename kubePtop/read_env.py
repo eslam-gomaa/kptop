@@ -22,6 +22,8 @@ class ReadEnv:
             GlobalAttrs.env_prometheus_username  = os.environ['KPTOP_PROMETHEUS_USERNAME']
             GlobalAttrs.env_prometheus_password  = os.environ['KPTOP_PROMETHEUS_PASSWORD']
             GlobalAttrs.env_insecure  = os.environ['KPTOP_INSECURE']
+            GlobalAttrs.node_exporter_node_label  = os.environ['KPTOP_NODE_EXPORTER_NODE_LABEL']
+            GlobalAttrs.start_graphs_with_zero  = os.environ['KPTOP_START_GRAPHS_WITH_ZERO']
         except (KeyError) as e:
             pass
 
