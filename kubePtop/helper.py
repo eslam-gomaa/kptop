@@ -1,4 +1,4 @@
-
+import time
 import math
 import datetime
 
@@ -112,3 +112,6 @@ class Helper:
     def percentage(self, part, whole):
         Percentage = 100 * float(part)/float(whole)
         return str(math.floor(Percentage)) + "%"
+
+    def convert_epoch_timestamp(self, timestamp):
+        return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))

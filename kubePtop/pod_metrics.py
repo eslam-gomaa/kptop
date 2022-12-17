@@ -1,8 +1,6 @@
 from kubePtop.session import PrometheusAPI
 from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.logging import Logging
-from kubePtop.colors import Bcolors
-bcolors = Bcolors()
 from kubePtop.helper import Helper
 helper_ = Helper()
 from tabulate import tabulate
@@ -679,7 +677,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(time() - container_start_time_seconds{{pod="{pod}", container=~"{container}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            query = f'sum(time() - container_start_time_seconds{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -706,6 +704,156 @@ class PrometheusPodsMetrics(PrometheusAPI):
             Logging.log.error(e)
             Logging.log.exception(traceback.format_stack())
         return output
+
+    def podFileDescriptors(self, pod=".*", namespace="default", container=".*"):
+        """
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": 0
+        }
+        try:
+            query = f'sum(container_file_descriptors{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            result = self.run_query(query)
+
+            if not result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {query}"
+                Logging.log.error(f"could not get metric's value: {query}")
+                return output
+
+            if not result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {query}"
+                Logging.log.error(f"Query did not return any data: {query}")
+                return output
+
+            interfaces = {}
+            for interface in result.get('data').get('result'):
+                interfaces[interface.get('metric').get('interface')] = float(interface.get('value')[1]) 
+
+            output['result'] = float(result.get('data').get('result')[0].get('value')[1])
+            
+            output['success'] = True
+
+        except Exception as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+        return output
+
+    def podThreads(self, pod=".*", namespace="default", container=".*"):
+        """
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": 0
+        }
+        try:
+            query = f'sum(container_threads{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            result = self.run_query(query)
+
+            if not result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {query}"
+                Logging.log.error(f"could not get metric's value: {query}")
+                return output
+
+            if not result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {query}"
+                Logging.log.error(f"Query did not return any data: {query}")
+                return output
+
+            interfaces = {}
+            for interface in result.get('data').get('result'):
+                interfaces[interface.get('metric').get('interface')] = float(interface.get('value')[1]) 
+
+            output['result'] = float(result.get('data').get('result')[0].get('value')[1])
+            
+            output['success'] = True
+
+        except Exception as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+        return output
+
+    def podProcesses(self, pod=".*", namespace="default", container=".*"):
+        """
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": 0
+        }
+        try:
+            query = f'sum(container_processes{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            result = self.run_query(query)
+
+            if not result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {query}"
+                Logging.log.error(f"could not get metric's value: {query}")
+                return output
+
+            if not result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {query}"
+                Logging.log.error(f"Query did not return any data: {query}")
+                return output
+
+            interfaces = {}
+            for interface in result.get('data').get('result'):
+                interfaces[interface.get('metric').get('interface')] = float(interface.get('value')[1]) 
+
+            output['result'] = float(result.get('data').get('result')[0].get('value')[1])
+            
+            output['success'] = True
+
+        except Exception as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+        return output
+
+
+    def podStartTime(self, pod=".*", namespace="default", container=".*"):
+        """
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": 0
+        }
+        try:
+            query = f'sum(container_start_time_seconds{{pod="{pod}", container!="POD", image!="", namespace="{namespace}", container=~"{container}"}}) by (pod, namespace, device, container)'
+            result = self.run_query(query)
+
+            if not result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {query}"
+                Logging.log.error(f"could not get metric's value: {query}")
+                return output
+
+            if not result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {query}"
+                Logging.log.error(f"Query did not return any data: {query}")
+                return output
+
+            interfaces = {}
+            for interface in result.get('data').get('result'):
+                interfaces[interface.get('metric').get('interface')] = float(interface.get('value')[1]) 
+
+            output['result'] = float(result.get('data').get('result')[0].get('value')[1])
+            
+            output['success'] = True
+
+        except Exception as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+        return output
+
 
     def podDiskReadBytes(self, pod, container=".*", namespace="default"):
         """
@@ -783,128 +931,3 @@ class PrometheusPodsMetrics(PrometheusAPI):
 
         return output
 
-
-
-
-    # def podSwapLimit(self, pod=".*", node=".*", container=".*", namespace="default"):
-    #     """
-    #     Return Pod memory usage in bytes
-    #     """
-    #     output = {
-    #         "success": False,
-    #         "fail_reason": "",
-    #         "result": ""
-    #     }
-    #     try:
-    #         query = f'sum(container_spec_memory_swap_limit_bytes{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
-    #         result = self.run_query(query)
-
-    #         if not result.get('status') == 'success':
-                # output['fail_reason'] = f"could not get metric's value: {query}"
-                # Logging.log.error(f"could not get metric's value: {query}")
-    #             return output
-
-    #         if not result.get('data').get('result'):
-    #             output['fail_reason'] = f"Query did not return any data: {query}"
-                # Logging.log.error(f"Query did not return any data: {query}")
-    #             return output
-            
-    #         output['result'] = int(result.get('data').get('result')[0].get('value')[1]) 
-    #         output['success'] = True
-
-    #     except Exception as e:
-    #         output['success']: False
-    #         output['fail_reason'] = e
-
-
-
-    
-    # def PodMemUsage_(self, pod=".*", node=".*", container=".*", namespace="default", sort_desc=False):
-    #     """
-    #     Return Pod memory usage in bytes
-    #     """
-    #     output = {
-    #         "success": False,
-    #         "fail_reason": "",
-    #         "result": ""
-    #     }
-        
-    #     try:
-    #         ### Memory Limit
-    #         # Memory Limit is done on the pod level. (that's why I'm using 'sum')
-    #         memory_limit_query = f'sum(container_spec_memory_limit_bytes{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
-    #         memory_limit = self.run_query(memory_limit_query)
-    #         # memory_cache = self.run_query('sum(container_memory_cache{container!="", instance="ip-192-168-104-139.me-south-1.compute.internal"}) by (pod, instance, namespace)')
-    #         if not memory_limit.get('status') == 'success':
-    #             output['fail_reason'] = f"could not get metric's value: {memory_usage_query}"
-    #             return output
-
-    #         if not memory_limit.get('data').get('result'):
-    #             output['fail_reason'] = f"Query did not return any data: {memory_limit_query}"
-    #             return output
-
-    #         ### Memory Usage
-    #         if sort_desc:
-    #             memory_usage_query = f'sort_desc(sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace))'
-    #             memory_usage = self.run_query(memory_usage_query)
-    #         else:
-    #             memory_usage_query = f'sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
-    #         memory_usage = self.run_query(memory_usage_query)
-
-    #         if not memory_usage.get('status') == 'success':
-    #             output['fail_reason'] = f"could not get metric's value: {memory_usage_query}"
-    #             return output
-
-    #         if not memory_usage.get('data').get('result'):
-    #             output['fail_reason'] = f"Query did not return any data: {memory_usage_query}"
-    #             return output
-
-    #         ## Memory Usage Max
-    #         memory_max_usage_query = f'sum(container_memory_max_usage_bytes{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
-    #         memory_max_usage = self.run_query(memory_max_usage_query)
-           
-    #         if not memory_max_usage.get('status') == 'success':
-    #             output['fail_reason'] = f"could not get metric's value: {memory_usage_query}"
-    #             return output
-
-    #         if not memory_max_usage.get('data').get('result'):
-    #             output['fail_reason'] = f"Query did not return any data: {memory_max_usage_query}"
-    #             return output
-
-    #         ## Memory Cache
-    #         # Here ... 
-    #         memory_cache_query = f'sum(container_memory_cache{{image!="", container!="", container!="POD", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
-    #         memory_cache = self.run_query(memory_cache_query)
-    #         if not memory_cache.get('status') == 'success':
-    #             output['fail_reason'] = f"could not get metric's value: {memory_usage_query}"
-    #             return output
-
-    #         if not memory_cache.get('data').get('result'):
-    #             output['fail_reason'] = f"Query did not return any data: {memory_cache_query}"
-    #             return output
-
-
-    #         dct = {}
-    #         if len(memory_usage.get('data').get('result')) > 0 and (len(memory_limit.get('data').get('result'))) > 0:
-    #             for pod_mem_usage in memory_usage.get('data').get('result'):
-    #                 dct[pod_mem_usage.get('metric').get('pod')] = {
-    #                     "namespace": pod_mem_usage.get('metric').get('namespace'),
-    #                     "instance": pod_mem_usage.get('metric').get('instance'),
-    #                     "memory_usage": int(pod_mem_usage.get('value')[1]),
-    #                     "memory_usage_max": "",
-    #                     "memory_limit": "",
-    #                     "memory_cache": ""
-    #                 }
-
-    #             dct[pod_mem_usage.get('metric').get('pod')]["memory_limit"] = int(memory_limit.get('data').get('result')[0].get('value')[1])
-    #             dct[pod_mem_usage.get('metric').get('pod')]["memory_usage_max"] = int(memory_max_usage.get('data').get('result')[0].get('value')[1])
-    #             dct[pod_mem_usage.get('metric').get('pod')]["memory_cache"] = int(memory_cache.get('data').get('result')[0].get('value')[1])
-                                  
-            
-    #         output['result'] = dct
-    #         output['success'] = True
-
-    #     except(KeyError, AttributeError) as e:
-    #         output['success']: False
-    #         output['fail_reason'] = e
-    #     return output
