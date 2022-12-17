@@ -121,10 +121,16 @@ kptop pods
 ### Live monitoring for Pods
 
 ```bash
-kptop pod <POD>
+kptop pod <POD> -n <NAMESPACE>
 ```
 
 ![image](https://user-images.githubusercontent.com/33789516/208233405-f07bab04-896e-4d80-bed5-f92deae91e19.png)  
+
+![image](https://user-images.githubusercontent.com/33789516/208233544-e51e1ec2-a4c9-4615-9f9f-32156937a18c.png)
+
+![image](https://user-images.githubusercontent.com/33789516/208233652-ed26534f-f5f1-486f-a3df-87800ebc8b73.png)
+
+
 
 
 <br>
