@@ -1317,3 +1317,11 @@ class PrometheusNodeMetrics(PrometheusAPI):
             Logging.log.exception(traceback.format_stack())
 
         return output
+
+
+    def topNode(self):
+        """
+        """
+        pass
+        
+
