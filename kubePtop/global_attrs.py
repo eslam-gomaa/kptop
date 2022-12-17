@@ -1,6 +1,3 @@
-# # import logging as logging
-# from rich.logging import RichHandler
-# from datetime import datetime, timezone
 
 class GlobalAttrs:
     env_prometheus_server = "..."
@@ -22,5 +19,3 @@ class GlobalAttrs:
 
     def __init__(self):
         pass
-
-
