@@ -82,7 +82,7 @@ kubectl() {
 | `--namespace`,  `-n`         | Specify a Kubernetes Namespace                               | default |
 | `--all-namespaces`,  `-A`    |                                                              |         |
 | `--container`,  `-c`         | Specify a container                                          |         |
-| `--interval`,  `-i`          | Live monitoring update interval                              | 8       |
+| `--interval`,  `-i`          | Live monitoring update interval                              | 8 <br> <sub>[**NOTE**: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub>      |
 | `--debug`,  `-d`             | Enable debugging logging mode                                | False   |
 | `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |         |
 
