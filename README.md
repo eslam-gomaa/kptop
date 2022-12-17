@@ -102,6 +102,9 @@ kptop nodes
 kptop node <NODE>
 ```
 
+![image](https://user-images.githubusercontent.com/33789516/208231200-cd066a8e-15fc-4d92-bd45-f5fba492c665.png)
+
+
 ![image](https://user-images.githubusercontent.com/33789516/208190533-cb719cef-e76c-4c6d-8686-2f32edae15c6.png)
 
 
@@ -141,6 +144,8 @@ kptop pvcs
 ```
 
 <br>
+
+
 
 
 
