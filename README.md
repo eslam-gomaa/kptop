@@ -268,5 +268,5 @@ export KPTOP_NODE_EXPORTER_NODE_LABEL="kubernetes_node"
 
 <br>
 
-Please reach me anytime on [Linkedin](https://www.linkedin.com/in/eslam-gomaa/)
+Reach me anytime on [Linkedin](https://www.linkedin.com/in/eslam-gomaa/)
 
