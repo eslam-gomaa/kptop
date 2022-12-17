@@ -181,7 +181,7 @@ kptop --verify-prometheus
 
 <details>
     <summary>
-        <b style="font-size:16px" >Sample output</b>
+        <b style="font-size:14px" >Sample output</b>
     </summary>
     <br>
 
