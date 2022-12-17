@@ -137,20 +137,16 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                                                         # TaskProgressColumn(),
                                                         TextColumn("{task.fields[status]}"),
                                                         )
-                self.extra_uptime = self.progress_extra.add_task(completed=0, description=f"[white]UP Time   ", total=100, status="Loading")
-                self.extra_start_time = self.progress_extra.add_task(completed=0, description=f"[white]Start Time   ", total=100, status="Loading")
-                self.extra_file_discriptors = self.progress_extra.add_task(completed=0, description=f"[white]File Descriptors   ", total=100, status="Loading")
-                self.extra_file_threads = self.progress_extra.add_task(completed=0, description=f"[white]Threads   ", total=100, status="Loading")
-                self.extra_file_processes = self.progress_extra.add_task(completed=0, description=f"[white]Processes   ", total=100, status="Loading")
-
-                # self.progress_pvc = Progress(TextColumn("[progress.description]{task.description}"),
-                #                                         BarColumn(bar_width=20), 
-                #                                         TaskProgressColumn(),
-                #                                         TextColumn("{task.fields[status]}"),
-                #                                         )
-
-                # self.task_pvc_i = self.progress_pvc.add_task(completed=0, description=f"[white]PVC Used   ", total=100, status="Loading")
-
+                self.task_extra_uptime = self.progress_extra.add_task(completed=0, description=f"[white]UP Time   ", total=100, status="Loading")
+                start_time_json = self.podStartTime(pod=pod, namespace=namespace, container=container)
+                if start_time_json.get('success'):
+                    start_time = helper_.convert_epoch_timestamp(start_time_json.get('result'))
+                else:
+                    start_time = start_time_json.get('fail_reason')
+                self.task_extra_start_time = self.progress_extra.add_task(completed=0, description=f"[white]Start Time   ", total=100, status=start_time)
+                self.task_extra_file_discriptors = self.progress_extra.add_task(completed=0, description=f"[white]File Descriptors   ", total=100, status="Loading")
+                self.task_extra_threads = self.progress_extra.add_task(completed=0, description=f"[white]Threads   ", total=100, status="Loading")
+                self.task_extra_processes = self.progress_extra.add_task(completed=0, description=f"[white]Processes   ", total=100, status="Loading")
 
 
                 self.group_memory = Group (
@@ -246,10 +242,33 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                             self.progress_cpu.update(task_id=self.task_cpu_used_user, completed=0, description=f"[white]CPU used USER   ", total=100, status=pod_cpu_metrics_json.get('cpuUsageUserAVG10mMilicores').get('fail_reason'))
                             GlobalAttrs.exceptions_num +=1
 
-
-                        # pod_pvc_metrics_json = self.podPVC(pod)
                         
+                        # Update Extra progress bars
+                        pod_uptime_json = self.podUpTime(pod=pod, container=container, namespace=namespace)
+                        if pod_uptime_json.get('success'):
+                            self.progress_extra.update(task_id=self.task_extra_uptime, completed=0, description=f"[white]UP Time   ", total=100, status=helper_.sec_to_m_h_d(pod_uptime_json.get('result')))
+                            pass
+                        else:
+                            self.progress_extra.update(task_id=self.task_extra_uptime, completed=0, description=f"[white]UP Time   ", total=100, status=pod_uptime_json.get('fail_reason'))
 
+                        pod_file_descriptors_json = self.podFileDescriptors(pod=pod, container=container, namespace=namespace)
+                        if pod_file_descriptors_json.get('success'):
+                            self.progress_extra.update(task_id=self.task_extra_file_discriptors, completed=0, description=f"[white]File Descriptors   ", total=100, status=int(pod_file_descriptors_json.get('result')))
+                            pass
+                        else:
+                            self.progress_extra.update(task_id=self.task_extra_file_discriptors, completed=0, description=f"[white]File Descriptors   ", total=100, status=pod_file_descriptors_json.get('fail_reason'))
+                        
+                        pod_threads_json = self.podThreads(pod=pod, container=container, namespace=namespace)
+                        if pod_threads_json.get('success'):
+                            self.progress_extra.update(task_id=self.task_extra_threads, completed=0, description=f"[white]Threads   ", total=100, status=int(pod_threads_json.get('result')))
+                        else:
+                            self.progress_extra.update(task_id=self.task_extra_threads, completed=0, description=f"[white]Threads   ", total=100, status=pod_threads_json.get('fail_reason'))
+
+                        pod_processes_json = self.podProcesses(pod=pod, container=container, namespace=namespace)
+                        if pod_processes_json.get('success'):
+                            self.progress_extra.update(task_id=self.task_extra_processes, completed=0, description=f"[white]Processes   ", total=100, status=int(pod_processes_json.get('result')))
+                        else:
+                            self.progress_extra.update(task_id=self.task_extra_processes, completed=0, description=f"[white]Processes   ", total=100, status=pod_processes_json.get('fail_reason'))
 
 
                         time.sleep(GlobalAttrs.live_update_interval)
@@ -442,18 +461,6 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                 update_pod_pvcs_usage = False
 
             layout["body2_a_b"].update(Panel(Markdown("Loading..."), title="[b]PVCs used by the pod", padding=(1, 1)))
-
-
-            def return_pod_uptime():
-                time.sleep(GlobalAttrs.live_update_interval)
-                pod_uptime = "unknown"
-                pod_uptime_json = self.podUpTime(pod=pod, namespace=namespace, container=container)
-                if pod_uptime_json.get('success'):
-                    # if pod_uptime_json.get('result') != 0:
-                    pod_uptime = helper_.sec_to_m_h_d(pod_uptime_json.get('result'))
-                else:
-                    pod_uptime = "could not get metric value"
-                return pod_uptime
 
 
             Logging.log.info("Starting the Layout.")
