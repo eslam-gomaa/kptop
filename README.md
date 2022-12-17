@@ -28,7 +28,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 <br>
 
-## Installation [not ready yet]
+## Installation
 <a id=installation></a>
 
 > Compatible with Python 3.6+
