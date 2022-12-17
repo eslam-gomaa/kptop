@@ -42,7 +42,14 @@ pip3 install kptop --upgrade
 `vi ~/.bash_rc`
 
 ```bash
-# 
+kubectl() {
+    if [[ $1 == 'kptop' ]]
+    then
+        kptop $@
+    else
+        kubectl $@
+    fi
+}
 ```
 
 <br>
@@ -70,13 +77,14 @@ pip3 install kptop --upgrade
 <a id=cli></a>
 
 
-| ENV                   | Description                     | Default |
-| --------------------- | ------------------------------- | ------- |
-| `--namespace`,  `-n`      | Specify a Kubernetes Namespace  | default |
-| `--all-namespaces`,  `-A` |                                 |         |
-| `--container`,  `-c`      | Specify a container             |         |
-| `--interval`,  `-i`       | Live monitoring update interval | 8       |
-| `--debug`,  `-d`          | Enable debugging logging mode   | False   |
+| ENV                          | Description                                                  | Default |
+| ---------------------------- | ------------------------------------------------------------ | ------- |
+| `--namespace`,  `-n`         | Specify a Kubernetes Namespace                               | default |
+| `--all-namespaces`,  `-A`    |                                                              |         |
+| `--container`,  `-c`         | Specify a container                                          |         |
+| `--interval`,  `-i`          | Live monitoring update interval                              | 8 <br> <sub>[**NOTE**: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub>      |
+| `--debug`,  `-d`             | Enable debugging logging mode                                | False   |
+| `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |         |
 
 
 
@@ -111,7 +119,6 @@ kptop node <NODE>
 
 
 <br>
-
 
 ### Top pods
 <a id=top_pods></a>
@@ -165,16 +172,94 @@ kptop pvcs
 <br>
 
 
+### Verify Prometheus connectivity
+<a id=verify_prometheus></a>
+
+```bash
+kptop --verify-prometheus
+```
+
+<details>
+    <summary>
+        <b style="font-size:14px" >Sample output</b>
+    </summary>
+    <br>
+
+```bash 
+Verifying Prometheus connection: Connected                     
+{
+  "connected": true,
+  "status_code": 200,
+  "reason": "",
+  "fail_reason": ""
+}
+
+Verifying Prometheus Exporters:
+
+* Node Exporter:  Found             
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_versions": {
+      "1.3.1": "2"
+    }
+  }
+}
+
+* Kubernetes Exporter:  Found           
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_git_versions": {
+      "v1.21.0": "3",
+      "v1.21.14": "1"
+    }
+  }
+}
+```
+    
+</details>
+
+
+
+
+<br>
+
+
 ---
 
 <br>
 
+## Logging
+
+Default log file location is "`/tmp/kptop.log`"
+
+
+<br>
+
+---
+
+<br>
+
+
 ## Known Issues
 
 
-### #1 Node Exporter metrics don't return data
+### 
 
+<details>
+    <summary>
+        <b style="font-size:22px" > [1] Node Exporter metrics don't return data</b>
+    </summary>
+    <br>
+    
 ![image](https://user-images.githubusercontent.com/33789516/208234711-bf46a36b-db60-4fba-943c-792b68f721e6.png)
+    
+</details>
+
+
 
 
 - This is NOT an issue, the node exporter NODE label change from version to another, currently we encountered only "kubernetes_node" or "node"
@@ -193,10 +278,7 @@ export KPTOP_NODE_EXPORTER_NODE_LABEL="kubernetes_node"
 
 
 
+<br>
 
-
-
-
-
-
+Reach me anytime on [Linkedin](https://www.linkedin.com/in/eslam-gomaa/)
 
