@@ -958,9 +958,9 @@ class PrometheusPodsMetrics(PrometheusAPI):
                 output['fail_reason'] = f"could not get metric value: \n{memory_limit_query}"
                 return output
 
-            if not memory_limit.get('data').get('result'):
-                output['fail_reason'] = f"Query did not return any data: \n{memory_limit_query}"
-                return output
+            # if not memory_limit.get('data').get('result'):
+            #     output['fail_reason'] = f"Query did not return any data: \n{memory_limit_query}"
+            #     return output
 
             memory_usage = self.run_query(memory_usage_query)
             if not memory_usage.get('status') == 'success':
@@ -985,9 +985,9 @@ class PrometheusPodsMetrics(PrometheusAPI):
                 output['fail_reason'] = f"could not get metric value: \n{cpu_limit_query}"
                 return output
 
-            if not cpu_limit.get('data').get('result'):
-                output['fail_reason'] = f"Query did not return any data: \n{cpu_limit_query}"
-                return output
+            # if not cpu_limit.get('data').get('result'):
+            #     output['fail_reason'] = f"Query did not return any data: \n{cpu_limit_query}"
+            #     return output
 
             cpu_usage = self.run_query(cpu_usage_query)
             if not cpu_usage.get('status') == 'success':

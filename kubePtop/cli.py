@@ -84,8 +84,8 @@ class Cli():
         parser.add_argument('-d', '--debug', required=False, action='store_true', help='Print debug output')
         parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
 
-        parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
-        parser.add_argument('-L', '--list-dashboards', required=False, action='store_true', help='List available dashboards')
+        # parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
+        # parser.add_argument('-L', '--list-dashboards', required=False, action='store_true', help='List available dashboards')
 
         pod_aliases = ['pod', 'pods', 'po']
         node_aliases = ['node', 'nodes']
@@ -141,11 +141,11 @@ class Cli():
         if results.interval:
             GlobalAttrs.live_update_interval = results.interval
 
-        if results.list_dashboards:
-            self.list_dashboards = True
+        # if results.list_dashboards:
+        #     self.list_dashboards = True
 
-        if results.dashboard:
-            self.dashboard = results.dashboard
+        # if results.dashboard:
+        #     self.dashboard = results.dashboard
 
         if results.sort_by_mem_usage:
             self.sort_by_mem_usage = True
