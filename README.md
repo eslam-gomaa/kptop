@@ -172,9 +172,19 @@ kptop pvcs
 ## Known Issues
 
 
-### #1 Node Exporter metrics don't return data
+### 
 
+<details>
+    <summary>
+        <b style="font-size:22px" >#1 Node Exporter metrics don't return data</b>
+    </summary>
+    <br>
+    
 ![image](https://user-images.githubusercontent.com/33789516/208234711-bf46a36b-db60-4fba-943c-792b68f721e6.png)
+    
+</details>
+
+
 
 
 - This is NOT an issue, the node exporter NODE label change from version to another, currently we encountered only "kubernetes_node" or "node"
@@ -193,10 +203,7 @@ export KPTOP_NODE_EXPORTER_NODE_LABEL="kubernetes_node"
 
 
 
+<br>
 
-
-
-
-
-
+Please reach me anytime on [Linkedin](https://www.linkedin.com/in/eslam-gomaa/)
 
