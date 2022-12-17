@@ -139,8 +139,12 @@ kptop pod <POD> -n <NAMESPACE>
 ### Live monitoring for Containers
 
 ```bash
-kptop pod <POD> --container <CONTAINER>
+kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 ```
+
+![image](https://user-images.githubusercontent.com/33789516/208234009-e3656b8b-6fdb-4f72-bb87-15332c67e3d7.png)
+
+
 
 <br>
 
