@@ -16,9 +16,9 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 >  [[ In the Development Phase ]]
 - [ ] [Top Nodes](#top_nodes)
-- [x] [Live monitoring for Nodes](#monitor_node) #done#
+- [x] [Live monitoring for Nodes](#monitor_node) `#done#`
 - [ ] [Top Pods](#top_pods)
-- [x] [Live monitoring for Pods/Containers](#monitor_pod) #done#
+- [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
 - [ ] [Top PVCs](#top_pvcs)
 
 
