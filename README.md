@@ -42,7 +42,14 @@ pip3 install kptop --upgrade
 `vi ~/.bash_rc`
 
 ```bash
-# 
+kubectl() {
+    if [[ $1 == 'kptop' ]]
+    then
+        kptop $@
+    else
+        kubectl $@
+    fi
+}
 ```
 
 <br>
