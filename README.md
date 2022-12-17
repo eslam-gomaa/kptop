@@ -174,8 +174,11 @@ kptop pvcs
 
 ### #1 Node Exporter metrics don't return data
 
+![image](https://user-images.githubusercontent.com/33789516/208234711-bf46a36b-db60-4fba-943c-792b68f721e6.png)
+
+
 - This is NOT an issue, the node exporter NODE label change from version to another, currently we encountered only "kubernetes_node" or "node"
-- "node" is sat as the default, If it doensn't work you can change it with the "[KPTOP_NODE_EXPORTER_NODE_LABEL](#env)" Environment variables
+- "node" is the default, to fix the it you can change it with the "[KPTOP_NODE_EXPORTER_NODE_LABEL](#env)" Environment variables
 
 ```bash
 export KPTOP_NODE_EXPORTER_NODE_LABEL="node" # default
