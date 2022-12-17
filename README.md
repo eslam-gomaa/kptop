@@ -251,7 +251,7 @@ Default log file location is "`/tmp/kptop.log`"
 
 <details>
     <summary>
-        <b style="font-size:22px" >#1 Node Exporter metrics don't return data</b>
+        <b style="font-size:22px" >`#1` Node Exporter metrics don't return data</b>
     </summary>
     <br>
     
