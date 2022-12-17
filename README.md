@@ -124,6 +124,8 @@ kptop pods
 kptop pod <POD>
 ```
 
+![image](https://user-images.githubusercontent.com/33789516/208233405-f07bab04-896e-4d80-bed5-f92deae91e19.png)  
+
 
 <br>
 
