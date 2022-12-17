@@ -2,6 +2,8 @@ from kubePtop.session import PrometheusAPI
 from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.logging import Logging
 from kubePtop.helper import Helper
+from kubePtop.colors import Bcolors
+bcolors = Bcolors()
 helper_ = Helper()
 from tabulate import tabulate
 import textwrap
@@ -25,7 +27,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": False
         }
         try:
-            query = f'sum(container_last_seen{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_last_seen{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -80,7 +82,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -117,7 +119,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": {}
         }
         try:
-            query = f'sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace, container)'
+            query = f'sum(container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -155,7 +157,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": []
         }
         try:
-            query = f'container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{range_}]'
+            query = f'container_memory_working_set_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{range_}]'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -196,7 +198,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_memory_max_usage_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_memory_max_usage_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -230,7 +232,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_spec_memory_limit_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_spec_memory_limit_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -263,7 +265,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_memory_cache{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_memory_cache{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -297,7 +299,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_spec_memory_swap_limit_bytes{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_spec_memory_swap_limit_bytes{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -331,7 +333,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_cpu_load_average_10s{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_cpu_load_average_10s{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -364,7 +366,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(irate(container_cpu_usage_seconds_total{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
+            query = f'sum(irate(container_cpu_usage_seconds_total{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -398,7 +400,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(irate(container_cpu_system_seconds_total{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
+            query = f'sum(irate(container_cpu_system_seconds_total{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -431,7 +433,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(irate(container_cpu_user_seconds_total{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
+            query = f'sum(irate(container_cpu_user_seconds_total{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}[{avg}])) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -464,7 +466,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(container_spec_cpu_quota{{image!="", container!="", container!="POD", namespace="{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
+            query = f'sum(container_spec_cpu_quota{{image!="", container!="", container!="POD", namespace=~"{namespace}", pod=~"{pod}", container=~"{container}", {GlobalAttrs.kubernetes_exporter_node_label}=~"{node}"}}) by (pod, instance, namespace)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -502,7 +504,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
         }
         try:
             # Get PVCs Names used by the Pod.
-            pvcs_names_query = f'sum(kube_pod_spec_volumes_persistentvolumeclaims_info{{namespace="{namespace}", pod=~"{pod}", container=~".*"}}) by (namespace, persistentvolumeclaim, volume, pod)'
+            pvcs_names_query = f'sum(kube_pod_spec_volumes_persistentvolumeclaims_info{{namespace=~"{namespace}", pod=~"{pod}", container=~".*"}}) by (namespace, persistentvolumeclaim, volume, pod)'
             pvc_names_result = self.run_query(pvcs_names_query)
             if not pvc_names_result.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {pvcs_names_query}"
@@ -577,7 +579,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": {}
         }
         try:
-            query = f'sum(irate(container_network_receive_bytes_total{{container!="", namespace="{namespace}", pod=~"{pod}"}}[10m])) by (pod, instance, namespace, interface)'
+            query = f'sum(irate(container_network_receive_bytes_total{{container!="", namespace=~"{namespace}", pod=~"{pod}"}}[10m])) by (pod, instance, namespace, interface)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -618,7 +620,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": {}
         }
         try:
-            query = f'sum(irate(container_network_transmit_bytes_total{{container!="", namespace="{namespace}", pod=~"{pod}"}}[10m])) by (pod, instance, namespace, interface)'
+            query = f'sum(irate(container_network_transmit_bytes_total{{container!="", namespace=~"{namespace}", pod=~"{pod}"}}[10m])) by (pod, instance, namespace, interface)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -677,7 +679,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(time() - container_start_time_seconds{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            query = f'sum(time() - container_start_time_seconds{{pod="{pod}", container=~"{container}", namespace=~"{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -714,7 +716,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(container_file_descriptors{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            query = f'sum(container_file_descriptors{{pod="{pod}", container=~"{container}", namespace=~"{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -751,7 +753,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(container_threads{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            query = f'sum(container_threads{{pod="{pod}", container=~"{container}", namespace=~"{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -788,7 +790,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(container_processes{{pod="{pod}", container=~"{container}", namespace="{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
+            query = f'sum(container_processes{{pod="{pod}", container=~"{container}", namespace=~"{namespace}", container!="POD", image!=""}}) by (pod, instance, namespace, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -826,7 +828,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": 0
         }
         try:
-            query = f'sum(container_start_time_seconds{{pod="{pod}", container!="POD", image!="", namespace="{namespace}", container=~"{container}"}}) by (pod, namespace, device, container)'
+            query = f'sum(container_start_time_seconds{{pod="{pod}", container!="POD", image!="", namespace=~"{namespace}", container=~"{container}"}}) by (pod, namespace, device, container)'
             result = self.run_query(query)
 
             if not result.get('status') == 'success':
@@ -868,7 +870,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(irate(container_fs_reads_bytes_total{{pod="{pod}", namespace="{namespace}", container=~"{container}"}}[10m])) by (pod, namespace, device)'
+            query = f'sum(irate(container_fs_reads_bytes_total{{pod="{pod}", namespace=~"{namespace}", container=~"{container}"}}[10m])) by (pod, namespace, device)'
             result = self.run_query(query)
             if not result.get('status') == 'success':
                 output['fail_reason'] =  f"could not get metric's value: \n{query}"
@@ -906,7 +908,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            query = f'sum(irate(container_fs_writes_bytes_total{{pod="{pod}", namespace="{namespace}", container=~"{container}"}}[10m])) by (pod, namespace, device)'
+            query = f'sum(irate(container_fs_writes_bytes_total{{pod="{pod}", namespace=~"{namespace}", container=~"{container}"}}[10m])) by (pod, namespace, device)'
             result = self.run_query(query)
             if not result.get('status') == 'success':
                 output['fail_reason'] =  f"could not get metric's value: \n{query}"
@@ -930,4 +932,147 @@ class PrometheusPodsMetrics(PrometheusAPI):
             Logging.log.exception(traceback.format_stack())
 
         return output
+
+    def topPod(self, namespace="default", sort_by_mem_usage=False):
+        """
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": {}
+        }
+
+        try:
+            memory_limit_query = f'sum(container_spec_memory_limit_bytes{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}) by (pod, instance, namespace)'
+
+            memory_usage_query = f'sum(container_memory_working_set_bytes{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}) by (pod, instance, namespace)'
+            if sort_by_mem_usage:
+                memory_usage_query = f'sort_desc(sum(container_memory_working_set_bytes{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}) by (pod, instance, namespace))'
+                
+            memory_usage_max_query = f'sum(container_memory_max_usage_bytes{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}) by (pod, instance, namespace)'
+            cpu_limit_query = f'sum(container_spec_cpu_quota{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}) by (pod, instance, namespace)'
+            cpu_usage_query = f'sum(irate(container_cpu_usage_seconds_total{{namespace=~"{namespace}", image!="", container!="", container!="POD"}}[10m])) by (pod, instance, namespace)'
+
+            memory_limit = self.run_query(memory_limit_query)
+            if not memory_limit.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric value: \n{memory_limit_query}"
+                return output
+
+            if not memory_limit.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{memory_limit_query}"
+                return output
+
+            memory_usage = self.run_query(memory_usage_query)
+            if not memory_usage.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric value: \n{memory_usage_query}"
+                return output
+
+            if not memory_usage.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{memory_usage_query}"
+                return output
+
+            memory_usage_max = self.run_query(memory_usage_max_query)
+            if not memory_usage_max.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric value: \n{memory_usage_max_query}"
+                return output
+
+            if not memory_usage_max.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{memory_usage_max_query}"
+                return output
+
+            cpu_limit = self.run_query(cpu_limit_query)
+            if not cpu_limit.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric value: \n{cpu_limit_query}"
+                return output
+
+            if not cpu_limit.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{cpu_limit_query}"
+                return output
+
+            cpu_usage = self.run_query(cpu_usage_query)
+            if not cpu_usage.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric value: \n{cpu_usage_query}"
+                return output
+
+            if not cpu_usage.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{cpu_usage_query}"
+                return output
+
+            dct = {}
+            if (len(memory_usage.get('data').get('result')) > 0) and (len(memory_limit.get('data').get('result')) > 0) and (len(memory_usage.get('data').get('result')) > 0):
+                for pod_mem_usage in memory_usage.get('data').get('result'):
+                    dct[pod_mem_usage.get('metric').get('pod')] = {
+                        "namespace": pod_mem_usage.get('metric').get('namespace'),
+                        "instance": pod_mem_usage.get('metric').get('instance'),
+                        "memory_usage": int(pod_mem_usage.get('value')[1]),
+                        "memory_usage_max": 0,
+                        "memory_limit": 0,
+                        "cpu_limit": 0
+                    }
+                for pod_mem_limit in memory_limit.get('data').get('result'):
+                    dct[pod_mem_limit.get('metric').get('pod')]["memory_limit"] = int(pod_mem_limit.get('value')[1])             
+            
+                for pod_mem_usage_max in memory_usage_max.get('data').get('result'):
+                    dct[pod_mem_usage_max.get('metric').get('pod')]["memory_usage_max"] = int(pod_mem_usage_max.get('value')[1])
+
+                for pod_cpu_limit in cpu_limit.get('data').get('result'):
+                    dct[pod_cpu_limit.get('metric').get('pod')]["cpu_limit"] = int(pod_cpu_limit.get('value')[1][:-2])
+
+                for pod_cpu_usage in cpu_usage.get('data').get('result'):
+                    dct[pod_cpu_usage.get('metric').get('pod')]["cpu_usage"] = float('%.2f' % float(pod_cpu_usage.get('value')[1]))
+
+
+            output['result'] = dct
+            output['success'] = True
+
+        except(KeyError, AttributeError) as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+
+        return output
+
+
+    def topPodTable(self, namespace="default", sort_by_mem_usage=False):
+        """
+        """
+        pods_json = self.topPod(namespace=namespace, sort_by_mem_usage=sort_by_mem_usage)
+        if not pods_json.get('success'):
+            print(f"No pods found in the '{namespace}' namespace \n{bcolors.WARNING + pods_json.get('fail_reason') + bcolors.ENDC}")
+            exit(1)
+        # import rich
+        # rich.print_json(data=pods_json)
+
+        table = [['NAMESPACE', 'POD', 'MEM LIMIT', 'MEM USAGE', 'MEM USAGE %', 'MEM USAGE MAX', 'MEM FREE', 'CPU LIMIT', 'CPU USAGE' ]]
+        for pod, value in pods_json.get('result').items():
+            
+            # pvc_name = "\n".join(textwrap.wrap(pvc, width=23, replace_whitespace=False))
+
+            if int(value.get('memory_limit')) == 0:
+                memory_limit = "---" #"NO_LIMIT"
+                memory_free = ""
+                memory_usage_percentage = ""
+            else:
+                memory_limit = helper_.bytes_to_kb_mb_gb(value.get('memory_limit'))
+                memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
+                memory_usage_percentage = helper_.percentage(value.get('memory_usage'), value.get('memory_limit'))
+
+            if int(value.get('cpu_limit')) == 0:
+                cpu_limit = "---" #"NO_LIMIT"
+                cpu_usage = ""
+
+            else:
+                cpu_limit = str(value.get('cpu_limit')) + "m"
+
+
+            row = [value.get('namespace'), pod, memory_limit, helper_.bytes_to_kb_mb_gb(value.get('memory_usage')), memory_usage_percentage, helper_.bytes_to_kb_mb_gb(value.get('memory_usage_max')), memory_free, cpu_limit, str(value.get('cpu_usage')) + "m"]
+            table.append(row)
+        
+        out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
+        print(out)
+
+
+
+
 
