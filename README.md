@@ -52,15 +52,15 @@ pip3 install kptop --upgrade
 
 ## Environment Variables
 
-| ENV                         | Description                                                  | Default | Required |
-| --------------------------- | ------------------------------------------------------------ | ------- | -------- |
-| `KUBE_PTOP_PROMETHEUS_SERVER` | Prometheus server URL                                        |         | Yes      |
-| `KPTOP_BASIC_AUTH_ENABLED`    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| `KPTOP_PROMETHEUS_USERNAME`   | Prometheus username                                          |         | No       |
-| `KPTOP_PROMETHEUS_PASSWORD`   | Prometheus password                                          |         | No       |
-| `KPTOP_INSECURE`              | Verify SSL certificate                                       | False   | No       |
-
-
+| ENV                            | Description                                                  | Default | Required |
+| ------------------------------ | ------------------------------------------------------------ | ------- | -------- |
+| KUBE_PTOP_PROMETHEUS_SERVER    | Prometheus server URL                                        |         | Yes      |
+| KPTOP_BASIC_AUTH_ENABLED       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| KPTOP_PROMETHEUS_USERNAME      | Prometheus username                                          |         | No       |
+| KPTOP_PROMETHEUS_PASSWORD      | Prometheus password                                          |         | No       |
+| KPTOP_INSECURE                 | Verify SSL certificate                                       | False   | No       |
+| KPTOP_NODE_EXPORTER_NODE_LABEL | node exporter "node label"                                   | "node"  | NO       |
+| KPTOP_START_GRAPHS_WITH_ZERO   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
 
 
 
