@@ -181,7 +181,7 @@ kptop --verify-prometheus
 
 <details>
     <summary>
-        <b style="font-size:17px" >Sample output</b>
+        <b style="font-size:16px" >Sample output</b>
     </summary>
     <br>
 
@@ -234,7 +234,8 @@ Verifying Prometheus Exporters:
 
 ## Logging
 
-> default log file location is "/tmp/kptop.log"
+Default log file location is "`/tmp/kptop.log`"
+
 
 <br>
 
