@@ -146,6 +146,28 @@ kptop pvcs
 <br>
 
 
+---
+
+<br>
+
+## Known Issues
+
+### #1 Node Exporter metrics don't return data
+
+- This is NOT an issue, the node exporter NODE label change from version to another, curretnly we encountered "kubernetes_node" or "node"
+- "node" is the default, If it doensn't work you can change it with the ... Environment variables
+
+> auto detection of exporters verstions can be implemented later (if needed).
+
+<br>
+
+---
+
+
+
+
+
+
 
 
 
