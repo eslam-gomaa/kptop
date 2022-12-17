@@ -15,11 +15,11 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 <br>
 
 >  [[ In the Development Phase ]]
-- [ ] Top Nodes
-- [x] [Live monitoring for Nodes](https://github.com/eslam-gomaa/kptop/blob/main/README.md#live-monitoring-for-nodes) #done#
-- [ ] Top Pods
-- [x] [Live monitoring for Pods](https://github.com/eslam-gomaa/kptop/blob/main/README.md#live-monitoring-for-nodes) #done#
-- [ ] [Top PVCs](https://github.com/eslam-gomaa/kptop/blob/main/README.md#top-pvcs)
+- [ ] [Top Nodes](#top_nodes)
+- [x] [Live monitoring for Nodes](#monitor_node) #done#
+- [ ] [Top Pods](#top_pods)
+- [x] [Live monitoring for Pods/Containers](#monitor_pod) #done#
+- [ ] [Top PVCs](#top_pvcs)
 
 
 <br>
@@ -38,7 +38,6 @@ pip3 install kptop --upgrade
 ```
 
 ### To use it as a Kubectl argument
-<a id=cli></a>
 
 `vi ~/.bash_rc`
 
@@ -68,6 +67,7 @@ pip3 install kptop --upgrade
 <br>
 
 ## CLI Arguments
+<a id=cli></a>
 
 
 | ENV                   | Description                     | Default |
@@ -89,6 +89,7 @@ pip3 install kptop --upgrade
 ## Examples
 
 ### Top nodes
+<a id=top_nodes></a>
 
 ```bash
 kptop nodes
@@ -98,6 +99,7 @@ kptop nodes
 
 
 ### Live monitoring for Nodes
+<a id=monitor_node></a>
 
 ```bash
 kptop node <NODE>
@@ -112,6 +114,7 @@ kptop node <NODE>
 
 
 ### Top pods
+<a id=top_pods></a>
 
 ```bash
 kptop pods
@@ -120,6 +123,7 @@ kptop pods
 <br>
 
 ### Live monitoring for Pods
+<a id=monitor_pod></a>
 
 ```bash
 kptop pod <POD> -n <NAMESPACE>
@@ -138,6 +142,7 @@ kptop pod <POD> -n <NAMESPACE>
 <br>
 
 ### Live monitoring for Containers
+<a id=monitor_container></a>
 
 ```bash
 kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
@@ -150,6 +155,8 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 <br>
 
 ### Top PVCs
+<a id=top_pvcs></a>
+
 
 ```bash
 kptop pvcs
@@ -163,6 +170,7 @@ kptop pvcs
 <br>
 
 ## Known Issues
+
 
 ### #1 Node Exporter metrics don't return data
 
