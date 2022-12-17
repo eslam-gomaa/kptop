@@ -130,6 +130,7 @@ kptop pod <POD> -n <NAMESPACE>
 
 ![image](https://user-images.githubusercontent.com/33789516/208233652-ed26534f-f5f1-486f-a3df-87800ebc8b73.png)
 
+![image](https://user-images.githubusercontent.com/33789516/208233865-9026acfa-ad64-475a-8337-8e8edab1fcb9.png)
 
 
 
