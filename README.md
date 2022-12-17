@@ -77,13 +77,14 @@ kubectl() {
 <a id=cli></a>
 
 
-| ENV                   | Description                     | Default |
-| --------------------- | ------------------------------- | ------- |
-| `--namespace`,  `-n`      | Specify a Kubernetes Namespace  | default |
-| `--all-namespaces`,  `-A` |                                 |         |
-| `--container`,  `-c`      | Specify a container             |         |
-| `--interval`,  `-i`       | Live monitoring update interval | 8       |
-| `--debug`,  `-d`          | Enable debugging logging mode   | False   |
+| ENV                          | Description                                                  | Default |
+| ---------------------------- | ------------------------------------------------------------ | ------- |
+| `--namespace`,  `-n`         | Specify a Kubernetes Namespace                               | default |
+| `--all-namespaces`,  `-A`    |                                                              |         |
+| `--container`,  `-c`         | Specify a container                                          |         |
+| `--interval`,  `-i`          | Live monitoring update interval                              | 8       |
+| `--debug`,  `-d`             | Enable debugging logging mode                                | False   |
+| `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |         |
 
 
 
@@ -118,7 +119,6 @@ kptop node <NODE>
 
 
 <br>
-
 
 ### Top pods
 <a id=top_pods></a>
@@ -168,6 +168,62 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 ```bash
 kptop pvcs
 ```
+
+<br>
+
+
+### Verify Prometheus connectivity
+<a id=verify_prometheus></a>
+
+```bash
+kptop --verify-prometheus
+```
+
+<details>
+    <summary>
+        <b style="font-size:17px" >Sample output</b>
+    </summary>
+    <br>
+
+```bash 
+Verifying Prometheus connection: Connected                     
+{
+  "connected": true,
+  "status_code": 200,
+  "reason": "",
+  "fail_reason": ""
+}
+
+Verifying Prometheus Exporters:
+
+* Node Exporter:  Found             
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_versions": {
+      "1.3.1": "2"
+    }
+  }
+}
+
+* Kubernetes Exporter:  Found           
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_git_versions": {
+      "v1.21.0": "3",
+      "v1.21.14": "1"
+    }
+  }
+}
+```
+    
+</details>
+
+
+
 
 <br>
 
