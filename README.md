@@ -17,7 +17,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 >  [[ In the Development Phase ]]
 - [ ] [Top Nodes](#top_nodes)
 - [x] [Live monitoring for Nodes](#monitor_node) `#done#`
-- [ ] [Top Pods](#top_pods)
+- [x] [Top Pods](#top_pods) `#done#`
 - [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
 - [ ] [Top PVCs](#top_pvcs)
 
@@ -77,15 +77,15 @@ kubectl() {
 <a id=cli></a>
 
 
-| ENV                          | Description                                                  | Default |
-| ---------------------------- | ------------------------------------------------------------ | ------- |
-| `--namespace`,  `-n`         | Specify a Kubernetes Namespace                               | default |
-| `--all-namespaces`,  `-A`    |                                                              |         |
-| `--container`,  `-c`         | Specify a container                                          |         |
-| `--interval`,  `-i`          | Live monitoring update interval                              | 8 <br> <sub>[**NOTE**: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub>      |
-| `--debug`,  `-d`             | Enable debugging logging mode                                | False   |
-| `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |         |
-
+| ENV                      | Description                                                  | Default                                                      |
+| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| --namespace,-n           | Specify a Kubernetes Namespace                               | default                                                      |
+| --all-namespaces,-A      |                                                              |                                                              |
+| --container,-c           | Specify a container                                          |                                                              |
+| --interval,-i            | Live monitoring update interval                              | 8  [NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)] |
+| --debug,-d               | Enable debugging logging mode                                | False                                                        |
+| --verify-prometheus,-V   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
+| ----sort-by-mem-usage,-s | Sort top result by memory usage                              | False                                                        |
 
 
 <br>
