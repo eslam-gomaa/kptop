@@ -232,6 +232,17 @@ Verifying Prometheus Exporters:
 
 <br>
 
+## Logging
+
+> default log file location is "/tmp/kptop.log"
+
+<br>
+
+---
+
+<br>
+
+
 ## Known Issues
 
 
