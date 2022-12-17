@@ -10,7 +10,6 @@ from kubePtop.pod_metrics import PrometheusPodsMetrics
 from kubePtop.pod_metrics import PrometheusPodsMetrics
 import rich
 
-
 node_monitor = Node_Monitoring()
 pod_monitor = Pod_Monitoring()
 pod_metrics = PrometheusPodsMetrics()
@@ -33,6 +32,7 @@ class Cli():
         self.debug = False
         self.dashboard = 'default'
         self.list_dashboards = False
+        self.sort_by_mem_usage = False
 
         # Read CLI arguments
         self.argparse()
@@ -63,10 +63,14 @@ class Cli():
         if (self.pod) and (self.container):
             pod_monitor.pod_monitor(pod=self.pod, container=self.container, namespace=self.namespace)
 
+        ns = self.namespace
+        if self.all_namespaces:
+            ns = ".*"
+        pod_metrics.topPodTable(namespace=ns,sort_by_mem_usage=self.sort_by_mem_usage)
+        exit(0)
 
         # Print help if no args are provided.
-        self.parser.print_help()
-        exit(0)
+        # self.parser.print_help()
 
 
     def argparse(self):
@@ -78,6 +82,7 @@ class Cli():
         parser.add_argument('-i', '--interval', type=int, required=False, metavar='', help='Live monitoring update interval')
         parser.add_argument('-V', '--verify-prometheus', required=False, action='store_true', help='Verify Prometheus connection & exporters')
         parser.add_argument('-d', '--debug', required=False, action='store_true', help='Print debug output')
+        parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
 
         parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
         parser.add_argument('-L', '--list-dashboards', required=False, action='store_true', help='List available dashboards')
@@ -141,6 +146,9 @@ class Cli():
 
         if results.dashboard:
             self.dashboard = results.dashboard
+
+        if results.sort_by_mem_usage:
+            self.sort_by_mem_usage = True
 
 
 
