@@ -191,11 +191,15 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 <a id=top_pvcs></a>
 
 
+🚩 Currently `kptop pvc` can take time depending on the latency between you and the Prometheus server (many requests have to be made to get the PVCs data).
+ Will work on improving the speed in the future releases.
+
+
 ```bash
 kptop pvcs <NAMESPACE>
 ```
-
-> NOTE: in this example, all VPCs have the same capacity because this is a testing environment ([nfs-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner))
+ 
+> **NOTE:** in this example, all VPCs have the same capacity because this is a testing environment (using [nfs-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner))
 
 
 ```bash
