@@ -1055,7 +1055,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
         # import rich
         # rich.print_json(data=pods_json)
 
-        table = [['NAMESPACE', 'POD', 'MEM LIMIT', 'MEM USAGE', 'MEM USAGE %', 'MEM USAGE MAX', 'MEM FREE', 'CPU LIMIT', 'CPU USAGE' ]]
+        table = [['NAMESPACE', 'POD', 'MEM LIMIT', 'MEM USAGE', 'MEM USAGE%', 'MEM USAGE MAX', 'MEM FREE', 'CPU LIMIT', 'CPU USAGE' ]]
         for pod, value in pods_json.get('result').items():
             
             # pvc_name = "\n".join(textwrap.wrap(pvc, width=23, replace_whitespace=False))
@@ -1180,7 +1180,7 @@ class PrometheusPodsMetrics(PrometheusAPI):
             print(f"No pvc's found in the '{namespace}' namespace \n{bcolors.WARNING + str(pvc_json.get('fail_reason')  ) + bcolors.ENDC}")
             exit(1)
 
-        table = [['NAMESPACE', 'PVC', 'VOLUME', 'CAPACITY', 'USED', 'USED %', 'FREE', 'FREE %' ]]
+        table = [['NAMESPACE', 'PVC', 'VOLUME', 'CAPACITY', 'USED', 'USED%', 'FREE', 'FREE%' ]]
         for pvc, value in pvc_json.get('result').items():
 
             if value.get('capacity') != -1:
