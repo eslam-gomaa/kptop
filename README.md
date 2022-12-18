@@ -17,7 +17,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 >  [[ In the Development Phase ]]
 - [ ] [Top Nodes](#top_nodes)
 - [x] [Live monitoring for Nodes](#monitor_node) `#done#`
-- [ ] [Top Pods](#top_pods)
+- [x] [Top Pods](#top_pods) `#done#`
 - [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
 - [ ] [Top PVCs](#top_pvcs)
 
@@ -28,28 +28,15 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 <br>
 
-## Installation [not ready yet]
+## Installation
 <a id=installation></a>
 
 > Compatible with Python 3.6+
 
+[on PyPi](https://pypi.org/project/kptop/0.0.0/#description)
+
 ```bash
 pip3 install kptop --upgrade
-```
-
-### To use it as a Kubectl argument
-
-`vi ~/.bash_rc`
-
-```bash
-kubectl() {
-    if [[ $1 == 'kptop' ]]
-    then
-        kptop $@
-    else
-        kubectl $@
-    fi
-}
 ```
 
 <br>
@@ -77,15 +64,15 @@ kubectl() {
 <a id=cli></a>
 
 
-| ENV                          | Description                                                  | Default |
-| ---------------------------- | ------------------------------------------------------------ | ------- |
-| `--namespace`,  `-n`         | Specify a Kubernetes Namespace                               | default |
-| `--all-namespaces`,  `-A`    |                                                              |         |
-| `--container`,  `-c`         | Specify a container                                          |         |
-| `--interval`,  `-i`          | Live monitoring update interval                              | 8 <br> <sub>[**NOTE**: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub>      |
-| `--debug`,  `-d`             | Enable debugging logging mode                                | False   |
-| `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |         |
-
+| ENV                      | Description                                                  | Default                                                      |
+| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| --namespace,-n           | Specify a Kubernetes Namespace                               | default                                                      |
+| --all-namespaces,-A      |                                                              |                                                              |
+| --container,-c           | Specify a container                                          |                                                              |
+| --interval,-i            | Live monitoring update interval                              | 8  [NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)] |
+| --debug,-d               | Enable debugging logging mode                                | False                                                        |
+| --verify-prometheus,-V   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
+| ----sort-by-mem-usage,-s | Sort top result by memory usage                              | False                                                        |
 
 
 <br>
@@ -95,6 +82,14 @@ kubectl() {
 <br>
 
 ## Examples
+
+<br>
+
+```bash
+export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
+```
+
+<br>
 
 ### Top nodes
 <a id=top_nodes></a>
@@ -124,8 +119,39 @@ kptop node <NODE>
 <a id=top_pods></a>
 
 ```bash
-kptop pods
+kptop pods -n <NAMESPACE>
 ```
+
+```
+kptop pods -n elk-stack
+
+NAMESPACE    POD                                      MEM LIMIT    MEM USAGE    MEM USAGE %    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
+elk-stack    elasticsearch-master-0                   2.0 gb       1.38 gb      68%            2.0 gb           635.25 mb   1000m        0.04m
+elk-stack    elasticsearch-master-1                   2.0 gb       1.49 gb      74%            2.0 gb           522.05 mb   1000m        0.03m
+elk-stack    strimzi-filebeat-filebeat-f8ms7          200.0 mb     85.73 mb     42%            174.16 mb        114.27 mb   1000m        0.02m
+elk-stack    haproxy-ingress-filebeat-filebeat-pq2wf  200.0 mb     87.73 mb     43%            171.31 mb        112.27 mb   1000m        0.03m
+elk-stack    strimzi-filebeat-filebeat-r7dht          200.0 mb     119.12 mb    59%            199.52 mb        80.88 mb    1000m        0.02m
+elk-stack    haproxy-ingress-filebeat-filebeat-lzqdt  200.0 mb     98.66 mb     49%            199.57 mb        101.34 mb   1000m        0.02m
+elk-stack    my-kibana-kibana-79448f7fb7-wf4t6        2.0 gb       342.87 mb    16%            618.07 mb        1.67 gb     1000m        0.02m
+elk-stack    my-logstash-logstash-0                   1.5 gb       1008.22 mb   65%            1.21 gb          527.78 mb   1000m        0.02m
+```
+
+```
+kptop pod -n kube-system
+
+NAMESPACE    POD                                              MEM LIMIT    MEM USAGE    MEM USAGE %    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
+kube-system  coredns-558bd4d5db-nfcjq                         170.0 mb     26.65 mb     15%            42.77 mb         143.35 mb   ---          0.0m
+kube-system  coredns-558bd4d5db-vcstr                         170.0 mb     17.41 mb     10%            23.22 mb         152.59 mb   ---          0.0m
+kube-system  etcd-master                                      ---          71.4 mb                     390.23 mb                    ---          0.02m
+kube-system  kube-apiserver-master                            ---          639.01 mb                   731.13 mb                    ---          0.09m
+kube-system  kube-controller-manager-master                   ---          100.29 mb                   145.41 mb                    ---          0.02m
+kube-system  kube-proxy-q6nr7                                 ---          30.32 mb                    58.91 mb                     ---          0.0m
+kube-system  kube-proxy-q489q                                 ---          22.43 mb                    63.0 mb                      ---          0.0m
+kube-system  kube-proxy-bghp6                                 ---          22.1 mb                     64.1 mb                      ---          0.0m
+kube-system  kube-scheduler-master                            ---          38.75 mb                    61.68 mb                     ---          0.0m
+kube-system  nfs-subdir-external-provisioner-b97f4d9f5-bjp2h  ---          9.37 mb                     37.38 mb                     ---          0.0m
+```
+
 
 <br>
 
