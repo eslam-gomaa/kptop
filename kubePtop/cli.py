@@ -62,13 +62,22 @@ class Cli():
                 rich.print(f"[yellow]{check_pod.get('fail_reason')}")
                 exit(1)
             pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace, container=self.container)
+        
+        if self.list_pods:
+            # kptop pods
+            ns = self.namespace
+            if self.all_namespaces:
+                ns = ".*"
+            pod_metrics.topPodTable(namespace=ns,sort_by_mem_usage=self.sort_by_mem_usage)
+            exit(0)
 
-        # kptop pods
-        ns = self.namespace
-        if self.all_namespaces:
-            ns = ".*"
-        pod_metrics.topPodTable(namespace=ns,sort_by_mem_usage=self.sort_by_mem_usage)
-        exit(0)
+        if self.list_pvcs:
+            # kptop pods
+            ns = self.namespace
+            if self.all_namespaces:
+                ns = ".*"
+            pod_metrics.topPvcTable(namespace=ns)
+            exit(0)
 
         # Print help if no args are provided.
         # self.parser.print_help()
@@ -120,7 +129,7 @@ class Cli():
                 self.parser.print_help()
                 exit(1)
         
-        ### Example: kptop pod <POD-NAME>
+        ### Example: kptop pods <POD-NAME>
         if len(results.top) == 2:
             if results.top[0] in pod_aliases:
                 self.pod = results.top[1]
@@ -165,5 +174,5 @@ class Cli():
 
 cli = Cli()
 
-def run():
-    cli = Cli()
+# def run():
+#     cli = Cli()
