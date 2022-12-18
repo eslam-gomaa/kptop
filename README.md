@@ -208,10 +208,6 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 <a id=top_pvcs></a>
 
 
-🚩 Currently `kptop pvc` can take time depending on the latency between you and the Prometheus server (many requests have to be made to get the PVCs data).
- Will work on improving the speed in the future releases.
-
-
 ```bash
 kptop pvcs <NAMESPACE>
 ```
