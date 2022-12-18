@@ -19,7 +19,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 - [x] [Live monitoring for Nodes](#monitor_node) `#done#`
 - [x] [Top Pods](#top_pods) `#done#`
 - [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
-- [ ] [Top PVCs](#top_pvcs)
+- [x] [Top PVCs](#top_pvcs)
 
 
 <br>
@@ -192,8 +192,42 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 
 
 ```bash
-kptop pvcs
+kptop pvcs <NAMESPACE>
 ```
+
+> NOTE: in this example, all VPCs have the same capacity because this is a testing environment ([nfs-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner))
+
+
+```bash
+kptop pvcs --all-namespaces
+```
+
+```
+NAMESPACE    PVC                                          VOLUME                CAPACITY    USED      USED %    FREE      FREE %
+elk-stack    elasticsearch-master-elasticsearch-master-0  elasticsearch-master  123.14 gb   21.42 gb  17%       95.43 gb  77%
+elk-stack    elasticsearch-master-elasticsearch-master-1  elasticsearch-master  123.14 gb   21.42 gb  17%       95.43 gb  77%
+elk-stack    elasticsearch-master-elasticsearch-master-2  elasticsearch-master  ?           ?         ?         ?         ?
+kafka        data-0-kafka-cluster-region1-kafka-0         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-0-kafka-cluster-region1-kafka-1         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-0-kafka-cluster-region1-kafka-2         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-0-kafka-cluster-region2-kafka-0         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-0-kafka-cluster-region2-kafka-1         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-0-kafka-cluster-region2-kafka-2         data-0                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-1-kafka-cluster-region1-kafka-0         data-1                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-1-kafka-cluster-region1-kafka-1         data-1                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-1-kafka-cluster-region1-kafka-2         data-1                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-2-kafka-cluster-region1-kafka-0         data-2                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-2-kafka-cluster-region1-kafka-1         data-2                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-2-kafka-cluster-region1-kafka-2         data-2                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-3-kafka-cluster-region1-kafka-0         data-3                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-3-kafka-cluster-region1-kafka-1         data-3                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-3-kafka-cluster-region1-kafka-2         data-3                123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-kafka-cluster-region1-zookeeper-0       data                  123.14 gb   21.42 gb  17%       95.43 gb  77%
+kafka        data-kafka-cluster-region2-zookeeper-0       data                  123.14 gb   21.42 gb  17%       95.43 gb  77%
+prometheus   my-prometheus-alertmanager                   storage-volume        123.14 gb   21.42 gb  17%       95.43 gb  77%
+prometheus   my-prometheus-server                         storage-volume        123.14 gb   21.42 gb  17%       95.43 gb  77%
+```
+
 
 <br>
 
