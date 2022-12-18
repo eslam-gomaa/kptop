@@ -132,7 +132,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                 # if (node_mem_metrics_json.get('MemTotalBytes').get('success') and node_mem_metrics_json.get('MemAvailableBytes').get('success')):
                 self.task_mem_used = self.progress_mem.add_task(completed=0, description=f"[white]Mem used", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemAvailableBytes').get('success'):
-                self.task_mem_available = self.progress_mem.add_task(completed=0, description=f"[white]Mem available", total=100, status="Loading")
+                # self.task_mem_available = self.progress_mem.add_task(completed=0, description=f"[white]Mem available", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemFreeBytes').get('success'):
                 self.task_mem_free = self.progress_mem.add_task(completed=0, description=f"[white]Mem free", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemCachedBytes').get('success'):
@@ -223,7 +223,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             
                     self.progress_mem_total.update(self.task_mem_total, description=f"[white]Mem Total    ", status=f"     {helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemTotalBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_used, completed=node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result') + node_mem_metrics_json.get('MemBuffersBytes').get('result') + node_mem_metrics_json.get('MemCachedBytes').get('result')), description=f"[white]Mem used", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result') + node_mem_metrics_json.get('MemBuffersBytes').get('result') + node_mem_metrics_json.get('MemCachedBytes').get('result')))}")
-                    self.progress_mem.update(self.task_mem_available, completed=node_mem_metrics_json.get('MemAvailableBytes').get('result'), description=f"[white]Mem available", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemAvailableBytes').get('result'))}")
+                    # self.progress_mem.update(self.task_mem_available, completed=node_mem_metrics_json.get('MemAvailableBytes').get('result'), description=f"[white]Mem available", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemAvailableBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_free, completed=node_mem_metrics_json.get('MemFreeBytes').get('result'), description=f"[white]Mem free", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemFreeBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_cached, completed=node_mem_metrics_json.get('MemCachedBytes').get('result'), description=f"[white]Mem cached   ", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemCachedBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_buffer, completed=node_mem_metrics_json.get('MemBuffersBytes').get('result'), description=f"[white]Mem buffer   ", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemBuffersBytes').get('result'))}")
@@ -554,7 +554,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                 # if (node_mem_metrics_json.get('MemTotalBytes').get('success') and node_mem_metrics_json.get('MemAvailableBytes').get('success')):
                 self.task_mem_used = self.progress_mem.add_task(completed=0, description=f"[white]Mem used", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemAvailableBytes').get('success'):
-                self.task_mem_available = self.progress_mem.add_task(completed=0, description=f"[white]Mem available", total=100, status="Loading")
+                # self.task_mem_available = self.progress_mem.add_task(completed=0, description=f"[white]Mem available", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemFreeBytes').get('success'):
                 self.task_mem_free = self.progress_mem.add_task(completed=0, description=f"[white]Mem free", total=100, status="Loading")
                 # if node_mem_metrics_json.get('MemCachedBytes').get('success'):
@@ -644,8 +644,8 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     node_fs_metrics_json = node_metrics_json.get('fs')
             
                     self.progress_mem_total.update(self.task_mem_total, description=f"[white]Mem Total    ", status=f"     {helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemTotalBytes').get('result'))}")
-                    self.progress_mem.update(self.task_mem_used, completed=node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result') + node_mem_metrics_json.get('MemBuffersBytes').get('result') + node_mem_metrics_json.get('MemCachedBytes').get('result')), description=f"[white]Mem used", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result') + node_mem_metrics_json.get('MemBuffersBytes').get('result') + node_mem_metrics_json.get('MemCachedBytes').get('result')))}")
-                    self.progress_mem.update(self.task_mem_available, completed=node_mem_metrics_json.get('MemAvailableBytes').get('result'), description=f"[white]Mem available", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemAvailableBytes').get('result'))}")
+                    self.progress_mem.update(self.task_mem_used, completed=node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result')), description=f"[white]Mem used", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemTotalBytes').get('result') - (node_mem_metrics_json.get('MemFreeBytes').get('result') + node_mem_metrics_json.get('MemBuffersBytes').get('result') + node_mem_metrics_json.get('MemCachedBytes').get('result')))}")
+                    # self.progress_mem.update(self.task_mem_available, completed=node_mem_metrics_json.get('MemAvailableBytes').get('result'), description=f"[white]Mem available", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemAvailableBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_free, completed=node_mem_metrics_json.get('MemFreeBytes').get('result'), description=f"[white]Mem free", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemFreeBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_cached, completed=node_mem_metrics_json.get('MemCachedBytes').get('result'), description=f"[white]Mem cached   ", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemCachedBytes').get('result'))}")
                     self.progress_mem.update(self.task_mem_buffer, completed=node_mem_metrics_json.get('MemBuffersBytes').get('result'), description=f"[white]Mem buffer   ", total=node_mem_metrics_json.get('MemTotalBytes').get('result'), status=f"{helper_.bytes_to_kb_mb_gb(node_mem_metrics_json.get('MemBuffersBytes').get('result'))}")
@@ -850,7 +850,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     #     Logging.log.info(network_transmit_bytes)
                     #     network_transmit_bytes = self.nodeNetworkTransmitBytes(node_name)
                     #     for device, value in network_transmit_bytes.get('result').items():
-                    #         network_transmit_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
+                        #         network_transmit_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
                     
                     # if update_disk_read_bytes_graph:
                     #     disk_read_bytes = self.nodeDiskReadBytes(node_name)
