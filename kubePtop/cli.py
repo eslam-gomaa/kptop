@@ -54,6 +54,7 @@ class Cli():
 
         if self.list_nodes:
             node_metrics.topNodeTable()
+            exit(0)
 
         # kptop pods <POD-NAME>
         if self.pod:
