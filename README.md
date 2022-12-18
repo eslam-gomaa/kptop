@@ -2,9 +2,10 @@
 
 A Python tool that provides Monitoring for Kubernetes Nodes, Pods, Containers, and PVCs resources on the terminal through Prometheus metircs
 
-https://youtu.be/B6AhNb-WlPg
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/B6AhNb-WlPg/0.jpg)](https://www.youtube.com/watch?v=B6AhNb-WlPg)
+https://user-images.githubusercontent.com/33789516/208325820-27111e21-81cb-446d-a5a4-0d73a615ea70.mp4
+
+
 
 <br>
 
