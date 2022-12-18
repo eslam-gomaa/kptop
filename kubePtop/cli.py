@@ -22,6 +22,7 @@ class Cli():
         self.parser = None
         # CLI Input attributes
         # self.verify_prometheus = False
+        self.list_pvcs = False
         self.list_nodes = False
         self.node = None
         self.list_pods = False
@@ -75,7 +76,7 @@ class Cli():
 
     def argparse(self):
         parser = argparse.ArgumentParser(description='A Python tool for Kubernetes Nodes/Pods terminal monitoring through Prometheus metrics.')
-        parser.add_argument('top', type=str, nargs='*', metavar='{pods, pod, po}  |  {nodes, node}', help='top pods/nodes')
+        parser.add_argument('top', type=str, nargs='*', metavar='{pods, pod, po}  |  {nodes, node}  |  {pvcs, pvc}', help='top pods/nodes/pvcs')
         parser.add_argument('-n', '--namespace', type=str, required=False, metavar='', help='Specify a Kubernetes namespace')
         parser.add_argument('-A', '--all-namespaces', required=False, action='store_true', help='All Kubernetes namespaces')
         parser.add_argument('-c', '--container', type=str, required=False, metavar='', help='Monitor a specific Pod\'s container')
@@ -89,28 +90,38 @@ class Cli():
 
         pod_aliases = ['pod', 'pods', 'po']
         node_aliases = ['node', 'nodes']
+        pvc_aliases = ['pvc', 'pvcs']
 
         results = parser.parse_args()
         self.parser = parser
 
         if results.debug:
             self.debug = True
-
+        
+        ### kptop --verify-prometheus
         if results.verify_prometheus:
             prometheus_api.verify_exporters()
             exit(0)
 
+
         if len(results.top) == 0:
             self.parser.print_help()
             exit(1)
+
+        ### kptop pods | nodes | pvcs
         if len(results.top) == 1:
             if results.top[0] in pod_aliases:
                 self.list_pods = True
             elif results.top[0] in node_aliases:
                 self.list_nodes = True
+            elif results.top[0] in pvc_aliases:
+                self.list_pvcs = True
             else:
                 rich.print(f"[bold]ERROR -- unkown argument '{results.top[0]}'\n")
                 self.parser.print_help()
+                exit(1)
+        
+        ### Example: kptop pod <POD-NAME>
         if len(results.top) == 2:
             if results.top[0] in pod_aliases:
                 self.pod = results.top[1]
@@ -118,11 +129,12 @@ class Cli():
                 self.node = results.top[1]
             else:
                 rich.print(f"[bold]ERROR -- unkown argument '{results.top[0]}'\n")
+                self.parser.print_help()
+                exit(1)
         if len(results.top) > 2:
             rich.print(f"[bold]ERROR -- unkown argument '{results.top[2]}' - only 2 arguments are expected\n")
             self.parser.print_help()
             exit(1)
-
 
         if results.namespace and results.all_namespaces:
             rich.print("[bold]ERROR -- You can only use '--all-namespaces' or '--namespace' \n")
