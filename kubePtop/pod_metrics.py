@@ -1084,88 +1084,98 @@ class PrometheusPodsMetrics(PrometheusAPI):
         print(out)
 
 
-    # def topPvc(self, pod=".*", namespace="default"):
-    #     """
-    #     Return number of CPU seconds used per pods.
-    #     """
-    #     output = {
-    #         "success": False,
-    #         "fail_reason": "",
-    #         "result": {}
-    #     }
-    #     try:
-    #         # Get PVCs Names used by the Pod.
-    #         pvcs_names_query = f'sum(kube_pod_spec_volumes_persistentvolumeclaims_info{{namespace=~"{namespace}", pod=~"{pod}", container=~".*"}}) by (namespace, persistentvolumeclaim, volume, pod)'
-    #         pvc_names_result = self.run_query(pvcs_names_query)
-    #         if not pvc_names_result.get('status') == 'success':
-    #             output['fail_reason'] = f"could not get metric's value: {pvcs_names_query}"
-    #             return output
-    #         if not pvc_names_result.get('data').get('result'):
-    #             output['fail_reason'] =  f"Query did not return any data: {pvcs_names_query}"
-    #             return output
+    def topPvc(self, pod=".*", namespace="default"):
+        """
+        Return number of CPU seconds used per pods.
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": {}
+        }
+        try:
+            # Get PVCs Names used by the Pod.
+            pvcs_names_query = f'sum(kube_pod_spec_volumes_persistentvolumeclaims_info{{namespace=~"{namespace}", pod=~"{pod}", container=~".*"}}) by (namespace, persistentvolumeclaim, volume, pod)'
+            pvc_names_result = self.run_query(pvcs_names_query)
+            if not pvc_names_result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {pvcs_names_query}"
+                return output
+            if not pvc_names_result.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {pvcs_names_query}"
+                return output
 
-    #         pvcs_dct = {}
-    #         for pvc in pvc_names_result.get('data').get('result'):
-    #             pvcs_dct[pvc.get('metric').get('persistentvolumeclaim')] = {
-    #                 "namespace": pvc.get('metric').get('namespace'),
-    #                 "pod": pvc.get('metric').get('pod'),
-    #                 "volume": pvc.get('metric').get('volume'),
-    #                 "capacity": 0,
-    #                 "used": 0,
-    #                 "available": 0,
-    #             }
+            pvcs_dct = {}
+            for pvc in pvc_names_result.get('data').get('result'):
+                pvcs_dct[pvc.get('metric').get('persistentvolumeclaim')] = {
+                    "namespace": pvc.get('metric').get('namespace'),
+                    "pod": pvc.get('metric').get('pod'),
+                    "volume": pvc.get('metric').get('volume'),
+                    "capacity": -1,
+                    "used": -1,
+                    "available": -1,
+                }
+
+
+            # Get PVCs capacity
+            pvcs_capacity_query = f'sum(kubelet_volume_stats_capacity_bytes{{namespace=~"{namespace}", persistentvolumeclaim=~".*"}}) by (persistentvolumeclaim, namespace)'
+            pvcs_capacity_result = self.run_query(pvcs_capacity_query)
+            # import rich
+            # rich.print(pvcs_capacity_result)
+            # exit(1)
+            if not pvcs_capacity_result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {pvcs_capacity_query}"
+                return output
+            if not pvcs_capacity_result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {pvcs_capacity_query}"
+                # return output
+            if pvcs_capacity_result.get('data').get('result'):
+                for pvc_json in pvcs_capacity_result.get('data').get('result'):
+                    pvcs_dct[pvc_json.get('metric').get('persistentvolumeclaim')]['capacity'] = int(pvc_json.get('value')[1])
             
-    #         for pvc in pvcs_dct.keys():
 
-    #             # Get PVCs capacity
-    #             pvcs_capacity_query = f'sum(kubelet_volume_stats_capacity_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
-    #             pvcs_names_result = self.run_query(pvcs_capacity_query)
-    #             if not pvcs_names_result.get('status') == 'success':
-    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_capacity_query}"
-    #                 return output
-    #             if not pvcs_names_result.get('data').get('result'):
-    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_capacity_query}"
-    #                 return output
-    #             pvcs_dct[pvc]['capacity'] = int(pvcs_names_result.get('data').get('result')[0].get('value')[1])
+            # Get PVCs used
+            pvcs_used_query = f'sum(kubelet_volume_stats_used_bytes{{namespace=~"{namespace}", persistentvolumeclaim=~".*"}}) by (persistentvolumeclaim, namespace)'
+            pvcs_used_result = self.run_query(pvcs_used_query)
+            if not pvcs_used_result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {pvcs_used_query}"
+                return output
+            if not pvcs_used_result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {pvcs_used_query}"
+                # return output
+            if pvcs_used_result.get('data').get('result'):
+                for pvc_json in pvcs_used_result.get('data').get('result'):
+                    pvcs_dct[pvc_json.get('metric').get('persistentvolumeclaim')]['used'] = int(pvc_json.get('value')[1])
 
-    #             # Get PVCs used
-    #             pvcs_used_query = f'sum(kubelet_volume_stats_used_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
-    #             pvcs_used_result = self.run_query(pvcs_used_query)
-    #             if not pvcs_used_result.get('status') == 'success':
-    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_used_query}"
-    #                 return output
-    #             if not pvcs_used_result.get('data').get('result'):
-    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_used_query}"
-    #                 return output
-    #             pvcs_dct[pvc]['used'] = int(pvcs_used_result.get('data').get('result')[0].get('value')[1])
+            # Get PVCs available
+            pvcs_available_query = f'sum(kubelet_volume_stats_available_bytes{{namespace=~"{namespace}", persistentvolumeclaim=~".*"}}) by (persistentvolumeclaim, namespace)'
+            pvcs_available_result = self.run_query(pvcs_available_query)
+            if not pvcs_available_result.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {pvcs_available_query}"
+                return output
+            if not pvcs_available_result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: {pvcs_available_query}"
+                # return output
+            if pvcs_available_result.get('data').get('result'):
+                for pvc_json in pvcs_available_result.get('data').get('result'):
+                    pvcs_dct[pvc_json.get('metric').get('persistentvolumeclaim')]['available'] = int(pvc_json.get('value')[1])
 
-    #             # Get PVCs used
-    #             pvcs_available_query = f'sum(kubelet_volume_stats_available_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
-    #             pvcs_available_result = self.run_query(pvcs_available_query)
-    #             if not pvcs_available_result.get('status') == 'success':
-    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_available_query}"
-    #                 return output
-    #             if not pvcs_available_result.get('data').get('result'):
-    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_available_query}"
-    #                 return output
-    #             pvcs_dct[pvc]['available'] = int(pvcs_available_result.get('data').get('result')[0].get('value')[1])
-   
-    #         output['result'] = pvcs_dct
-    #         output['success'] = True
+            output['result'] = pvcs_dct
+            output['success'] = True
 
-    #     except Exception as e:
-    #         output['success']: False
-    #         output['fail_reason'] = e
-    #         Logging.log.error(e)
-    #         Logging.log.exception(traceback.format_stack())
-    #     return output
+        except Exception as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+        return output
 
-    def topPvcTable(self, pod=".*", namespace="default"):
+
+    def topPvcTable(self, namespace="default"):
         """
         """
-        pvc_json = self.podPVC(namespace=namespace)
-        # import rich
-        # rich.print_json(data=pvc_json)
+        pvc_json = self.topPvc(namespace=namespace)
+        import rich
+        rich.print_json(data=pvc_json)
         if not pvc_json.get('success'):
             print(f"No pvc's found in the '{namespace}' namespace \n{bcolors.WARNING + str(pvc_json.get('fail_reason')  ) + bcolors.ENDC}")
             exit(1)
