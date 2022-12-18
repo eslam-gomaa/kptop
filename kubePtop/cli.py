@@ -43,6 +43,7 @@ class Cli():
             GlobalAttrs.debug = True
             Logging.log.setLevel(level="DEBUG")
 
+        # kptop nodes <NODE-NAME>
         if self.node:
             if self.list_dashboards:
                 node_monitor.list_dashboards()
@@ -50,20 +51,19 @@ class Cli():
             # Check if the node found.
             node_monitor.display_dashboard(dashboard=self.dashboard, node_name=self.node)
 
-        if self.pod and (self.container is None):
+        # kptop pods <POD-NAME>
+        if self.pod:
+            if self.container is None:
+                self.container = ".*"
             # Check if the pod found.
-            self.container = ".*"
             check_pod = pod_metrics.podExists(pod=self.pod, namespace=self.namespace)
             if not check_pod.get('result'):
                 print(f"pod/{self.pod} not found in the '{self.namespace}' namespace")
                 rich.print(f"[yellow]{check_pod.get('fail_reason')}")
                 exit(1)
+            pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace, container=self.container)
 
-            pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace)
-
-        if (self.pod) and (self.container):
-            pod_monitor.pod_monitor(pod=self.pod, container=self.container, namespace=self.namespace)
-
+        # kptop pods
         ns = self.namespace
         if self.all_namespaces:
             ns = ".*"
@@ -72,7 +72,6 @@ class Cli():
 
         # Print help if no args are provided.
         # self.parser.print_help()
-
 
     def argparse(self):
         parser = argparse.ArgumentParser(description='A Python tool for Kubernetes Nodes/Pods terminal monitoring through Prometheus metrics.')
