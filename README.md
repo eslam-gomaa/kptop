@@ -11,7 +11,8 @@ https://user-images.githubusercontent.com/33789516/208325820-27111e21-81cb-446d-
 
 ## Motivation
 
-The resources metrics provided by the K8s APIs are very limited compared what what's scraped by Prometheus
+The resources metrics provided by the K8s APIs are very limited compared what what's scraped by Prometheus.
+
 This tool is using Prometheus as a data source for metrics to display all the needed informations right on the terminal.
 
 <br>
