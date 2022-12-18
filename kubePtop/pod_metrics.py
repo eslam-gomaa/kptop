@@ -1062,8 +1062,8 @@ class PrometheusPodsMetrics(PrometheusAPI):
 
             if int(value.get('memory_limit')) == 0:
                 memory_limit = "---" #"NO_LIMIT"
-                memory_free = ""
-                memory_usage_percentage = ""
+                memory_free = "---"
+                memory_usage_percentage = "---"
             else:
                 memory_limit = helper_.bytes_to_kb_mb_gb(value.get('memory_limit'))
                 memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
