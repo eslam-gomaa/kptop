@@ -1174,8 +1174,8 @@ class PrometheusPodsMetrics(PrometheusAPI):
         """
         """
         pvc_json = self.topPvc(namespace=namespace)
-        import rich
-        rich.print_json(data=pvc_json)
+        # import rich
+        # rich.print_json(data=pvc_json)
         if not pvc_json.get('success'):
             print(f"No pvc's found in the '{namespace}' namespace \n{bcolors.WARNING + str(pvc_json.get('fail_reason')  ) + bcolors.ENDC}")
             exit(1)
