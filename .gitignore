@@ -3,3 +3,4 @@ kubePtop/__pycache__
 build
 dist
 kptop.egg-info
+.DS_Store
