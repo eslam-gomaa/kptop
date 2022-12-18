@@ -33,23 +33,10 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 > Compatible with Python 3.6+
 
+[on PyPi](https://pypi.org/project/kptop/0.0.0/#description)
+
 ```bash
 pip3 install kptop --upgrade
-```
-
-### To use it as a Kubectl argument
-
-`vi ~/.bash_rc`
-
-```bash
-kubectl() {
-    if [[ $1 == 'kptop' ]]
-    then
-        kptop $@
-    else
-        kubectl $@
-    fi
-}
 ```
 
 <br>
@@ -95,6 +82,14 @@ kubectl() {
 <br>
 
 ## Examples
+
+<br>
+
+```bash
+export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
+```
+
+<br>
 
 ### Top nodes
 <a id=top_nodes></a>
