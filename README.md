@@ -2,6 +2,8 @@
 
 A Python tool that provides Monitoring for Kubernetes Nodes, Pods, Containers, and PVCs resources on the terminal through Prometheus metircs
 
+<video src="docs/kptop.mp4"></video>
+
 <br>
 
 ## Motivation
