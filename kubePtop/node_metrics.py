@@ -110,42 +110,6 @@ class PrometheusNodeMetrics(PrometheusAPI):
             Logging.log.exception(traceback.format_stack())
         return output
     
-
-    # def devices_up(self, node, devices_filter="eth.*"):
-    #     """
-    #     Check if devices are up
-    #     """
-    #     output = {
-    #         "success": False,
-    #         "fail_reason": "",
-    #         "result": []
-    #     }
-    #     try:
-    #         result = self.run_query(f'node_network_up{{node="{node}", device=~"{devices_filter}"}}')
-    #         if not result.get('status') == 'success':
-    #             output['fail_reason'] = "could not get metric value"
-    #             return output
-
-    #         if not result.get('data').get('result'):
-    #             output['fail_reason'] = "metric did not return any data"
-    #             return output
-
-    #         for device in result.get('data').get('result'):
-    #             if int(device.get('value')[1]) == 1:
-    #                 device_state = "up"
-    #             else:
-    #                 device_state = "down"
-    #             output['result'].append({device.get('metric').get('device'): device_state})
-    #             output['success'] = True
-
-
-    #     except(KeyError, AttributeError) as e:
-    #         output['success']: False
-    #         output['fail_reason'] = e
-
-
-    #     return output
-
     def MemFreeBytes(self, node):
         """
         INPUT:
