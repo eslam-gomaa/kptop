@@ -3,4 +3,4 @@ def run():
     from kubePtop.cli import Cli
 
 
-# run()
+run()

@@ -3,6 +3,8 @@ from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.logging import Logging
 from kubePtop.helper import Helper
 from tabulate import tabulate
+from kubePtop.colors import Bcolors
+bcolors = Bcolors()
 import traceback
 
 
@@ -1286,6 +1288,123 @@ class PrometheusNodeMetrics(PrometheusAPI):
     def topNode(self):
         """
         """
-        pass
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": {}
+        }
+        try:
+            
+            memory_total_query = f'node_memory_MemTotal_bytes' # f'machine_memory_bytes'
+            memory_total = self.run_query(memory_total_query)
+            if not memory_total.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {memory_total_query}"
+                return output
+            if not memory_total.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {memory_total_query}"
+                return output
+
+            memory_free_query = f'node_memory_MemFree_bytes + node_memory_Cached_bytes'
+            memory_free = self.run_query(memory_free_query)
+            if not memory_free.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {memory_free_query}"
+                return output
+            if not memory_free.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {memory_free_query}"
+                return output
+
+            cpu_cores_query = f'machine_cpu_cores'
+            cpu_cores = self.run_query(cpu_cores_query)
+            if not cpu_cores.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {cpu_cores_query}"
+                return output
+            if not cpu_cores.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {cpu_cores_query}"
+                return output
+
+            cpu_used_percentage_query =  f'100 - (avg by ({GlobalAttrs.node_exporter_node_label}) (rate(node_cpu_seconds_total{{mode="idle"}}[10m])) * 100)'
+            cpu_used_percentage = self.run_query(cpu_used_percentage_query)
+            if not cpu_used_percentage.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {cpu_used_percentage_query}"
+                return output
+            if not cpu_used_percentage.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {cpu_used_percentage_query}"
+                return output
+
+            running_pods_count_query = f'kubelet_running_pods'
+            running_pods_count = self.run_query(running_pods_count_query)
+            if not running_pods_count.get('status') == 'success':
+                output['fail_reason'] = f"could not get metric's value: {running_pods_count_query}"
+                return output
+            if not running_pods_count.get('data').get('result'):
+                output['fail_reason'] =  f"Query did not return any data: {running_pods_count_query}"
+                return output
+
+            
+            nodes_dct = {}
+            for node in memory_total.get('data').get('result'):
+                nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
+                    "memory_total": int(node.get('value')[1]),
+                    "memory_free": -1,
+                    "memory_used": -1,
+                    "cpu_cores": -1,
+                    # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
+                    "cpu_used_percentage": -1,
+                    "running_pods_num": -1,
+                }
+            
+            for node in memory_free.get('data').get('result'):
+                nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_free'] = int(node.get('value')[1])
+                nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_used'] = nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_total'] - int(node.get('value')[1])
+
+            for node in cpu_cores.get('data').get('result'):
+                try:
+                    nodes_dct[node.get('metric').get('instance')]['cpu_cores'] = int(node.get('value')[1])
+                except KeyError:
+                    pass # A KeyError Exception is expected as this metric returns the value for the master nodes while other metrics dont.
+
+            for node in cpu_used_percentage.get('data').get('result'):
+                nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['cpu_used_percentage'] = float(node.get('value')[1])
+
+            for node in running_pods_count.get('data').get('result'):
+                try:
+                    nodes_dct[node.get('metric').get('instance')]['running_pods_num'] = int(node.get('value')[1])
+                except KeyError:
+                    pass # A KeyError Exception is expected as this metric returns the value for the master nodes while other metrics dont.
+
+            output['result'] = nodes_dct
+            output['success'] = True
+
+        except(KeyError, AttributeError) as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+
+        return output
+
+
+    def topNodeTable(self):
+        """
+        """
+        nodes_json = self.topNode()
+        # import rich
+        # rich.print(nodes_json)
+        if not nodes_json.get('success'):
+            print(f"No nodes found \n{bcolors.WARNING + str(nodes_json.get('fail_reason')) + bcolors.ENDC}")
+            exit(1)
+
+
+        table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS' ]]
+        for  node, value in nodes_json.get('result').items():
+            row = [node, helper_.bytes_to_kb_mb_gb(value.get('memory_total')), helper_.bytes_to_kb_mb_gb(value.get('memory_used')), helper_.bytes_to_kb_mb_gb(value.get('memory_free')), value.get('cpu_cores'), str(round(value.get('cpu_used_percentage'))) + "%", value.get('running_pods_num')]
+            table.append(row)
+        out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
+        print(out)
         
+
+
+        
+
+
 

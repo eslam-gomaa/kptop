@@ -48,13 +48,13 @@ pip3 install kptop --upgrade
 
 | ENV                            | Description                                                  | Default | Required |
 | ------------------------------ | ------------------------------------------------------------ | ------- | -------- |
-| KUBE_PTOP_PROMETHEUS_SERVER    | Prometheus server URL                                        |         | Yes      |
-| KPTOP_BASIC_AUTH_ENABLED       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| KPTOP_PROMETHEUS_USERNAME      | Prometheus username                                          |         | No       |
-| KPTOP_PROMETHEUS_PASSWORD      | Prometheus password                                          |         | No       |
-| KPTOP_INSECURE                 | Verify SSL certificate                                       | False   | No       |
-| KPTOP_NODE_EXPORTER_NODE_LABEL | node exporter "node label"                                   | "node"  | NO       |
-| KPTOP_START_GRAPHS_WITH_ZERO   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
+| `KUBE_PTOP_PROMETHEUS_SERVER`    | Prometheus server URL                                        |         | Yes      |
+| `KPTOP_BASIC_AUTH_ENABLED`       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| `KPTOP_PROMETHEUS_USERNAME`      | Prometheus username                                          |         | No       |
+| `KPTOP_PROMETHEUS_PASSWORD`      | Prometheus password                                          |         | No       |
+| `KPTOP_INSECURE`                 | Verify SSL certificate                                       | False   | No       |
+| `KPTOP_NODE_EXPORTER_NODE_LABEL` | node exporter "node label"                                   | "node"  | NO       |
+| `KPTOP_START_GRAPHS_WITH_ZERO`   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
 
 
 
@@ -66,13 +66,13 @@ pip3 install kptop --upgrade
 
 | ENV                      | Description                                                  | Default                                                      |
 | ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| --namespace,-n           | Specify a Kubernetes Namespace                               | default                                                      |
-| --all-namespaces,-A      |                                                              |                                                              |
-| --container,-c           | Specify a container                                          |                                                              |
-| --interval,-i            | Live monitoring update interval                              | 8  [NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)] |
-| --debug,-d               | Enable debugging logging mode                                | False                                                        |
-| --verify-prometheus,-V   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
-| ----sort-by-mem-usage,-s | Sort top result by memory usage                              | False                                                        |
+| `--namespace`,  `-n`           | Specify a Kubernetes Namespace                               | default                                                      |
+| `--all-namespaces`,  -A      |                                                              |                                                              |
+| `--container`,  `-c`           | Specify a container                                          |                                                              |
+| `--interval`,  `-i`            | Live monitoring update interval                              | 8  <br> <sub>[NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub> |
+| `--debug`,  `-d`               | Enable debugging logging mode                                | False                                                        |
+| `--verify-prometheus`,  `-V`   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
+| `--sort-by-mem-usage`,  `-s` | Sort top result by memory usage                              | False                                                        |
 
 
 <br>
@@ -81,7 +81,17 @@ pip3 install kptop --upgrade
 
 <br>
 
-## Examples
+## Usage with Examples
+
+<br>
+
+Different ways to connect to Prometheus server:
+1. You have direct access to it (Like in dev environments)
+2. Prometheus is exposed publically/over-vpn (mostly with an Ingress)
+3. You can use kubectl port-forward command
+4. You also can run it as a Kubernetes pod
+
+
 
 <br>
 
