@@ -1,6 +1,6 @@
 # Kube-Prometheus-Top [ kptop ]
 
-A Python tool that provides Monitoring for Kubernetes Nodes/Pods/Containers resources on the terminal through Prometheus metircs
+A Python tool that provides Monitoring for Kubernetes Nodes, Pods, Containers, and PVCs resources on the terminal through Prometheus metircs
 
 <br>
 
@@ -14,11 +14,10 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 ## Project Status
 <br>
 
->  [[ In the Development Phase ]]
-- [ ] [Top Nodes](#top_nodes)
-- [x] [Live monitoring for Nodes](#monitor_node) `#done#`
-- [x] [Top Pods](#top_pods) `#done#`
-- [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
+- [x] [Top Nodes](#top_nodes)
+- [x] [Live monitoring for Nodes](#monitor_node)
+- [x] [Top Pods](#top_pods)
+- [x] [Live monitoring for Pods/Containers](#monitor_pod)
 - [x] [Top PVCs](#top_pvcs)
 
 
@@ -48,13 +47,13 @@ pip3 install kptop --upgrade
 
 | ENV                            | Description                                                  | Default | Required |
 | ------------------------------ | ------------------------------------------------------------ | ------- | -------- |
-| KUBE_PTOP_PROMETHEUS_SERVER    | Prometheus server URL                                        |         | Yes      |
-| KPTOP_BASIC_AUTH_ENABLED       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| KPTOP_PROMETHEUS_USERNAME      | Prometheus username                                          |         | No       |
-| KPTOP_PROMETHEUS_PASSWORD      | Prometheus password                                          |         | No       |
-| KPTOP_INSECURE                 | Verify SSL certificate                                       | False   | No       |
-| KPTOP_NODE_EXPORTER_NODE_LABEL | node exporter "node label"                                   | "node"  | NO       |
-| KPTOP_START_GRAPHS_WITH_ZERO   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
+| `KUBE_PTOP_PROMETHEUS_SERVER`    | Prometheus server URL                                        |         | Yes      |
+| `KPTOP_BASIC_AUTH_ENABLED`       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| `KPTOP_PROMETHEUS_USERNAME`      | Prometheus username                                          |         | No       |
+| `KPTOP_PROMETHEUS_PASSWORD`      | Prometheus password                                          |         | No       |
+| `KPTOP_INSECURE`                 | Verify SSL certificate                                       | False   | No       |
+| `KPTOP_NODE_EXPORTER_NODE_LABEL` | node exporter "node label"                                   | "node"  | NO       |
+| `KPTOP_START_GRAPHS_WITH_ZERO`   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
 
 
 
@@ -66,13 +65,13 @@ pip3 install kptop --upgrade
 
 | ENV                      | Description                                                  | Default                                                      |
 | ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| --namespace,-n           | Specify a Kubernetes Namespace                               | default                                                      |
-| --all-namespaces,-A      |                                                              |                                                              |
-| --container,-c           | Specify a container                                          |                                                              |
-| --interval,-i            | Live monitoring update interval                              | 8  [NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)] |
-| --debug,-d               | Enable debugging logging mode                                | False                                                        |
-| --verify-prometheus,-V   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
-| ----sort-by-mem-usage,-s | Sort top result by memory usage                              | False                                                        |
+| `--namespace`,  `-n`           | Specify a Kubernetes Namespace                               | default                                                      |
+| `--all-namespaces`,  -A      |                                                              |                                                              |
+| `--container`,  `-c`           | Specify a container                                          |                                                              |
+| `--interval`,  `-i`            | Live monitoring update interval                              | 8  <br> <sub>[NOTE: the actuall update depends on the Prometheus scaping interval (15s by default)]</sub> |
+| `--debug`,  `-d`               | Enable debugging logging mode                                | False                                                        |
+| `--verify-prometheus`,  `-V`   | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
+| `--sort-by-mem-usage`,  `-s` | Sort top result by memory usage                              | False                                                        |
 
 
 <br>
@@ -81,7 +80,17 @@ pip3 install kptop --upgrade
 
 <br>
 
-## Examples
+## Usage with Examples
+
+<br>
+
+Different ways to connect to Prometheus server:
+1. You have direct access to it (Like in dev environments)
+2. Prometheus is exposed publically/over-vpn (mostly with an Ingress)
+3. You can use kubectl port-forward command
+4. You also can run it as a Kubernetes pod
+
+
 
 <br>
 
@@ -96,6 +105,12 @@ export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
 
 ```bash
 kptop nodes
+```
+
+```bash
+NODE      MEM TOTAL    MEM USAGE    MEM FREE      CPU CORES  CPU USAGE%      RUNNING PODS
+worker-1  19.6 gb      16.92 gb     2.69 gb               6  9%                        14
+worker-2  19.6 gb      9.52 gb      10.08 gb              6  9%                        27
 ```
 
 <br>
@@ -139,17 +154,17 @@ elk-stack    my-logstash-logstash-0                   1.5 gb       1008.22 mb   
 ```
 kptop pod -n kube-system
 
-NAMESPACE    POD                                              MEM LIMIT    MEM USAGE    MEM USAGE %    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
-kube-system  coredns-558bd4d5db-nfcjq                         170.0 mb     26.65 mb     15%            42.77 mb         143.35 mb   ---          0.0m
-kube-system  coredns-558bd4d5db-vcstr                         170.0 mb     17.41 mb     10%            23.22 mb         152.59 mb   ---          0.0m
-kube-system  etcd-master                                      ---          71.4 mb                     390.23 mb                    ---          0.02m
-kube-system  kube-apiserver-master                            ---          639.01 mb                   731.13 mb                    ---          0.09m
-kube-system  kube-controller-manager-master                   ---          100.29 mb                   145.41 mb                    ---          0.02m
-kube-system  kube-proxy-q6nr7                                 ---          30.32 mb                    58.91 mb                     ---          0.0m
-kube-system  kube-proxy-q489q                                 ---          22.43 mb                    63.0 mb                      ---          0.0m
-kube-system  kube-proxy-bghp6                                 ---          22.1 mb                     64.1 mb                      ---          0.0m
-kube-system  kube-scheduler-master                            ---          38.75 mb                    61.68 mb                     ---          0.0m
-kube-system  nfs-subdir-external-provisioner-b97f4d9f5-bjp2h  ---          9.37 mb                     37.38 mb                     ---          0.0m
+NAMESPACE    POD                                              MEM LIMIT    MEM USAGE    MEM USAGE%    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
+kube-system  coredns-558bd4d5db-nfcjq                         170.0 mb     26.0 mb      15%           42.77 mb         144.0 mb    ---          0.0m
+kube-system  coredns-558bd4d5db-vcstr                         170.0 mb     17.45 mb     10%           24.04 mb         152.55 mb   ---          0.0m
+kube-system  etcd-master                                      ---          85.02 mb     ---           391.7 mb         ---         ---          0.02m
+kube-system  kube-apiserver-master                            ---          635.97 mb    ---           731.13 mb        ---         ---          0.09m
+kube-system  kube-controller-manager-master                   ---          95.55 mb     ---           145.41 mb        ---         ---          0.03m
+kube-system  kube-proxy-q6nr7                                 ---          27.46 mb     ---           58.91 mb         ---         ---          0.0m
+kube-system  kube-proxy-q489q                                 ---          21.98 mb     ---           63.0 mb          ---         ---          0.0m
+kube-system  kube-proxy-bghp6                                 ---          22.35 mb     ---           64.1 mb          ---         ---          0.0m
+kube-system  kube-scheduler-master                            ---          37.04 mb     ---           61.68 mb         ---         ---          0.0m
+kube-system  nfs-subdir-external-provisioner-b97f4d9f5-bjp2h  ---          9.43 mb      ---           37.48 mb         ---         ---          0.0m
 ```
 
 
