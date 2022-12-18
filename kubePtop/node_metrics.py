@@ -1304,7 +1304,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 output['fail_reason'] =  f"Query did not return any data: {memory_total_query}"
                 return output
 
-            memory_free_query = f'node_memory_MemFree_bytes + node_memory_Cached_bytes'
+            memory_free_query = f'node_memory_MemFree_bytes'
             memory_free = self.run_query(memory_free_query)
             if not memory_free.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {memory_free_query}"
