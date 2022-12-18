@@ -14,11 +14,10 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 ## Project Status
 <br>
 
->  [[ In the Development Phase ]]
-- [ ] [Top Nodes](#top_nodes)
-- [x] [Live monitoring for Nodes](#monitor_node) `#done#`
-- [x] [Top Pods](#top_pods) `#done#`
-- [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
+- [x] [Top Nodes](#top_nodes)
+- [x] [Live monitoring for Nodes](#monitor_node)
+- [x] [Top Pods](#top_pods)
+- [x] [Live monitoring for Pods/Containers](#monitor_pod)
 - [x] [Top PVCs](#top_pvcs)
 
 
@@ -106,6 +105,12 @@ export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
 
 ```bash
 kptop nodes
+```
+
+```bash
+NODE      MEM TOTAL    MEM USAGE    MEM FREE      CPU CORES  CPU USAGE%      RUNNING PODS
+worker-1  19.6 gb      16.92 gb     2.69 gb               6  9%                        14
+worker-2  19.6 gb      9.52 gb      10.08 gb              6  9%                        27
 ```
 
 <br>
