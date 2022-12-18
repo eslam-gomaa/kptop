@@ -1,6 +1,6 @@
 # Kube-Prometheus-Top [ kptop ]
 
-A Python tool that provides Monitoring for Kubernetes Nodes/Pods/Containers resources on the terminal through Prometheus metircs
+A Python tool that provides Monitoring for Kubernetes Nodes, Pods, Containers, and PVCs resources on the terminal through Prometheus metircs
 
 <br>
 
@@ -154,17 +154,17 @@ elk-stack    my-logstash-logstash-0                   1.5 gb       1008.22 mb   
 ```
 kptop pod -n kube-system
 
-NAMESPACE    POD                                              MEM LIMIT    MEM USAGE    MEM USAGE %    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
-kube-system  coredns-558bd4d5db-nfcjq                         170.0 mb     26.65 mb     15%            42.77 mb         143.35 mb   ---          0.0m
-kube-system  coredns-558bd4d5db-vcstr                         170.0 mb     17.41 mb     10%            23.22 mb         152.59 mb   ---          0.0m
-kube-system  etcd-master                                      ---          71.4 mb                     390.23 mb                    ---          0.02m
-kube-system  kube-apiserver-master                            ---          639.01 mb                   731.13 mb                    ---          0.09m
-kube-system  kube-controller-manager-master                   ---          100.29 mb                   145.41 mb                    ---          0.02m
-kube-system  kube-proxy-q6nr7                                 ---          30.32 mb                    58.91 mb                     ---          0.0m
-kube-system  kube-proxy-q489q                                 ---          22.43 mb                    63.0 mb                      ---          0.0m
-kube-system  kube-proxy-bghp6                                 ---          22.1 mb                     64.1 mb                      ---          0.0m
-kube-system  kube-scheduler-master                            ---          38.75 mb                    61.68 mb                     ---          0.0m
-kube-system  nfs-subdir-external-provisioner-b97f4d9f5-bjp2h  ---          9.37 mb                     37.38 mb                     ---          0.0m
+NAMESPACE    POD                                              MEM LIMIT    MEM USAGE    MEM USAGE%    MEM USAGE MAX    MEM FREE    CPU LIMIT    CPU USAGE
+kube-system  coredns-558bd4d5db-nfcjq                         170.0 mb     26.0 mb      15%           42.77 mb         144.0 mb    ---          0.0m
+kube-system  coredns-558bd4d5db-vcstr                         170.0 mb     17.45 mb     10%           24.04 mb         152.55 mb   ---          0.0m
+kube-system  etcd-master                                      ---          85.02 mb     ---           391.7 mb         ---         ---          0.02m
+kube-system  kube-apiserver-master                            ---          635.97 mb    ---           731.13 mb        ---         ---          0.09m
+kube-system  kube-controller-manager-master                   ---          95.55 mb     ---           145.41 mb        ---         ---          0.03m
+kube-system  kube-proxy-q6nr7                                 ---          27.46 mb     ---           58.91 mb         ---         ---          0.0m
+kube-system  kube-proxy-q489q                                 ---          21.98 mb     ---           63.0 mb          ---         ---          0.0m
+kube-system  kube-proxy-bghp6                                 ---          22.35 mb     ---           64.1 mb          ---         ---          0.0m
+kube-system  kube-scheduler-master                            ---          37.04 mb     ---           61.68 mb         ---         ---          0.0m
+kube-system  nfs-subdir-external-provisioner-b97f4d9f5-bjp2h  ---          9.43 mb      ---           37.48 mb         ---         ---          0.0m
 ```
 
 
