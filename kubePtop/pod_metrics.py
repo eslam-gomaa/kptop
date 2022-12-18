@@ -519,13 +519,13 @@ class PrometheusPodsMetrics(PrometheusAPI):
                     "namespace": pvc.get('metric').get('namespace'),
                     "pod": pvc.get('metric').get('pod'),
                     "volume": pvc.get('metric').get('volume'),
-                    "capacity": 0,
-                    "used": 0,
-                    "available": 0,
+                    "capacity": -1,
+                    "used": -1,
+                    "available": -1,
                 }
             
             for pvc in pvcs_dct.keys():
-
+                
                 # Get PVCs capacity
                 pvcs_capacity_query = f'sum(kubelet_volume_stats_capacity_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
                 pvcs_names_result = self.run_query(pvcs_capacity_query)
@@ -534,8 +534,9 @@ class PrometheusPodsMetrics(PrometheusAPI):
                     return output
                 if not pvcs_names_result.get('data').get('result'):
                     output['fail_reason'] = f"Query did not return any data: {pvcs_capacity_query}"
-                    return output
-                pvcs_dct[pvc]['capacity'] = int(pvcs_names_result.get('data').get('result')[0].get('value')[1])
+                    # return output
+                if pvcs_names_result.get('data').get('result'):
+                    pvcs_dct[pvc]['capacity'] = int(pvcs_names_result.get('data').get('result')[0].get('value')[1])
 
                 # Get PVCs used
                 pvcs_used_query = f'sum(kubelet_volume_stats_used_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
@@ -545,8 +546,9 @@ class PrometheusPodsMetrics(PrometheusAPI):
                     return output
                 if not pvcs_used_result.get('data').get('result'):
                     output['fail_reason'] = f"Query did not return any data: {pvcs_used_query}"
-                    return output
-                pvcs_dct[pvc]['used'] = int(pvcs_used_result.get('data').get('result')[0].get('value')[1])
+                    # return output
+                if pvcs_used_result.get('data').get('result'):
+                    pvcs_dct[pvc]['used'] = int(pvcs_used_result.get('data').get('result')[0].get('value')[1])
 
                 # Get PVCs used
                 pvcs_available_query = f'sum(kubelet_volume_stats_available_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
@@ -556,8 +558,9 @@ class PrometheusPodsMetrics(PrometheusAPI):
                     return output
                 if not pvcs_available_result.get('data').get('result'):
                     output['fail_reason'] = f"Query did not return any data: {pvcs_available_query}"
-                    return output
-                pvcs_dct[pvc]['available'] = int(pvcs_available_result.get('data').get('result')[0].get('value')[1])
+                    # return output
+                if pvcs_available_result.get('data').get('result'):
+                    pvcs_dct[pvc]['available'] = int(pvcs_available_result.get('data').get('result')[0].get('value')[1])
    
             output['result'] = pvcs_dct
             output['success'] = True
@@ -591,11 +594,6 @@ class PrometheusPodsMetrics(PrometheusAPI):
                 output['fail_reason'] = f"Query did not return any data: {query}"
                 Logging.log.error(f"Query did not return any data: {query}")
                 return output
-
-            # with open('/tmp/test', 'a') as f:
-            #     for k, v in result.items():
-            #         f.write(f" {k}: {v}\n")
-            #     f.write("-----\n")
 
             interfaces = {}
             for interface in result.get('data').get('result'):
@@ -658,13 +656,26 @@ class PrometheusPodsMetrics(PrometheusAPI):
         if len(pod_pvcs_dct.get('result')) < 1:
             return "No PVCs used by the pod"
 
-        # table = [['PVC', "NAMESPACE", 'Volume', 'CAPACITY', 'USED', 'AVAILABLE']]
         table = [['PVC', 'CAPACITY', 'USED', 'AVAILABLE']]
         for pvc, value in pod_pvcs_dct.get('result').items():
-            
             pvc_name = "\n".join(textwrap.wrap(pvc, width=23, replace_whitespace=False))
 
-            row = [pvc_name, helper_.bytes_to_kb_mb_gb(value.get('capacity')), helper_.bytes_to_kb_mb_gb(value.get('used')), helper_.bytes_to_kb_mb_gb(value.get('available'))]
+            if value.get('capacity') != -1:
+                capacity = helper_.bytes_to_kb_mb_gb(value.get('capacity'))
+            else:
+                capacity = "?"
+
+            if value.get('used') != -1:
+                used = helper_.bytes_to_kb_mb_gb(value.get('used'))
+            else:
+                used = "?"
+
+            if value.get('available') != -1:
+                available = helper_.bytes_to_kb_mb_gb(value.get('available'))
+            else:
+                available = "?"
+
+            row = [pvc_name, capacity, used, available]
             table.append(row)
         
         out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
@@ -1073,6 +1084,116 @@ class PrometheusPodsMetrics(PrometheusAPI):
         print(out)
 
 
+    # def topPvc(self, pod=".*", namespace="default"):
+    #     """
+    #     Return number of CPU seconds used per pods.
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         # Get PVCs Names used by the Pod.
+    #         pvcs_names_query = f'sum(kube_pod_spec_volumes_persistentvolumeclaims_info{{namespace=~"{namespace}", pod=~"{pod}", container=~".*"}}) by (namespace, persistentvolumeclaim, volume, pod)'
+    #         pvc_names_result = self.run_query(pvcs_names_query)
+    #         if not pvc_names_result.get('status') == 'success':
+    #             output['fail_reason'] = f"could not get metric's value: {pvcs_names_query}"
+    #             return output
+    #         if not pvc_names_result.get('data').get('result'):
+    #             output['fail_reason'] =  f"Query did not return any data: {pvcs_names_query}"
+    #             return output
 
+    #         pvcs_dct = {}
+    #         for pvc in pvc_names_result.get('data').get('result'):
+    #             pvcs_dct[pvc.get('metric').get('persistentvolumeclaim')] = {
+    #                 "namespace": pvc.get('metric').get('namespace'),
+    #                 "pod": pvc.get('metric').get('pod'),
+    #                 "volume": pvc.get('metric').get('volume'),
+    #                 "capacity": 0,
+    #                 "used": 0,
+    #                 "available": 0,
+    #             }
+            
+    #         for pvc in pvcs_dct.keys():
 
+    #             # Get PVCs capacity
+    #             pvcs_capacity_query = f'sum(kubelet_volume_stats_capacity_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
+    #             pvcs_names_result = self.run_query(pvcs_capacity_query)
+    #             if not pvcs_names_result.get('status') == 'success':
+    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_capacity_query}"
+    #                 return output
+    #             if not pvcs_names_result.get('data').get('result'):
+    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_capacity_query}"
+    #                 return output
+    #             pvcs_dct[pvc]['capacity'] = int(pvcs_names_result.get('data').get('result')[0].get('value')[1])
+
+    #             # Get PVCs used
+    #             pvcs_used_query = f'sum(kubelet_volume_stats_used_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
+    #             pvcs_used_result = self.run_query(pvcs_used_query)
+    #             if not pvcs_used_result.get('status') == 'success':
+    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_used_query}"
+    #                 return output
+    #             if not pvcs_used_result.get('data').get('result'):
+    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_used_query}"
+    #                 return output
+    #             pvcs_dct[pvc]['used'] = int(pvcs_used_result.get('data').get('result')[0].get('value')[1])
+
+    #             # Get PVCs used
+    #             pvcs_available_query = f'sum(kubelet_volume_stats_available_bytes{{persistentvolumeclaim=~"{pvc}"}}) by (persistentvolumeclaim, namespace)'
+    #             pvcs_available_result = self.run_query(pvcs_available_query)
+    #             if not pvcs_available_result.get('status') == 'success':
+    #                 output['fail_reason'] = f"could not get metric's value: {pvcs_available_query}"
+    #                 return output
+    #             if not pvcs_available_result.get('data').get('result'):
+    #                 output['fail_reason'] = f"Query did not return any data: {pvcs_available_query}"
+    #                 return output
+    #             pvcs_dct[pvc]['available'] = int(pvcs_available_result.get('data').get('result')[0].get('value')[1])
+   
+    #         output['result'] = pvcs_dct
+    #         output['success'] = True
+
+    #     except Exception as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
+    #     return output
+
+    def topPvcTable(self, pod=".*", namespace="default"):
+        """
+        """
+        pvc_json = self.podPVC(namespace=namespace)
+        import rich
+        rich.print_json(data=pvc_json)
+        if not pvc_json.get('success'):
+            print(f"No pvc's found in the '{namespace}' namespace \n{bcolors.WARNING + str(pvc_json.get('fail_reason')  ) + bcolors.ENDC}")
+            exit(1)
+
+        table = [['NAMESPACE', 'PVC', 'VOLUME', 'CAPACITY', 'USED', 'USED %', 'FREE', 'FREE %' ]]
+        for pvc, value in pvc_json.get('result').items():
+
+            if value.get('capacity') != -1:
+                capacity = helper_.bytes_to_kb_mb_gb(value.get('capacity'))
+            else:
+                capacity = "?"
+
+            if value.get('used') != -1:
+                used = helper_.bytes_to_kb_mb_gb(value.get('used'))
+                used_percentage = helper_.percentage(value.get('used'), value.get('capacity'))
+            else:
+                used = "?"
+                used_percentage = "?"
+
+            if value.get('available') != -1:
+                available = helper_.bytes_to_kb_mb_gb(value.get('available'))
+                available_percentage = helper_.percentage(value.get('available'), value.get('capacity'))
+            else:
+                available = "?"
+                available_percentage = "?"
+
+            row = [value.get('namespace'), pvc, value.get('volume'), capacity, used, used_percentage, available, available_percentage]
+            table.append(row)
+        out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
+        print(out)
 
