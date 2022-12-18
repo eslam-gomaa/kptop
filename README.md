@@ -195,7 +195,7 @@ kptop pod <POD> -n <NAMESPACE> -c <CONTAINER>
 kptop pvcs <NAMESPACE>
 ```
 
-> NOTE: in this example, all VPCs have the same capacity because this is a testing environment ([nfs-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner))
+> **NOTE:** in this example, all VPCs have the same capacity because this is a testing environment (using [nfs-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner))
 
 
 ```bash
