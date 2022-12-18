@@ -1,10 +1,7 @@
 import requests
 import json
-# import urllib3
-# import socket
 from urllib3.exceptions import InsecureRequestWarning
 import rich
-# from rich.markdown import Markdown
 from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.logging import Logging
 logging = Logging()
@@ -31,7 +28,10 @@ class PrometheusAPI:
             if GlobalAttrs.debug:
                 print(f"DEBUG -- Connecting to Prometheus: {prometheus_url}")
             Logging.log.info(f"Connecting to Prometheus: {prometheus_url}")
-            req = session.get(prometheus_url)
+            if GlobalAttrs.env_basic_auth_enabled:
+                req = session.post(prometheus_url, auth=(GlobalAttrs.env_prometheus_username, GlobalAttrs.env_prometheus_password))
+            else:
+                req = session.get(prometheus_url)
             if req.status_code == 200:
                 Logging.log.info(f"connected successfully, status_code: {req.status_code}")
                 if GlobalAttrs.debug:
