@@ -6,13 +6,14 @@ import argparse
 from kubePtop.session import PrometheusAPI
 from kubePtop.node_monitor import Node_Monitoring
 from kubePtop.pod_monitor import Pod_Monitoring
-from kubePtop.pod_metrics import PrometheusPodsMetrics
+from kubePtop.node_metrics import PrometheusNodeMetrics
 from kubePtop.pod_metrics import PrometheusPodsMetrics
 import rich
 
 node_monitor = Node_Monitoring()
 pod_monitor = Pod_Monitoring()
 pod_metrics = PrometheusPodsMetrics()
+node_metrics = PrometheusNodeMetrics()
 prometheus_api = PrometheusAPI()
 from kubePtop.logging import Logging
 
@@ -50,6 +51,9 @@ class Cli():
                 exit(0)
             # Check if the node found.
             node_monitor.display_dashboard(dashboard=self.dashboard, node_name=self.node)
+
+        if self.list_nodes:
+            node_metrics.topNodeTable()
 
         # kptop pods <POD-NAME>
         if self.pod:
