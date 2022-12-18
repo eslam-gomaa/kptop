@@ -19,7 +19,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 - [x] [Live monitoring for Nodes](#monitor_node) `#done#`
 - [x] [Top Pods](#top_pods) `#done#`
 - [x] [Live monitoring for Pods/Containers](#monitor_pod) `#done#`
-- [ ] [Top PVCs](#top_pvcs)
+- [x] [Top PVCs](#top_pvcs)
 
 
 <br>
