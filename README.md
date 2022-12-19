@@ -46,6 +46,14 @@ pip3 install kptop --upgrade
 
 <br>
 
+> only in [this release](https://github.com/eslam-gomaa/kptop/releases/tag/v0.0.3) (forgot to put it in the requirements 😅 )
+```bash
+pip3 install asciichartpy
+```
+
+
+<br>
+
 ---
 
 ## Environment Variables
