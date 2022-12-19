@@ -86,7 +86,7 @@ pip3 install kptop --upgrade
 
 <br>
 
-## Usage with Examples
+## Usage <sub>with Examples</sub>
 
 <br>
 
