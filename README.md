@@ -61,7 +61,7 @@ pip3 install asciichartpy
 
 | ENV                            | Description                                                  | Default | Required |
 | ------------------------------ | ------------------------------------------------------------ | ------- | -------- |
-| `KUBE_PTOP_PROMETHEUS_SERVER`    | Prometheus server URL                                        |         | Yes      |
+| `KPTOP_PROMETHEUS_SERVER`      | Prometheus server URL                                        |         | Yes      |
 | `KPTOP_BASIC_AUTH_ENABLED`       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
 | `KPTOP_PROMETHEUS_USERNAME`      | Prometheus username                                          |         | No       |
 | `KPTOP_PROMETHEUS_PASSWORD`      | Prometheus password                                          |         | No       |
