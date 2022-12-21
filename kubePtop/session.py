@@ -29,7 +29,7 @@ class PrometheusAPI:
                 print(f"DEBUG -- Connecting to Prometheus: {prometheus_url}")
             Logging.log.info(f"Connecting to Prometheus: {prometheus_url}")
             if GlobalAttrs.env_basic_auth_enabled:
-                req = session.post(prometheus_url, auth=(GlobalAttrs.env_prometheus_username, GlobalAttrs.env_prometheus_password))
+                req = session.get(prometheus_url, auth=(GlobalAttrs.env_prometheus_username, GlobalAttrs.env_prometheus_password))
             else:
                 req = session.get(prometheus_url)
             if req.status_code == 200:
@@ -75,7 +75,10 @@ class PrometheusAPI:
             prometheus_url = self.prometheus_url + "/-/healthy"
             if GlobalAttrs.debug:
                 print(f"DEBUG -- Connecting to Prometheus: {prometheus_url}")
-            req = session.get(self.prometheus_url + "/-/healthy")
+            if GlobalAttrs.env_basic_auth_enabled:
+                req = session.get(prometheus_url, auth=(GlobalAttrs.env_prometheus_username, GlobalAttrs.env_prometheus_password))
+            else:
+                req = session.get(prometheus_url)
             if req.status_code == 200:
                 Logging.log.info(f"connected successfully, status_code: {req.status_code}")
                 if GlobalAttrs.debug:
@@ -102,7 +105,10 @@ class PrometheusAPI:
             self.get_session()
         try:
             Logging.log.info(f"Running Query:\n\t\t  => {query}")
-            req = self.session.get(self.prometheus_url_query, params={'query': f'{query}'})
+            if GlobalAttrs.env_basic_auth_enabled:
+                req = self.session.get(self.prometheus_url_query, params={'query': f'{query}'}, auth=(GlobalAttrs.env_prometheus_username, GlobalAttrs.env_prometheus_password))
+            else:
+                req = self.session.get(self.prometheus_url_query, params={'query': f'{query}'})
             if req.status_code == 200:
                 Logging.log.info(f"Query run successfully, exit_code: {req.status_code}; Result:\n{json.loads(req.text)}")
                 return json.loads(req.text)
