@@ -257,7 +257,6 @@ class PrometheusAPI:
             'node_load1',
             'node_load5',
             'node_load15',
-            'kube_node_status_capacity_cpu_cores',
             'machine_cpu_physical_cores',
             'machine_cpu_sockets',
             'up',
@@ -328,16 +327,16 @@ class PrometheusAPI:
                     self.progress_metrics_check.update(task_id=self.task_metrics_check_percentage, status=f" [ [yellow]{m}[/yellow] ]", completed=cnt)
 
                     row = [m, exporter]
-                    if result.get('status') == 'success':
-                        row.append('available')
-                        if len(result.get('data').get('result')) < 1:
-                            row.append('not_available')
-                            row.append('did NOT return any data')
-                        else:
-                            row.append('')
-                    else:
+                    if result.get('status') != 'success':
                         row.append('not_available')
                         row.append('could not get metric value')
+
+                    elif len(result.get('data').get('result')) < 1:
+                        row.append('not_available')
+                        row.append('did NOT return any data')
+                    else:
+                        row.append('available')
+                        row.append('')
 
                     table.append(row)
                     cnt+=1
@@ -349,23 +348,23 @@ class PrometheusAPI:
                     self.progress_metrics_check.update(task_id=self.task_metrics_check_percentage, status=f" [ [yellow]{m}[/yellow] ]", completed=cnt)
 
                     row = [m, exporter]
-                    if result.get('status') == 'success':
-                        row.append('available')
-                        if len(result.get('data').get('result')) < 1:
-                            row.append('not_available')
-                            row.append('did NOT return any data')
-                        else:
-                            row.append('')
-                    else:
+                    if result.get('status') != 'success':
                         row.append('not_available')
                         row.append('could not get metric value')
+
+                    elif len(result.get('data').get('result')) < 1:
+                        row.append('not_available')
+                        row.append('did NOT return any data')
+                    else:
+                        row.append('available')
+                        row.append('')
 
                     table.append(row)
                     cnt+=1
             except Exception as e:
                 print(f"Error while priting 'metrics_check' progress\n{e}")
         tabulate.WIDE_CHARS_MODE = False
-        out = tabulate(table, headers='firstrow', tablefmt='grid', showindex=True)
+        out = tabulate(table, headers='firstrow', tablefmt='grid', showindex=False)
         print(out)
         exit(1)
 
