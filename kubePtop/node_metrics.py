@@ -511,34 +511,35 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
         return output
 
-    def cpuCores(self, node):
-        """
-        not in use at the moment
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": ""
-        }
-        try:
-            result = self.run_query(f'kube_node_status_capacity_cpu_cores{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
-            if not result.get('status') == 'success':
-                output['fail_reason'] = "could not get metric value"
-                return output
+    ### NOT Used
+    # def cpuCores(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": ""
+    #     }
+    #     try:
+    #         result = self.run_query(f'kube_node_status_capacity_cpu_cores{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = "could not get metric value"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = "metric did not return any data"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = "metric did not return any data"
+    #             return output
                 
-            output['result'] = int(result.get('data').get('result')[0].get('value')[1])
-            output['success'] = True
+    #         output['result'] = int(result.get('data').get('result')[0].get('value')[1])
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
-        return output
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
+    #     return output
     
     def cpu_physical_cores(self, node):
         """
