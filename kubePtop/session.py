@@ -2,7 +2,10 @@ import requests
 import json
 from urllib3.exceptions import InsecureRequestWarning
 import rich
+from tabulate import tabulate
 from kubePtop.global_attrs import GlobalAttrs
+from rich.progress import SpinnerColumn, Progress, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn, TimeElapsedColumn
+from rich.live import Live
 from kubePtop.logging import Logging
 logging = Logging()
 # Ignore Warning
@@ -232,6 +235,146 @@ class PrometheusAPI:
         print("")
         rich.print_json(data=verify_kubernetes_exporter)
         print(" ")
+
+
+    def check_metrics(self):
+        """
+        Checks the existence of the needed metrics
+        -> Returns a structured table
+        """
+
+        # A List of the 'node_exporter' Prometheus metrics used by kptop
+        node_exporter_metrics_lst =[
+            'node_memory_MemFree_bytes',
+            'node_memory_MemAvailable_bytes',
+            'node_memory_MemTotal_bytes',
+            'node_memory_Cached_bytes',
+            'node_memory_Buffers_bytes',
+            'node_memory_SwapTotal_bytes',
+            'node_memory_SwapFree_bytes',
+            'node_memory_SwapCached_bytes',
+            'node_cpu_seconds_total',
+            'node_load1',
+            'node_load5',
+            'node_load15',
+            'kube_node_status_capacity_cpu_cores',
+            'machine_cpu_physical_cores',
+            'machine_cpu_sockets',
+            'up',
+            'node_boot_time_seconds',
+            'node_filesystem_size_bytes',
+            'node_filesystem_avail_bytes',
+            'node_filesystem_avail_bytes',
+            'node_network_receive_bytes_total',
+            'node_network_transmit_bytes_total',
+            'node_disk_written_bytes_total',
+            'node_disk_read_bytes_total',
+            'machine_cpu_cores',
+            'kubelet_running_pods',
+        ]
+
+        # A List of the 'Kubernetes exporter' Prometheus metrics used by kptop
+        kubernetes_exporter_metrics_lst =[
+            'container_last_seen',
+            'container_memory_working_set_bytes',
+            'container_memory_max_usage_bytes',
+            'container_spec_memory_limit_bytes',
+            'container_memory_cache',
+            'container_spec_memory_swap_limit_bytes',
+            'container_cpu_load_average_10s',
+            'container_cpu_usage_seconds_total',
+            'container_cpu_system_seconds_total',
+            'container_cpu_user_seconds_total',
+            'container_spec_cpu_quota',
+            'kube_pod_spec_volumes_persistentvolumeclaims_info',
+            'kubelet_volume_stats_capacity_bytes',
+            'kubelet_volume_stats_used_bytes',
+            'kubelet_volume_stats_available_bytes',
+            'container_network_receive_bytes_total',
+            'container_network_transmit_bytes_total',
+            'container_start_time_seconds',
+            'container_file_descriptors',
+            'container_threads',
+            'container_processes',
+            'container_fs_reads_bytes_total',
+            'container_fs_writes_bytes_total',
+            'container_fs_writes_bytes_total',
+        ]
+
+        table = [['METRIC', 'EXPORTER', "STATE", 'COMMENT']]
+
+        self.progress_metrics_check = Progress(
+                SpinnerColumn(),
+                TimeElapsedColumn(),
+                TimeRemainingColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(bar_width=30), 
+                TaskProgressColumn(),
+                TextColumn("{task.fields[status]}"),
+            )
+
+        self.task_metrics_check_percentage  = self.progress_metrics_check.add_task(
+                    description=f"[b]Checking Metrics ",
+                    status="...",
+                    total=len(node_exporter_metrics_lst) + len(kubernetes_exporter_metrics_lst),
+                    )
+        with Live(self.progress_metrics_check, auto_refresh=True, screen=False):
+            try:
+                cnt = 1
+                # Check 'node_exporter' metrics
+                for m in node_exporter_metrics_lst:
+                    exporter = "node_exporter"
+                    result = self.run_query(f"topk(1, {m})")
+                    self.progress_metrics_check.update(task_id=self.task_metrics_check_percentage, status=f" [ [yellow]{m}[/yellow] ]", completed=cnt)
+
+                    row = [m, exporter]
+                    if result.get('status') == 'success':
+                        row.append('available')
+                        if len(result.get('data').get('result')) < 1:
+                            row.append('not_available')
+                            row.append('did NOT return any data')
+                        else:
+                            row.append('')
+                    else:
+                        row.append('not_available')
+                        row.append('could not get metric value')
+
+                    table.append(row)
+                    cnt+=1
+
+                # Check 'kubernetes_exporter' metrics
+                for m in kubernetes_exporter_metrics_lst:
+                    exporter = "kubernetes"
+                    result = self.run_query(f"topk(1, {m})")
+                    self.progress_metrics_check.update(task_id=self.task_metrics_check_percentage, status=f" [ [yellow]{m}[/yellow] ]", completed=cnt)
+
+                    row = [m, exporter]
+                    if result.get('status') == 'success':
+                        row.append('available')
+                        if len(result.get('data').get('result')) < 1:
+                            row.append('not_available')
+                            row.append('did NOT return any data')
+                        else:
+                            row.append('')
+                    else:
+                        row.append('not_available')
+                        row.append('could not get metric value')
+
+                    table.append(row)
+                    cnt+=1
+            except Exception as e:
+                print(f"Error while priting 'metrics_check' progress\n{e}")
+        tabulate.WIDE_CHARS_MODE = False
+        out = tabulate(table, headers='firstrow', tablefmt='grid', showindex=True)
+        print(out)
+        exit(1)
+
+
+
+
+
+
+
 
 
 
