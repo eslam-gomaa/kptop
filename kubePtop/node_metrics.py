@@ -55,28 +55,28 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
         return output
 
+    ### TO BE CLEANED ###
+    # def node_type(self, node="master"):
+    #     """
+    #     Detects node type ie. master/worker
+    #     INPUT:
+    #         - K8s node name (str)
+    #     Return:
+    #         - node type eg. "worker" (str)
+    #     """
+    #     all_nodes = self.list_nodes_names()
+    #     if node not in all_nodes.get('result'):
+    #         raise SystemExit(f"ERROR -- Node '{node}' is not found")
 
-    def node_type(self, node="master"):
-        """
-        Detects node type ie. master/worker
-        INPUT:
-            - K8s node name (str)
-        Return:
-            - node type eg. "worker" (str)
-        """
-        all_nodes = self.list_nodes_names()
-        if node not in all_nodes.get('result'):
-            raise SystemExit(f"ERROR -- Node '{node}' is not found")
+    #     role = "worker"
+    #     worker_nodes = self.run_query(f'node_memory_MemTotal_bytes{{node="{node}"}}')
+    #     if len(worker_nodes.get('data').get('result')) < 1:
+    #         role = "master" 
 
-        role = "worker"
-        worker_nodes = self.run_query(f'node_memory_MemTotal_bytes{{node="{node}"}}')
-        if len(worker_nodes.get('data').get('result')) < 1:
-            role = "master" 
-
-        return role
+    #     return role
 
 
-
+    ### NOT USED ###
     def list_nodes_names(self, node, devices_filter="eth.*"):
         """
         Returns Nodes names:
@@ -598,21 +598,21 @@ class PrometheusNodeMetrics(PrometheusAPI):
             Logging.log.exception(traceback.format_stack())
         return output
 
+    ### NOT USED ###
+    # def nodeOSMetrics(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {}
+    #     output['nodeUp'] = self.nodeUp(node)
+    #     output['bootTimeSeconds'] = self.bootTimeSeconds(node)
+    #     # output['osInfo'] = self.osInfo(node_label, node)
+    #     # output['osVersion'] = self.osVersion(node_label, node)
+    #     output['unameInfo'] = self.unameInfo(node)
+    #     # output['kubeNodeInfo'] = self.kubeNodeInfo(node_label, node)
+    #     output['nodeExporterBuildInfo'] = self.nodeExporterBuildInfo(node)
 
-    def nodeOSMetrics(self, node):
-        """
-        not in use at the moment
-        """
-        output = {}
-        output['nodeUp'] = self.nodeUp(node)
-        output['bootTimeSeconds'] = self.bootTimeSeconds(node)
-        # output['osInfo'] = self.osInfo(node_label, node)
-        # output['osVersion'] = self.osVersion(node_label, node)
-        output['unameInfo'] = self.unameInfo(node)
-        # output['kubeNodeInfo'] = self.kubeNodeInfo(node_label, node)
-        output['nodeExporterBuildInfo'] = self.nodeExporterBuildInfo(node)
-
-        return output
+    #     return output
 
     def nodeUp(self, node):
         """
@@ -677,182 +677,183 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
         return output
 
-    def osInfo(self, node):
-        """
-        not in use at the moment
-        may be skipped.
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": {}
-        }
-        try:
-            result = self.run_query(f'node_os_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
-            if not result.get('status') == 'success':
-                output['fail_reason'] = "could not get metric value"
-                return output
+    ### NOT USED ###
+    # def osInfo(self, node):
+    #     """
+    #     not in use at the moment
+    #     may be skipped.
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         result = self.run_query(f'node_os_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = "could not get metric value"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = "metric did not return any data"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = "metric did not return any data"
+    #             return output
                 
-            output['result'] = {
-                "pretty_name": result.get('data').get('result')[0].get('metric').get('pretty_name'),
-                "version": result.get('data').get('result')[0].get('metric').get('version'),
-                "version_codename": result.get('data').get('result')[0].get('metric').get('version_codename'),
-                "version_id": result.get('data').get('result')[0].get('metric').get('version_id'),
-                }
-            output['success'] = True
+    #         output['result'] = {
+    #             "pretty_name": result.get('data').get('result')[0].get('metric').get('pretty_name'),
+    #             "version": result.get('data').get('result')[0].get('metric').get('version'),
+    #             "version_codename": result.get('data').get('result')[0].get('metric').get('version_codename'),
+    #             "version_id": result.get('data').get('result')[0].get('metric').get('version_id'),
+    #             }
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
-    def osVersion(self, node):
-        """
-        not in use at the moment
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": {}
-        }
-        try:
-            result = self.run_query(f'node_os_version{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
-            if not result.get('status') == 'success':
-                output['fail_reason'] = "could not get metric value"
-                return output
+    # def osVersion(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         result = self.run_query(f'node_os_version{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = "could not get metric value"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = "metric did not return any data"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = "metric did not return any data"
+    #             return output
                 
-            output['result'] = {
-                "id": result.get('data').get('result')[0].get('metric').get('id'),
-                "id_like": result.get('data').get('result')[0].get('metric').get('id_like'),
-                }
-            output['success'] = True
+    #         output['result'] = {
+    #             "id": result.get('data').get('result')[0].get('metric').get('id'),
+    #             "id_like": result.get('data').get('result')[0].get('metric').get('id_like'),
+    #             }
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
-    def unameInfo(self, node):
-        """
-        not in use at the moment
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": {}
-        }
-        try:
-            result = self.run_query(f'node_uname_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
-            if not result.get('status') == 'success':
-                output['fail_reason'] = "could not get metric value"
-                return output
+    # def unameInfo(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         result = self.run_query(f'node_uname_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = "could not get metric value"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = "metric did not return any data"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = "metric did not return any data"
+    #             return output
                 
-            output['result'] = {
-                "sysname": result.get('data').get('result')[0].get('metric').get('sysname'),
-                "release": result.get('data').get('result')[0].get('metric').get('release'),
-                "nodename": result.get('data').get('result')[0].get('metric').get('nodename'),
-                "machine": result.get('data').get('result')[0].get('metric').get('machine'),
-                "version": result.get('data').get('result')[0].get('metric').get('version'),
-                }
-            output['success'] = True
+    #         output['result'] = {
+    #             "sysname": result.get('data').get('result')[0].get('metric').get('sysname'),
+    #             "release": result.get('data').get('result')[0].get('metric').get('release'),
+    #             "nodename": result.get('data').get('result')[0].get('metric').get('nodename'),
+    #             "machine": result.get('data').get('result')[0].get('metric').get('machine'),
+    #             "version": result.get('data').get('result')[0].get('metric').get('version'),
+    #             }
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
-    def kubeNodeInfo(self, node):
-        """
-        not in use at the moment
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": {}
-        }
-        try:
-            result = self.run_query(f'kube_node_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
-            if not result.get('status') == 'success':
-                output['fail_reason'] = "could not get metric value"
-                return output
+    # def kubeNodeInfo(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         result = self.run_query(f'kube_node_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = "could not get metric value"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = "metric did not return any data"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = "metric did not return any data"
+    #             return output
                 
-            output['result'] = {
-                "container_runtime_version": result.get('data').get('result')[0].get('metric').get('container_runtime_version'),
-                "internal_ip": result.get('data').get('result')[0].get('metric').get('internal_ip'),
-                "kernel_version": result.get('data').get('result')[0].get('metric').get('kernel_version'),
-                "kubelet_version": result.get('data').get('result')[0].get('metric').get('kubelet_version'),
-                "kubeproxy_version": result.get('data').get('result')[0].get('metric').get('kubeproxy_version'),
-                "os_image": result.get('data').get('result')[0].get('metric').get('os_image'),
-                }
-            output['success'] = True
+    #         output['result'] = {
+    #             "container_runtime_version": result.get('data').get('result')[0].get('metric').get('container_runtime_version'),
+    #             "internal_ip": result.get('data').get('result')[0].get('metric').get('internal_ip'),
+    #             "kernel_version": result.get('data').get('result')[0].get('metric').get('kernel_version'),
+    #             "kubelet_version": result.get('data').get('result')[0].get('metric').get('kubelet_version'),
+    #             "kubeproxy_version": result.get('data').get('result')[0].get('metric').get('kubeproxy_version'),
+    #             "os_image": result.get('data').get('result')[0].get('metric').get('os_image'),
+    #             }
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
-    def nodeExporterBuildInfo(self, node):
-        """
-        not in use at the moment
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": {}
-        }
-        try:
-            query = f'node_exporter_build_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}'
-            result = self.run_query(query)
-            if not result.get('status') == 'success':
-                output['fail_reason'] = f"could not get metric value:\n {query}"
-                return output
+    # def nodeExporterBuildInfo(self, node):
+    #     """
+    #     not in use at the moment
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": {}
+    #     }
+    #     try:
+    #         query = f'node_exporter_build_info{{{GlobalAttrs.node_exporter_node_label}="{node}"}}'
+    #         result = self.run_query(query)
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] = f"could not get metric value:\n {query}"
+    #             return output
 
-            if not result.get('data').get('result'):
-                output['fail_reason'] = f"Query did not return any data:\n {query}"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = f"Query did not return any data:\n {query}"
+    #             return output
                 
-            output['result'] = {
-                "version": result.get('data').get('result')[0].get('metric').get('version'),
-                "revision": result.get('data').get('result')[0].get('metric').get('revision'),
-                "goversion": result.get('data').get('result')[0].get('metric').get('goversion'),
-                }
-            output['success'] = True
+    #         output['result'] = {
+    #             "version": result.get('data').get('result')[0].get('metric').get('version'),
+    #             "revision": result.get('data').get('result')[0].get('metric').get('revision'),
+    #             "goversion": result.get('data').get('result')[0].get('metric').get('goversion'),
+    #             }
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
     def nodeFsSize(self, node):
         """
@@ -1244,45 +1245,45 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
         return output
 
+    ### NOT USED ###
+    # def nodeCheck(self, node):
+    #     """
+    #     Check if the node is available
+    #     INPUT:
+    #         - K8s node name (str)
+    #     Return:
+    #         - metric (dct)
+    #     """
+    #     output = {
+    #         "success": False,
+    #         "fail_reason": "",
+    #         "result": ""
+    #     }
+    #     try:
+    #         query = f'sum(irate(node_disk_read_bytes_total{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}[10m])) by ({GlobalAttrs.node_exporter_node_label}, device)'
+    #         result = self.run_query(query)
+    #         if not result.get('status') == 'success':
+    #             output['fail_reason'] =  f"could not get metric's value: \n{query}"
+    #             return output
 
-    def nodeCheck(self, node):
-        """
-        Check if the node is available
-        INPUT:
-            - K8s node name (str)
-        Return:
-            - metric (dct)
-        """
-        output = {
-            "success": False,
-            "fail_reason": "",
-            "result": ""
-        }
-        try:
-            query = f'sum(irate(node_disk_read_bytes_total{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}[10m])) by ({GlobalAttrs.node_exporter_node_label}, device)'
-            result = self.run_query(query)
-            if not result.get('status') == 'success':
-                output['fail_reason'] =  f"could not get metric's value: \n{query}"
-                return output
-
-            if not result.get('data').get('result'):
-                output['fail_reason'] = f"Query did not return any data: \n{query}"
-                return output
+    #         if not result.get('data').get('result'):
+    #             output['fail_reason'] = f"Query did not return any data: \n{query}"
+    #             return output
             
-            devices = {}
-            for device in result.get('data').get('result'):
-                devices[device.get('metric').get('device')] = float(device.get('value')[1]) 
+    #         devices = {}
+    #         for device in result.get('data').get('result'):
+    #             devices[device.get('metric').get('device')] = float(device.get('value')[1]) 
 
-            output['result'] = devices
-            output['success'] = True
+    #         output['result'] = devices
+    #         output['success'] = True
 
-        except(KeyError, AttributeError) as e:
-            output['success']: False
-            output['fail_reason'] = e
-            Logging.log.error(e)
-            Logging.log.exception(traceback.format_stack())
+    #     except(KeyError, AttributeError) as e:
+    #         output['success']: False
+    #         output['fail_reason'] = e
+    #         Logging.log.error(e)
+    #         Logging.log.exception(traceback.format_stack())
 
-        return output
+    #     return output
 
 
     def topNode(self):
