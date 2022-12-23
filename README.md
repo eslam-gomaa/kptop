@@ -26,6 +26,10 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 - [x] [Live monitoring for Pods/Containers](#monitor_pod)
 - [x] [Top PVCs](#top_pvcs)
 
+> Additional
+
+- [x] [Check the connection with Prometheus Server](#verify_prometheus)
+- [x] [Check the existence of the needed Prometheus metrics](#check_metrics) <sub>[ [good for similar use cases](https://github.com/eslam-gomaa/kptop/issues/15) ]</sub>
 
 <br>
 
@@ -313,6 +317,164 @@ Verifying Prometheus Exporters:
 </details>
 
 
+<br>
+
+---
+
+### Check Prometheus metrics
+<a id=check_metrics></a>
+
+
+```bash
+kptop --verify-prometheus --check-metrics
+```
+
+
+<details>
+    <summary>
+        <b style="font-size:14px" >Sample output</b>
+    </summary>
+    <br>
+
+```bash 
+Verifying Prometheus connection: Connected                     
+{
+  "connected": true,
+  "status_code": 200,
+  "reason": "",
+  "fail_reason": ""
+}
+
+Verifying Prometheus Exporters:
+
+* Node Exporter:  Found             
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_versions": {
+      "1.3.1": "2"
+    }
+  }
+}
+
+* Kubernetes Exporter:  Found           
+{
+  "success": true,
+  "fail_reason": "",
+  "result": {
+    "found_git_versions": {
+      "v1.21.0": "3",
+      "v1.21.14": "1"
+    }
+  }
+}
+ 
+  0:00:00 0:00:00 Checking Metrics  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100%  [ container_fs_writes_bytes_total ]
++---------------------------------------------------+---------------+-----------+-----------+
+| METRIC                                            | EXPORTER      | STATE     | COMMENT   |
++===================================================+===============+===========+===========+
+| node_memory_MemFree_bytes                         | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_MemAvailable_bytes                    | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_MemTotal_bytes                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_Cached_bytes                          | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_Buffers_bytes                         | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_SwapTotal_bytes                       | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_SwapFree_bytes                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_memory_SwapCached_bytes                      | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_cpu_seconds_total                            | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_load1                                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_load5                                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_load15                                       | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| machine_cpu_physical_cores                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| machine_cpu_sockets                               | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| up                                                | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_boot_time_seconds                            | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_filesystem_size_bytes                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_filesystem_avail_bytes                       | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_filesystem_avail_bytes                       | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_network_receive_bytes_total                  | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_network_transmit_bytes_total                 | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_disk_written_bytes_total                     | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| node_disk_read_bytes_total                        | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| machine_cpu_cores                                 | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| kubelet_running_pods                              | node_exporter | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_last_seen                               | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_memory_working_set_bytes                | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_memory_max_usage_bytes                  | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_spec_memory_limit_bytes                 | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_memory_cache                            | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_spec_memory_swap_limit_bytes            | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_cpu_load_average_10s                    | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_cpu_usage_seconds_total                 | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_cpu_system_seconds_total                | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_cpu_user_seconds_total                  | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_spec_cpu_quota                          | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| kube_pod_spec_volumes_persistentvolumeclaims_info | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| kubelet_volume_stats_capacity_bytes               | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| kubelet_volume_stats_used_bytes                   | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| kubelet_volume_stats_available_bytes              | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_network_receive_bytes_total             | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_network_transmit_bytes_total            | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_start_time_seconds                      | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_file_descriptors                        | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_threads                                 | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_processes                               | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_fs_reads_bytes_total                    | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_fs_writes_bytes_total                   | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+| container_fs_writes_bytes_total                   | kubernetes    | available |           |
++---------------------------------------------------+---------------+-----------+-----------+
+```
+    
+</details>
 
 
 <br>
