@@ -2,6 +2,7 @@ from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.read_env import ReadEnv
 # Read environment variables
 read_environment_variables = ReadEnv()
+read_environment_variables.read_env()
 import argparse
 from kubePtop.session import PrometheusAPI
 from kubePtop.node_monitor import Node_Monitoring
