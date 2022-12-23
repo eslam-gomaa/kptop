@@ -16,6 +16,7 @@ class GlobalAttrs:
     kubernetes_exporter_node_label = "instance"
     live_update_interval = 8
     start_graphs_with_zero = True
+    graphs_width = 45
     
     debug = False
 
