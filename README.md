@@ -42,7 +42,7 @@ This tool is using Prometheus as a data source for metrics to display all the ne
 
 > Compatible with Python 3.6+
 
-[on PyPi](https://pypi.org/project/kptop/0.0.0/#description)
+[on PyPi](https://pypi.org/project/kptop)
 
 ```bash
 pip3 install kptop --upgrade
