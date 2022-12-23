@@ -88,7 +88,7 @@ pip3 install asciichartpy
 | `--debug`,  `-d`             | Enable debugging logging mode                                | False                                                        |
 | `--verify-prometheus`,  `-V` | Verify connectivity to Prometheus server & check the existence of the needed exporters |                                                              |
 | `--sort-by-mem-usage`,  `-s` | Sort top result by memory usage                              | False                                                        |
-
+| `--check-metrics` ,  `-C`    | Check the existence of the needed metrics, _needs to be done with_  `-V` | False                                                        |
 
 <br>
 
