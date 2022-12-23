@@ -373,11 +373,13 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             update_network_transmit_bytes_graph = True
             network_transmit_bytes_graph =  AsciiGraph()
             network_received_bytes = self.podNetworkReceiveBytes(pod, namespace=namespace)
-            Logging.log.info("Getting Pod 'network_received_bytes' metrics")
-            Logging.log.info(network_received_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'network_received_bytes' metrics; Result:\n{network_received_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'network_received_bytes' metrics")
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
-                network_transmit_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
 
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
@@ -403,11 +405,13 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             disk_read_bytes_graph = AsciiGraph()
             disk_write_bytes_graph = AsciiGraph()
             disk_read_bytes = self.podDiskReadBytes(pod=pod, container=container, namespace=namespace)
-            Logging.log.info("Getting Pod 'disk_read_bytes' metrics")
-            Logging.log.info(disk_read_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'disk_read_bytes' metrics; Result:\n{disk_read_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'disk_read_bytes' metrics")
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=42, format='{:8.0f} kb/s')
-                disk_write_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=4, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
+                disk_write_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 disk_write_bytes_graph.graph = disk_read_bytes.get('fail_reason')
@@ -434,8 +438,8 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             containers_mem_usage_range_graph = AsciiGraph()
             containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container, namespace=namespace)
             if containers_mem_usage.get('success'):
-                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
-                containers_mem_usage_range_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
+                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=GlobalAttrs.graphs_width - 3, format='{:8.0f} mb')
+                containers_mem_usage_range_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} mb')
             else:
                 containers_mem_usage_graph.graph = containers_mem_usage.get('fail_reason')
                 update_containers_mem_usage = False
@@ -455,7 +459,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             pod_pvcs_usage_graph = AsciiGraph()
             pod_pvcs = self.podPVC(pod, namespace)
             if pod_pvcs.get('success'):
-                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=6, width=45, format='{:8.0f} mb')
+                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=6, width=GlobalAttrs.graphs_width, format='{:8.0f} mb')
             else:
                 pod_pvcs_usage_graph.graph = f"{bcolors.BOLD + bcolors.WARNING} [ No PVCs found ]{bcolors.ENDC}\n{bcolors.GRAY}{pod_pvcs.get('fail_reason')}"
                 update_pod_pvcs_usage = False
@@ -500,15 +504,19 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                     
                     if update_network_received_bytes_graph:
                         network_received_bytes = self.podNetworkReceiveBytes(pod, namespace)
-                        Logging.log.info("Updating Node 'network_received_bytes' metrics")
-                        Logging.log.info(network_received_bytes)
+                        if GlobalAttrs.debug:
+                            Logging.log.debug(f"Getting Pod 'network_received_bytes' metrics; Result:\n{network_received_bytes}")
+                        else:
+                            Logging.log.info("Getting Pod 'network_received_bytes' metrics")                        
                         for device, value in network_received_bytes.get('result').items():
                             network_received_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
                     if update_network_transmit_bytes_graph:
                         network_transmit_bytes = self.podNetworkTransmitBytes(pod, namespace)
-                        Logging.log.info("Updating Node 'network_transmit_bytes' metrics")
-                        Logging.log.info(network_transmit_bytes)
+                        if GlobalAttrs.debug:
+                            Logging.log.debug(f"Updating Pod 'network_transmit_bytes' metrics; Result:\n{network_transmit_bytes}")
+                        else:
+                            Logging.log.info("Updating Pod 'network_transmit_bytes' metrics")     
                         for device, value in network_transmit_bytes.get('result').items():
                             network_transmit_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
@@ -525,15 +533,19 @@ class Pod_Monitoring(PrometheusPodsMetrics):
 
                     if update_disk_read_bytes_graph:
                         disk_read_bytes = self.podDiskReadBytes(pod=pod, container=container, namespace=namespace)
-                        Logging.log.info("Updating Pod 'disk_read_bytes' metrics")
-                        Logging.log.info(disk_read_bytes)
+                        if GlobalAttrs.debug:
+                            Logging.log.debug(f"Updating Pod 'disk_read_bytes' metrics; Result:\n{disk_read_bytes}")
+                        else:
+                            Logging.log.info("Updating Pod 'disk_read_bytes' metrics")
                         for device, value in disk_read_bytes.get('result').items():
                             disk_read_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
                     if update_disk_write_bytes_graph:
                         disk_write_bytes = self.podDiskWriteBytes(pod=pod, container=container, namespace=namespace)
-                        Logging.log.info("Updating Pod 'disk_write_bytes' metrics")
-                        Logging.log.info(disk_write_bytes)
+                        if GlobalAttrs.debug:
+                            Logging.log.debug(f"Updating Pod 'disk_write_bytes' metrics; Result:\n{disk_write_bytes}")
+                        else:
+                            Logging.log.info("Updating Pod 'disk_write_bytes' metrics")
                         for device, value in disk_write_bytes.get('result').items():
                             disk_write_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
