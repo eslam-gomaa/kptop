@@ -1,9 +1,10 @@
 import os
 from kubePtop.global_attrs import GlobalAttrs
 gattrs = GlobalAttrs()
+
 class ReadEnv:
     def __init__(self):
-        self.read_env()
+        pass
 
     def read_env(self):
         """
@@ -52,5 +53,15 @@ class ReadEnv:
     
         try:
             GlobalAttrs.start_graphs_with_zero = os.environ['KPTOP_START_GRAPHS_WITH_ZERO']
+        except:
+            pass
+
+        try:
+            GlobalAttrs.log_dir = os.environ['KPTOP_LOGGING_DIR']
+        except:
+            pass
+
+        try:
+            GlobalAttrs.graphs_width = int(os.environ['KPTOP_GRAPH_WIDTH'])
         except:
             pass

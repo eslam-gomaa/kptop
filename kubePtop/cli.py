@@ -2,6 +2,7 @@ from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.read_env import ReadEnv
 # Read environment variables
 read_environment_variables = ReadEnv()
+read_environment_variables.read_env()
 import argparse
 from kubePtop.session import PrometheusAPI
 from kubePtop.node_monitor import Node_Monitoring
@@ -95,6 +96,7 @@ class Cli():
         parser.add_argument('-c', '--container', type=str, required=False, metavar='', help='Monitor a specific Pod\'s container')
         parser.add_argument('-i', '--interval', type=int, required=False, metavar='', help='Live monitoring update interval')
         parser.add_argument('-V', '--verify-prometheus', required=False, action='store_true', help='Verify Prometheus connection & exporters')
+        parser.add_argument('-C', '--check-metrics', required=False, action='store_true', help='Checks the availability of the needed metrics')
         parser.add_argument('-d', '--debug', required=False, action='store_true', help='Print debug output')
         parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
 
@@ -114,6 +116,8 @@ class Cli():
         ### kptop --verify-prometheus
         if results.verify_prometheus:
             prometheus_api.verify_exporters()
+            if results.check_metrics:
+                prometheus_api.check_metrics()
             exit(0)
 
 
