@@ -214,9 +214,8 @@ class Node_Monitoring(PrometheusNodeMetrics):
                 while True:
                     Logging.log.info("Getting node metrics to update the dashboard")
                     node_metrics_json = self.nodeMetrics(node=node_name)
-                    if GlobalAttrs.debug:
-                        Logging.log.info("Node metrics Json:")
-                        Logging.log.info(node_metrics_json)
+                    Logging.log.debug("Node metrics Json:")
+                    Logging.log.debug(node_metrics_json)
                     node_mem_metrics_json = node_metrics_json.get('memory')
                     node_cpu_metrics_json = node_metrics_json.get('cpu')
                     node_fs_metrics_json = node_metrics_json.get('fs')
@@ -348,10 +347,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_disk_read_bytes_graph = True
             disk_read_bytes_graph = AsciiGraph()
             disk_read_bytes = self.nodeDiskReadBytes(node_name)
-            Logging.log.info("Getting Node 'disk_read_bytes' metrics")
-            Logging.log.info(disk_read_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'disk_read_bytes' metrics; Result:\n{disk_read_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'disk_read_bytes' metrics")   
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 update_disk_read_bytes_graph = False
@@ -359,10 +360,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_network_received_bytes_graph = True
             network_received_bytes_graph =  AsciiGraph()
             network_received_bytes = self.nodeNetworkReceiveBytes(node_name)
-            Logging.log.info("Getting Node 'network_received_bytes' metrics")
-            Logging.log.info(network_received_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'network_received_bytes' metrics; Result:\n{network_received_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'network_received_bytes' metrics")   
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
                 update_network_received_bytes_graph = False
@@ -370,10 +373,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_network_transmit_bytes_graph = True
             network_transmit_bytes_graph =  AsciiGraph()
             network_transmit_bytes = self.nodeNetworkTransmitBytes(node_name)
-            Logging.log.info("Getting Node 'network_transmit_bytes' metrics")
-            Logging.log.info(network_transmit_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'network_transmit_bytes' metrics; Result:\n{network_transmit_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'network_transmit_bytes' metrics")   
             if network_transmit_bytes.get('success'):
-                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_transmit_bytes_graph.graph = network_transmit_bytes.get('fail_reason')
                 update_network_transmit_bytes_graph = False
@@ -384,7 +389,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             disk_written_bytes_graph = AsciiGraph()
             disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
             if disk_written_bytes.get('success'):
-                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_written_bytes_graph.graph = disk_written_bytes.get('fail_reason')
                 update_disk_written_bytes_graph = False
@@ -414,18 +419,18 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     pod_memory_usage = node_metrics.PodMemTopUsage(node=node_name)
                     layout["body2_a"].update(Panel(pod_memory_usage, title="[b]Top Pods in Memory Usage", padding=(1, 1)))                    
                     Logging.log.info("Updating the Layout with 'Top Pods in Memory Usage'")
-                    Logging.log.info(f"Result:\n{pod_memory_usage}")
+                    Logging.log.debug(f"Result:\n{pod_memory_usage}")
                     
                     if update_network_received_bytes_graph:
                         network_received_bytes = self.nodeNetworkReceiveBytes(node_name)
                         Logging.log.info("Updating Node 'network_received_bytes' metrics")
-                        Logging.log.info(network_received_bytes)
+                        Logging.log.debug(network_received_bytes)
                         for device, value in network_received_bytes.get('result').items():
                             network_received_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
                     if update_network_transmit_bytes_graph:
                         Logging.log.info("Updating Node 'network_transmit_bytes' metrics")
-                        Logging.log.info(network_transmit_bytes)
+                        Logging.log.debug(network_transmit_bytes)
                         network_transmit_bytes = self.nodeNetworkTransmitBytes(node_name)
                         for device, value in network_transmit_bytes.get('result').items():
                             network_transmit_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
@@ -433,14 +438,14 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     if update_disk_read_bytes_graph:
                         disk_read_bytes = self.nodeDiskReadBytes(node_name)
                         Logging.log.info("Updating Node 'disk_read_bytes' metrics")
-                        Logging.log.info(disk_read_bytes)
+                        Logging.log.debug(disk_read_bytes)
                         for device, value in disk_read_bytes.get('result').items():
                             disk_read_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
                     if update_disk_written_bytes_graph:
                         disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
                         Logging.log.info("Updating Node 'disk_written_bytes' metrics")
-                        Logging.log.info(disk_written_bytes)
+                        Logging.log.debug(disk_written_bytes)
                         for device, value in disk_written_bytes.get('result').items():
                             disk_written_bytes_graph.update_lst(device, helper_.bytes_to_kb(value))
 
@@ -638,7 +643,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     node_metrics_json = self.nodeMetrics(node=node_name)
                     if GlobalAttrs.debug:
                         Logging.log.info("Node metrics Json:")
-                        Logging.log.info(node_metrics_json)
+                        Logging.log.debug(node_metrics_json)
                     node_mem_metrics_json = node_metrics_json.get('memory')
                     node_cpu_metrics_json = node_metrics_json.get('cpu')
                     node_fs_metrics_json = node_metrics_json.get('fs')
@@ -663,8 +668,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
                     self.progress_fs.update(self.task_fs_used, completed=node_fs_metrics_json.get('nodeFsUsed').get('result'), description=f"[white]FS used   ", total=node_fs_metrics_json.get('nodeFsSize').get('result'), status=helper_.bytes_to_kb_mb_gb(node_fs_metrics_json.get('nodeFsUsed').get('result')))
                     self.progress_fs.update(self.task_fs_available, completed=node_fs_metrics_json.get('nodeFsAvailable').get('result'), description=f"[white]FS available   ", total=node_fs_metrics_json.get('nodeFsSize').get('result'), status=helper_.bytes_to_kb_mb_gb(node_fs_metrics_json.get('nodeFsAvailable').get('result')))
                     
-                    if GlobalAttrs.debug:
-                        Logging.log.debug(f"Waiting for interval '{GlobalAttrs.live_update_interval}' before the next update")
+                    Logging.log.debug(f"Waiting for interval '{GlobalAttrs.live_update_interval}' before the next update")
                     time.sleep(GlobalAttrs.live_update_interval)
 
             def check_thread_node_resources(self, restart=True):
@@ -770,10 +774,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_disk_read_bytes_graph = True
             disk_read_bytes_graph = AsciiGraph()
             disk_read_bytes = self.nodeDiskReadBytes(node_name)
-            Logging.log.info("Getting Node 'disk_read_bytes' metrics")
-            Logging.log.info(disk_read_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'disk_read_bytes' metrics; Result:\n{disk_read_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'disk_read_bytes' metrics")   
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 update_disk_read_bytes_graph = False
@@ -781,10 +787,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_network_received_bytes_graph = True
             network_received_bytes_graph =  AsciiGraph()
             network_received_bytes = self.nodeNetworkReceiveBytes(node_name)
-            Logging.log.info("Getting Node 'network_received_bytes' metrics")
-            Logging.log.info(network_received_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'network_received_bytes' metrics; Result:\n{network_received_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'network_received_bytes' metrics")   
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
                 update_network_received_bytes_graph = False
@@ -792,10 +800,12 @@ class Node_Monitoring(PrometheusNodeMetrics):
             update_network_transmit_bytes_graph = True
             network_transmit_bytes_graph =  AsciiGraph()
             network_transmit_bytes = self.nodeNetworkTransmitBytes(node_name)
-            Logging.log.info("Getting Node 'network_transmit_bytes' metrics")
-            Logging.log.info(network_transmit_bytes)
+            if GlobalAttrs.debug:
+                Logging.log.debug(f"Getting Pod 'network_transmit_bytes' metrics; Result:\n{network_transmit_bytes}")
+            else:
+                Logging.log.info("Getting Pod 'network_transmit_bytes' metrics")   
             if network_transmit_bytes.get('success'):
-                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_transmit_bytes_graph.graph = network_transmit_bytes.get('fail_reason')
                 update_network_transmit_bytes_graph = False
@@ -806,7 +816,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             disk_written_bytes_graph = AsciiGraph()
             disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
             if disk_written_bytes.get('success'):
-                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_written_bytes_graph.graph = disk_written_bytes.get('fail_reason')
                 update_disk_written_bytes_graph = False
@@ -900,7 +910,6 @@ class Node_Monitoring(PrometheusNodeMetrics):
             print("                 ", end="\r")
             rich.print("Ok")
             exit(0)
-
 
 
     def node_monitor_dashboard_memory(self, node_name):
