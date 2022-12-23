@@ -2,3 +2,4 @@ rich
 requests
 tabulate
 argparse
+asciichartpy

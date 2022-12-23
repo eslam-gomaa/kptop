@@ -351,7 +351,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'disk_read_bytes' metrics")
             Logging.log.info(disk_read_bytes)
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 update_disk_read_bytes_graph = False
@@ -362,7 +362,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'network_received_bytes' metrics")
             Logging.log.info(network_received_bytes)
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
                 update_network_received_bytes_graph = False
@@ -373,7 +373,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'network_transmit_bytes' metrics")
             Logging.log.info(network_transmit_bytes)
             if network_transmit_bytes.get('success'):
-                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_transmit_bytes_graph.graph = network_transmit_bytes.get('fail_reason')
                 update_network_transmit_bytes_graph = False
@@ -384,7 +384,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             disk_written_bytes_graph = AsciiGraph()
             disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
             if disk_written_bytes.get('success'):
-                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_written_bytes_graph.graph = disk_written_bytes.get('fail_reason')
                 update_disk_written_bytes_graph = False
@@ -773,7 +773,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'disk_read_bytes' metrics")
             Logging.log.info(disk_read_bytes)
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 update_disk_read_bytes_graph = False
@@ -784,7 +784,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'network_received_bytes' metrics")
             Logging.log.info(network_received_bytes)
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
                 update_network_received_bytes_graph = False
@@ -795,7 +795,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             Logging.log.info("Getting Node 'network_transmit_bytes' metrics")
             Logging.log.info(network_transmit_bytes)
             if network_transmit_bytes.get('success'):
-                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_transmit_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 network_transmit_bytes_graph.graph = network_transmit_bytes.get('fail_reason')
                 update_network_transmit_bytes_graph = False
@@ -806,7 +806,7 @@ class Node_Monitoring(PrometheusNodeMetrics):
             disk_written_bytes_graph = AsciiGraph()
             disk_written_bytes = self.nodeDiskWrittenBytes(node_name)
             if disk_written_bytes.get('success'):
-                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=45, format='{:8.0f} kb/s')
+                disk_written_bytes_graph.create_graph(disk_written_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width, format='{:8.0f} kb/s')
             else:
                 disk_written_bytes_graph.graph = disk_written_bytes.get('fail_reason')
                 update_disk_written_bytes_graph = False
