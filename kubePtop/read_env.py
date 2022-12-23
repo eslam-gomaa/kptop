@@ -60,3 +60,8 @@ class ReadEnv:
             GlobalAttrs.log_dir = os.environ['KPTOP_LOGGING_DIR']
         except:
             pass
+
+        try:
+            GlobalAttrs.graphs_width = int(os.environ['KPTOP_GRAPH_WIDTH'])
+        except:
+            pass

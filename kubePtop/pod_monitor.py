@@ -376,8 +376,8 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             Logging.log.info("Getting Pod 'network_received_bytes' metrics")
             Logging.log.info(network_received_bytes)
             if network_received_bytes.get('success'):
-                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
-                network_transmit_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=42, format='{:8.0f} kb/s')
+                network_received_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
+                network_transmit_bytes_graph.create_graph(network_received_bytes.get('result').keys(), height=6, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
 
             else:
                 network_received_bytes_graph.graph = network_received_bytes.get('fail_reason')
@@ -406,8 +406,8 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             Logging.log.info("Getting Pod 'disk_read_bytes' metrics")
             Logging.log.info(disk_read_bytes)
             if disk_read_bytes.get('success'):
-                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=42, format='{:8.0f} kb/s')
-                disk_write_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=4, format='{:8.0f} kb/s')
+                disk_read_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
+                disk_write_bytes_graph.create_graph(disk_read_bytes.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} kb/s')
             else:
                 disk_read_bytes_graph.graph = disk_read_bytes.get('fail_reason')
                 disk_write_bytes_graph.graph = disk_read_bytes.get('fail_reason')
@@ -434,8 +434,8 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             containers_mem_usage_range_graph = AsciiGraph()
             containers_mem_usage = self.podMemUsagePerContainers(pod=pod, container=container, namespace=namespace)
             if containers_mem_usage.get('success'):
-                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
-                containers_mem_usage_range_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=42, format='{:8.0f} mb')
+                containers_mem_usage_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=GlobalAttrs.graphs_width - 3, format='{:8.0f} mb')
+                containers_mem_usage_range_graph.create_graph(containers_mem_usage.get('result').keys(), height=5, width=GlobalAttrs.graphs_width -3, format='{:8.0f} mb')
             else:
                 containers_mem_usage_graph.graph = containers_mem_usage.get('fail_reason')
                 update_containers_mem_usage = False
@@ -455,7 +455,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
             pod_pvcs_usage_graph = AsciiGraph()
             pod_pvcs = self.podPVC(pod, namespace)
             if pod_pvcs.get('success'):
-                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=6, width=45, format='{:8.0f} mb')
+                pod_pvcs_usage_graph.create_graph(pod_pvcs.get('result').keys(), height=6, width=GlobalAttrs.graphs_width, format='{:8.0f} mb')
             else:
                 pod_pvcs_usage_graph.graph = f"{bcolors.BOLD + bcolors.WARNING} [ No PVCs found ]{bcolors.ENDC}\n{bcolors.GRAY}{pod_pvcs.get('fail_reason')}"
                 update_pod_pvcs_usage = False

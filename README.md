@@ -70,6 +70,7 @@ pip3 install asciichartpy
 | `KPTOP_NODE_EXPORTER_NODE_LABEL` | node exporter "node label"                                   | "node"  | NO       |
 | `KPTOP_START_GRAPHS_WITH_ZERO`   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
 | `KPTOP_LOGGING_DIR`              | Choose a different logging directory                         | /tmp/   | NO       |
+| `KPTOP_GRAPH_WIDTH`              | Choose a custom graphs width                                 | 45      | NO       |
 
 
 <br>
