@@ -1,12 +1,14 @@
 
 class GlobalAttrs:
-    env_prometheus_server = "..."
+    env_prometheus_server = "??"
     env_basic_auth_enabled = False
     env_prometheus_username = None
     env_prometheus_password = None
     env_insecure = False
     
-    log_file_path = "/tmp/kptop.log"
+    log_dir = "/tmp/"
+    log_file = "kptop.log"
+
     exceptions_num = 0
     session = None
 
