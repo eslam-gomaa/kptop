@@ -113,7 +113,10 @@ class PrometheusAPI:
             else:
                 req = self.session.get(self.prometheus_url_query, params={'query': f'{query}'})
             if req.status_code == 200:
-                Logging.log.info(f"Query run successfully, exit_code: {req.status_code}; Result:\n{json.loads(req.text)}")
+                if GlobalAttrs.debug:
+                    Logging.log.debug(f"Query run successfully, exit_code: {req.status_code}; Result:\n{json.loads(req.text)}")
+                else:
+                    Logging.log.info(f"Query run successfully, exit_code: {req.status_code}")
                 return json.loads(req.text)
             else:
                 Logging.log.error(f"Query did NOT run successfully, exit_code: {req.status_code}")
