@@ -1020,17 +1020,18 @@ class PrometheusPodsMetrics(PrometheusAPI):
                         "memory_limit": 0,
                         "cpu_limit": 0
                     }
-                for pod_mem_limit in memory_limit.get('data').get('result'):
-                    dct[pod_mem_limit.get('metric').get('pod')]["memory_limit"] = int(pod_mem_limit.get('value')[1])             
-            
-                for pod_mem_usage_max in memory_usage_max.get('data').get('result'):
-                    dct[pod_mem_usage_max.get('metric').get('pod')]["memory_usage_max"] = int(pod_mem_usage_max.get('value')[1])
-
-                for pod_cpu_limit in cpu_limit.get('data').get('result'):
-                    dct[pod_cpu_limit.get('metric').get('pod')]["cpu_limit"] = int(pod_cpu_limit.get('value')[1][:-2])
-
-                for pod_cpu_usage in cpu_usage.get('data').get('result'):
-                    dct[pod_cpu_usage.get('metric').get('pod')]["cpu_usage"] = float('%.2f' % float(pod_cpu_usage.get('value')[1]))
+                try:
+                    for pod_mem_limit in memory_limit.get('data').get('result'):
+                        dct[pod_mem_limit.get('metric').get('pod')]["memory_limit"] = int(pod_mem_limit.get('value')[1])             
+                    for pod_mem_usage_max in memory_usage_max.get('data').get('result'):
+                        dct[pod_mem_usage_max.get('metric').get('pod')]["memory_usage_max"] = int(pod_mem_usage_max.get('value')[1])
+                    for pod_cpu_limit in cpu_limit.get('data').get('result'):
+                        dct[pod_cpu_limit.get('metric').get('pod')]["cpu_limit"] = int(pod_cpu_limit.get('value')[1][:-2])
+                    for pod_cpu_usage in cpu_usage.get('data').get('result'):
+                        dct[pod_cpu_usage.get('metric').get('pod')]["cpu_usage"] = float('%.2f' % float(pod_cpu_usage.get('value')[1]))
+                except Exception as e:
+                    print(f"ERROR -- got an error while listing pods\n{e}")
+                    traceback.print_exc()
 
 
             output['result'] = dct
