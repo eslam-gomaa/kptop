@@ -8,7 +8,7 @@ if os.path.isfile(requirements):
 
 setup(
     name = 'kptop',
-    version = '0.0.4',
+    version = '0.0.5',
     author = 'Eslam Gomaa',
     # license = '<the license you chose>',
     description = 'A CLI tool that provides Monitoring for Kubernetes resources on the terminal through Prometheus metircs',
