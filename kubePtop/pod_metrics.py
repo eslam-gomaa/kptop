@@ -1020,17 +1020,18 @@ class PrometheusPodsMetrics(PrometheusAPI):
                         "memory_limit": 0,
                         "cpu_limit": 0
                     }
-                for pod_mem_limit in memory_limit.get('data').get('result'):
-                    dct[pod_mem_limit.get('metric').get('pod')]["memory_limit"] = int(pod_mem_limit.get('value')[1])             
-            
-                for pod_mem_usage_max in memory_usage_max.get('data').get('result'):
-                    dct[pod_mem_usage_max.get('metric').get('pod')]["memory_usage_max"] = int(pod_mem_usage_max.get('value')[1])
-
-                for pod_cpu_limit in cpu_limit.get('data').get('result'):
-                    dct[pod_cpu_limit.get('metric').get('pod')]["cpu_limit"] = int(pod_cpu_limit.get('value')[1][:-2])
-
-                for pod_cpu_usage in cpu_usage.get('data').get('result'):
-                    dct[pod_cpu_usage.get('metric').get('pod')]["cpu_usage"] = float('%.2f' % float(pod_cpu_usage.get('value')[1]))
+                try:
+                    for pod_mem_limit in memory_limit.get('data').get('result'):
+                        dct[pod_mem_limit.get('metric').get('pod')]["memory_limit"] = int(pod_mem_limit.get('value')[1])             
+                    for pod_mem_usage_max in memory_usage_max.get('data').get('result'):
+                        dct[pod_mem_usage_max.get('metric').get('pod')]["memory_usage_max"] = int(pod_mem_usage_max.get('value')[1])
+                    for pod_cpu_limit in cpu_limit.get('data').get('result'):
+                        dct[pod_cpu_limit.get('metric').get('pod')]["cpu_limit"] = int(pod_cpu_limit.get('value')[1][:-2])
+                    for pod_cpu_usage in cpu_usage.get('data').get('result'):
+                        dct[pod_cpu_usage.get('metric').get('pod')]["cpu_usage"] = float('%.2f' % float(pod_cpu_usage.get('value')[1]))
+                except Exception as e:
+                    print(f"ERROR -- got an error while listing pods\n{e}")
+                    traceback.print_exc()
 
 
             output['result'] = dct
@@ -1066,7 +1067,11 @@ class PrometheusPodsMetrics(PrometheusAPI):
                 memory_usage_percentage = "---"
             else:
                 memory_limit = helper_.bytes_to_kb_mb_gb(value.get('memory_limit'))
-                memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
+                
+                if value.get('memory_limit') - value.get('memory_usage') > 0:
+                    memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
+                else:
+                    memory_free = f"-{helper_.bytes_to_kb_mb_gb((value.get('memory_limit') - value.get('memory_usage')) * -1)}"
                 memory_usage_percentage = helper_.percentage(value.get('memory_usage'), value.get('memory_limit'))
 
             if int(value.get('cpu_limit')) == 0:
