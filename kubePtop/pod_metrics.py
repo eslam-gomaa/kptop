@@ -1066,7 +1066,11 @@ class PrometheusPodsMetrics(PrometheusAPI):
                 memory_usage_percentage = "---"
             else:
                 memory_limit = helper_.bytes_to_kb_mb_gb(value.get('memory_limit'))
-                memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
+                
+                if value.get('memory_limit') - value.get('memory_usage') > 0:
+                    memory_free = helper_.bytes_to_kb_mb_gb(value.get('memory_limit') - value.get('memory_usage'))
+                else:
+                    memory_free = f"-{helper_.bytes_to_kb_mb_gb((value.get('memory_limit') - value.get('memory_usage')) * -1)}"
                 memory_usage_percentage = helper_.percentage(value.get('memory_usage'), value.get('memory_limit'))
 
             if int(value.get('cpu_limit')) == 0:
