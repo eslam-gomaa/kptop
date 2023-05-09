@@ -1,5 +1,5 @@
-rich
-requests
-tabulate
+rich==13.3.1
+requests==2.28.2
+tabulate==0.9.0
 argparse
-asciichartpy
+asciichartpy==1.5.25
