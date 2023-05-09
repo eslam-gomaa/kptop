@@ -36,6 +36,10 @@ class Cli():
         self.dashboard = 'default'
         self.list_dashboards = False
         self.sort_by_mem_usage = False
+        self.list_option = ''
+        self.list_nodes_option = []
+        self.colorize_json = False
+        
 
         # Read CLI arguments
         self.argparse()
@@ -50,12 +54,23 @@ class Cli():
             if self.list_dashboards:
                 node_monitor.list_dashboards()
                 exit(0)
+            
+            # kptop nodes <NODE-NAME> -o json
+            if self.list_option == 'json':
+                node_metrics.topNodeJson(node=self.node, color=self.colorize_json)
+                exit(0)
             # Check if the node found.
             node_monitor.display_dashboard(dashboard=self.dashboard, node_name=self.node)
 
+        # kptop nodes
         if self.list_nodes:
-            node_metrics.topNodeTable()
+            # kptop nodes -o json
+            if self.list_option == 'json':
+                node_metrics.topNodeJson(node=".*", color=self.colorize_json)
+                exit(0)
+            node_metrics.topNodeTable(option=self.list_option)
             exit(0)
+
 
         # kptop pods <POD-NAME>
         if self.pod:
@@ -90,7 +105,7 @@ class Cli():
 
     def argparse(self):
         parser = argparse.ArgumentParser(description='A Python tool for Kubernetes Nodes/Pods terminal monitoring through Prometheus metrics.')
-        parser.add_argument('top', type=str, nargs='*', metavar='{pods, pod, po}  |  {nodes, node}  |  {pvcs, pvc}', help='top pods/nodes/pvcs')
+        parser.add_argument('top', type=str, nargs='*', metavar='{pods, pod, po}  |  {nodes, node}  |  {persistentvolumeclaim, pvc}', help='top pods/nodes/persistentvolumeclaim')
         parser.add_argument('-n', '--namespace', type=str, required=False, metavar='', help='Specify a Kubernetes namespace')
         parser.add_argument('-A', '--all-namespaces', required=False, action='store_true', help='All Kubernetes namespaces')
         parser.add_argument('-c', '--container', type=str, required=False, metavar='', help='Monitor a specific Pod\'s container')
@@ -99,13 +114,15 @@ class Cli():
         parser.add_argument('-C', '--check-metrics', required=False, action='store_true', help='Checks the availability of the needed metrics')
         parser.add_argument('-d', '--debug', required=False, action='store_true', help='Print debug output')
         parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
+        parser.add_argument('-o', '--option', type=str, required=False, choices=['cloud', 'json'], help='options for "kptop node||pod" (currently supported in "kptop node")')
+        parser.add_argument('-cj', '--colorize-json', required=False, action='store_true', help='Colorize Json output (with "-o json")')
 
         # parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
         # parser.add_argument('-L', '--list-dashboards', required=False, action='store_true', help='List available dashboards')
 
         pod_aliases = ['pod', 'pods', 'po']
         node_aliases = ['node', 'nodes']
-        pvc_aliases = ['pvc', 'pvcs']
+        pvc_aliases = ['pvc', 'persistentvolumeclaim']
 
         results = parser.parse_args()
         self.parser = parser
@@ -160,6 +177,12 @@ class Cli():
 
         if results.namespace:
             self.namespace = results.namespace
+            
+        if results.option:
+            self.list_option = results.option
+            
+        if results.colorize_json:
+            self.colorize_json = results.option
 
         if results.all_namespaces:
             self.all_namespaces = results.all_namespaces
