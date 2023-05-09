@@ -4,6 +4,8 @@ from kubePtop.logging import Logging
 from kubePtop.helper import Helper
 from tabulate import tabulate
 from kubePtop.colors import Bcolors
+import json
+import rich
 bcolors = Bcolors()
 import traceback
 
@@ -192,7 +194,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
             "result": ""
         }
         try:
-            result = self.run_query(f'node_memory_MemTotal_bytes{{{GlobalAttrs.node_exporter_node_label}="{node}"}}')
+            result = self.run_query(f'node_memory_MemTotal_bytes{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}')
             if not result.get('status') == 'success':
                 output['fail_reason'] = "could not get metric value"
                 return output
@@ -1287,7 +1289,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
     #     return output
 
 
-    def topNode(self):
+    def topNode(self, node=".*"):
         """
         """
         output = {
@@ -1296,8 +1298,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
             "result": {}
         }
         try:
-            
-            memory_total_query = f'node_memory_MemTotal_bytes' # f'machine_memory_bytes'
+            memory_total_query = f'node_memory_MemTotal_bytes{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}'
             memory_total = self.run_query(memory_total_query)
             if not memory_total.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {memory_total_query}"
@@ -1306,7 +1307,28 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 output['fail_reason'] =  f"Query did not return any data: {memory_total_query}"
                 return output
 
-            memory_free_query = f'node_memory_MemFree_bytes'
+            nodes_dct = {}
+            for node_ in memory_total.get('data').get('result'):
+                nodes_dct[node_.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
+                    "memory_total": int(node_.get('value')[1]),
+                    "memory_free": -1,
+                    "memory_used": -1,
+                    "cpu_cores": -1,
+                    # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
+                    "cpu_used_percentage": -1,
+                    "running_pods_num": -1,
+                    "cluster": "",
+                    "node_os": "",
+                    "node_arch": "",
+                    "region": "",
+                    "az": "",
+                    "instance_type": "",
+                    "cluster_env": "",
+                    "node_group_capacity_type": "",
+                    "node_group_name": "",
+                }
+
+            memory_free_query = f'node_memory_MemFree_bytes{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}'
             memory_free = self.run_query(memory_free_query)
             if not memory_free.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {memory_free_query}"
@@ -1315,7 +1337,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 output['fail_reason'] =  f"Query did not return any data: {memory_free_query}"
                 return output
 
-            cpu_cores_query = f'machine_cpu_cores'
+            cpu_cores_query = f'machine_cpu_cores{{kubernetes_io_hostname=~"{node}"}}'
             cpu_cores = self.run_query(cpu_cores_query)
             if not cpu_cores.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {cpu_cores_query}"
@@ -1324,7 +1346,8 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 output['fail_reason'] =  f"Query did not return any data: {cpu_cores_query}"
                 return output
 
-            cpu_used_percentage_query =  f'100 - (avg by ({GlobalAttrs.node_exporter_node_label}) (rate(node_cpu_seconds_total{{mode="idle"}}[10m])) * 100)'
+            #### Fix
+            cpu_used_percentage_query =  f'100 - (avg by ({GlobalAttrs.node_exporter_node_label}) (rate(node_cpu_seconds_total{{mode="idle", {GlobalAttrs.node_exporter_node_label}=~"{node}"}}[10m])) * 100)'
             cpu_used_percentage = self.run_query(cpu_used_percentage_query)
             if not cpu_used_percentage.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {cpu_used_percentage_query}"
@@ -1333,7 +1356,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 output['fail_reason'] =  f"Query did not return any data: {cpu_used_percentage_query}"
                 return output
 
-            running_pods_count_query = f'kubelet_running_pods'
+            running_pods_count_query = f'kubelet_running_pods{{instance=~"{node}"}}'
             running_pods_count = self.run_query(running_pods_count_query)
             if not running_pods_count.get('status') == 'success':
                 output['fail_reason'] = f"could not get metric's value: {running_pods_count_query}"
@@ -1341,19 +1364,13 @@ class PrometheusNodeMetrics(PrometheusAPI):
             if not running_pods_count.get('data').get('result'):
                 output['fail_reason'] =  f"Query did not return any data: {running_pods_count_query}"
                 return output
-
-            
-            nodes_dct = {}
-            for node in memory_total.get('data').get('result'):
-                nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
-                    "memory_total": int(node.get('value')[1]),
-                    "memory_free": -1,
-                    "memory_used": -1,
-                    "cpu_cores": -1,
-                    # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
-                    "cpu_used_percentage": -1,
-                    "running_pods_num": -1,
-                }
+                
+            ## 
+            node_managed_k8s_info = self.nodeManagedK8sInfo(node=node)
+            if not node_managed_k8s_info.get('success'):
+                output['fail_reason'] = node_managed_k8s_info.get('fail_reason')
+                return output
+        
             
             for node in memory_free.get('data').get('result'):
                 nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_free'] = int(node.get('value')[1])
@@ -1373,6 +1390,29 @@ class PrometheusNodeMetrics(PrometheusAPI):
                     nodes_dct[node.get('metric').get('instance')]['running_pods_num'] = int(node.get('value')[1])
                 except KeyError:
                     pass # A KeyError Exception is expected as this metric returns the value for the master nodes while other metrics dont.
+                    
+            
+            for node in node_managed_k8s_info.get('result'):
+                # General Labels (match different cloud providers)
+                try:
+                    nodes_dct[node.get('metric').get('instance')]['node_arch'] = node['metric']['beta_kubernetes_io_arch']
+                    nodes_dct[node.get('metric').get('instance')]['node_os'] = node['metric']['beta_kubernetes_io_os']
+                    nodes_dct[node.get('metric').get('instance')]['cluster'] = node['metric']['cluster']
+                    nodes_dct[node.get('metric').get('instance')]['region'] = node['metric']['topology_kubernetes_io_region']
+                    nodes_dct[node.get('metric').get('instance')]['az'] = node['metric']['topology_kubernetes_io_zone']
+                    nodes_dct[node.get('metric').get('instance')]['instance_type'] = node['metric']['node_kubernetes_io_instance_type']
+                except KeyError:
+                    pass # If labels are not found, means that most probably this is a Local cluster
+                
+                # AWS Labels
+                try:
+                    nodes_dct[node.get('metric').get('instance')]['node_group_capacity_type'] = node['metric']['eks_amazonaws_com_capacityType']
+                    nodes_dct[node.get('metric').get('instance')]['node_group_name'] = node['metric']['eks_amazonaws_com_nodegroup']
+                    if nodes_dct[node.get('metric').get('instance')]['node_group_name']:
+                        nodes_dct[node.get('metric').get('instance')]['cluster_env'] = 'EKS'
+                except KeyError:
+                    pass # If labels are not found, means that it's not an EKS cluster.
+            
 
             output['result'] = nodes_dct
             output['success'] = True
@@ -1384,9 +1424,20 @@ class PrometheusNodeMetrics(PrometheusAPI):
             Logging.log.exception(traceback.format_stack())
 
         return output
+    
+    def topNodeJson(self, node=".*", color=False):
+        nodes_dct = self.topNode(node=node)
+        if not nodes_dct.get('success'):
+            print(f"ERROR -- Failed to get nodes \n{nodes_dct.get('fail_reason')}")
+            exit(1)
+            
+        if color:
+            rich.print_json(data=nodes_dct.get('result'))
+        else:
+            print(json.dumps(nodes_dct.get('result'), indent=4))
 
 
-    def topNodeTable(self):
+    def topNodeTable(self, option=""):
         """
         """
         nodes_json = self.topNode()
@@ -1398,15 +1449,80 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
 
         table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS' ]]
-        for  node, value in nodes_json.get('result').items():
-            row = [node, helper_.bytes_to_kb_mb_gb(value.get('memory_total')), helper_.bytes_to_kb_mb_gb(value.get('memory_used')), helper_.bytes_to_kb_mb_gb(value.get('memory_free')), value.get('cpu_cores'), str(round(value.get('cpu_used_percentage'))) + "%", value.get('running_pods_num')]
-            table.append(row)
+        if option == 'cloud':
+            table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS', 'CLUSTER', 'INSTANCE TYPE', 'AZ', 'ENV', 'NG CAPACITY TYPE']]
+            
+        if option == 'cloud':
+            for  node, value in nodes_json.get('result').items():
+                row = [
+                        node,
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_total')),
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_used')),
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_free')),
+                        value.get('cpu_cores'),
+                        str(round(value.get('cpu_used_percentage'))) + "%", 
+                        value.get('running_pods_num'),
+                        value.get('cluster'),
+                        value.get('instance_type'),
+                        # value.get('region'),
+                        value.get('az'),
+                        value.get('cluster_env'),
+                        value.get('node_group_capacity_type'),
+                        # value.get('node_group_name'),
+                    ]
+                table.append(row)
+        else:
+            for  node, value in nodes_json.get('result').items():
+                row = [
+                        node,
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_total')),
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_used')),
+                        helper_.bytes_to_kb_mb_gb(value.get('memory_free')),
+                        value.get('cpu_cores'),
+                        str(round(value.get('cpu_used_percentage'))) + "%", 
+                        value.get('running_pods_num'),
+                    ]
+                table.append(row)
+                
         out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
         print(out)
         
 
+    def nodeManagedK8sInfo(self, node):
+        """
+        INPUT:
+            - K8s node name (str)
+        Return:
+            - dct of metric (dct)
+        """
+        output = {
+            "success": False,
+            "fail_reason": "",
+            "result": {}
+        }
+        try:
+            query = f'kubelet_node_name{{kubernetes_io_hostname=~"{node}"}}'
+            result = self.run_query(query)
+            if not result.get('status') == 'success':
+                output['fail_reason'] =  f"could not get metric's value: \n{query}"
+                return output
 
-        
+            if not result.get('data').get('result'):
+                output['fail_reason'] = f"Query did not return any data: \n{query}"
+                return output
+
+            output['result'] = result.get('data').get('result')
+            output['success'] = True
+
+        except(KeyError, AttributeError) as e:
+            output['success']: False
+            output['fail_reason'] = e
+            Logging.log.error(e)
+            Logging.log.exception(traceback.format_stack())
+
+        return output 
+    
+    
 
 
 
