@@ -102,7 +102,7 @@ Different ways to connect to Prometheus server:
 1. You have direct access to it (Like in dev environments)
 2. Prometheus is exposed publically/over-vpn (mostly with an Ingress)
 3. You can use [kubectl port-forward command](./docs/port-forward.md)
-4. You also can run `kptop` as a Kubernetes pod  (to be built in the next release))
+4. You also can run `kptop` as a Kubernetes pod  (to be built))
 
 
 <br>
