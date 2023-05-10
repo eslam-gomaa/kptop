@@ -556,7 +556,7 @@ class Pod_Monitoring(PrometheusPodsMetrics):
                         Markdown("Bytes Write", justify='center'),
                         Text.from_ansi(disk_write_bytes_graph.graph + f"\n {disk_write_bytes_graph.colors_description_str}"),
                     )
-                    layout["body2_b_a"].update(Panel(group_disk_io, title="[b]Network IO", padding=(1, 1)))
+                    layout["body2_b_a"].update(Panel(group_disk_io, title="[b]Disk IO", padding=(1, 1)))
 
 
 
