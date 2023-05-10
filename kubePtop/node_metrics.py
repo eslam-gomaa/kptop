@@ -1323,7 +1323,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
                     "region": "",
                     "az": "",
                     "instance_type": "",
-                    "cluster_env": "",
+                    "cluster_env": "Unknown",
                     "node_group_capacity_type": "",
                     "node_group_name": "",
                 }

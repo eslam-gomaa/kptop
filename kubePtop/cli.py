@@ -116,6 +116,7 @@ class Cli():
         parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
         parser.add_argument('-o', '--option', type=str, required=False, choices=['cloud', 'json'], help='options for "kptop node||pod" (currently supported in "kptop node")')
         parser.add_argument('-cj', '--colorize-json', required=False, action='store_true', help='Colorize Json output (with "-o json")')
+        # parser.add_argument('-q', '--query', type=str, required=False, help='options for "Run a custom query')
 
         # parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
         # parser.add_argument('-L', '--list-dashboards', required=False, action='store_true', help='List available dashboards')
