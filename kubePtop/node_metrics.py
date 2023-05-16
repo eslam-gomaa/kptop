@@ -1289,7 +1289,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
     #     return output
 
 
-    def topNode(self, node=".*"):
+    def topNode(self, node=".*", option=""):
         """
         """
         output = {
@@ -1308,25 +1308,38 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 return output
 
             nodes_dct = {}
+            
             for node_ in memory_total.get('data').get('result'):
-                nodes_dct[node_.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
-                    "memory_total": int(node_.get('value')[1]),
-                    "memory_free": -1,
-                    "memory_used": -1,
-                    "cpu_cores": -1,
-                    # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
-                    "cpu_used_percentage": -1,
-                    "running_pods_num": -1,
-                    "cluster": "",
-                    "node_os": "",
-                    "node_arch": "",
-                    "region": "",
-                    "az": "",
-                    "instance_type": "",
-                    "cluster_env": "Unknown",
-                    "node_group_capacity_type": "",
-                    "node_group_name": "",
-                }
+                
+                if (option == 'cloud') or (option == 'json'):
+                    nodes_dct[node_.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
+                        "memory_total": int(node_.get('value')[1]),
+                        "memory_free": -1,
+                        "memory_used": -1,
+                        "cpu_cores": -1,
+                        # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
+                        "cpu_used_percentage": -1,
+                        "running_pods_num": -1,
+                        "cluster": "?",
+                        "node_os": "?",
+                        "node_arch": "?",
+                        "region": "?",
+                        "az": "?",
+                        "instance_type": "?",
+                        "cluster_env": "Unknown",
+                        "node_group_capacity_type": "?",
+                        "node_group_name": "?",
+                    }
+                else:
+                    nodes_dct[node_.get('metric').get(GlobalAttrs.node_exporter_node_label)] = {
+                        "memory_total": int(node_.get('value')[1]),
+                        "memory_free": -1,
+                        "memory_used": -1,
+                        "cpu_cores": -1,
+                        # "cpu_used": -1, # not sure of the metrics to get the used cpu in milicores.
+                        "cpu_used_percentage": -1,
+                        "running_pods_num": -1,
+                    }
 
             memory_free_query = f'node_memory_MemFree_bytes{{{GlobalAttrs.node_exporter_node_label}=~"{node}"}}'
             memory_free = self.run_query(memory_free_query)
@@ -1366,12 +1379,12 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 return output
                 
             ## 
-            node_managed_k8s_info = self.nodeManagedK8sInfo(node=node)
-            if not node_managed_k8s_info.get('success'):
-                output['fail_reason'] = node_managed_k8s_info.get('fail_reason')
-                return output
+            if (option == 'cloud') or (option == 'json'):
+                node_managed_k8s_info = self.nodeManagedK8sInfo(node=node)
+                if not node_managed_k8s_info.get('success'):
+                    output['fail_reason'] = node_managed_k8s_info.get('fail_reason')
+                    return output
         
-            
             for node in memory_free.get('data').get('result'):
                 nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_free'] = int(node.get('value')[1])
                 nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_used'] = nodes_dct[node.get('metric').get(GlobalAttrs.node_exporter_node_label)]['memory_total'] - int(node.get('value')[1])
@@ -1391,29 +1404,34 @@ class PrometheusNodeMetrics(PrometheusAPI):
                 except KeyError:
                     pass # A KeyError Exception is expected as this metric returns the value for the master nodes while other metrics dont.
                     
-            
-            for node in node_managed_k8s_info.get('result'):
-                # General Labels (match different cloud providers)
-                try:
-                    nodes_dct[node.get('metric').get('instance')]['node_arch'] = node['metric']['beta_kubernetes_io_arch']
-                    nodes_dct[node.get('metric').get('instance')]['node_os'] = node['metric']['beta_kubernetes_io_os']
-                    nodes_dct[node.get('metric').get('instance')]['cluster'] = node['metric']['cluster']
-                    nodes_dct[node.get('metric').get('instance')]['region'] = node['metric']['topology_kubernetes_io_region']
-                    nodes_dct[node.get('metric').get('instance')]['az'] = node['metric']['topology_kubernetes_io_zone']
-                    nodes_dct[node.get('metric').get('instance')]['instance_type'] = node['metric']['node_kubernetes_io_instance_type']
-                except KeyError:
-                    pass # If labels are not found, means that most probably this is a Local cluster
-                
-                # AWS Labels
-                try:
-                    nodes_dct[node.get('metric').get('instance')]['node_group_capacity_type'] = node['metric']['eks_amazonaws_com_capacityType']
-                    nodes_dct[node.get('metric').get('instance')]['node_group_name'] = node['metric']['eks_amazonaws_com_nodegroup']
-                    if nodes_dct[node.get('metric').get('instance')]['node_group_name']:
-                        nodes_dct[node.get('metric').get('instance')]['cluster_env'] = 'EKS'
-                except KeyError:
-                    pass # If labels are not found, means that it's not an EKS cluster.
-            
+            # rich.print(node_managed_k8s_info)
+            if (option == 'cloud') or (option == 'json'):
+                for node in node_managed_k8s_info.get('result'):
+                    # General Labels (match different cloud providers)
+                    # rich.print(node_managed_k8s_info.get('result'))
+                    try:
+                        nodes_dct[node.get('metric').get('instance')]['node_arch'] = node['metric']['beta_kubernetes_io_arch']
+                        nodes_dct[node.get('metric').get('instance')]['node_os'] = node['metric']['beta_kubernetes_io_os']
+                        nodes_dct[node.get('metric').get('instance')]['region'] = node['metric']['topology_kubernetes_io_region']
+                        nodes_dct[node.get('metric').get('instance')]['az'] = node['metric']['topology_kubernetes_io_zone']
+                        nodes_dct[node.get('metric').get('instance')]['instance_type'] = node['metric']['node_kubernetes_io_instance_type']                    
+                    except KeyError:
+                        pass # If labels are not found, means that most probably this is a Local cluster
 
+                    try:
+                        nodes_dct[node.get('metric').get('instance')]['cluster'] = node['metric']['cluster']
+                    except:
+                        pass # If labels are not found, means that most probably this is a Local cluster
+                    
+                    # AWS Labels
+                    try:
+                        nodes_dct[node.get('metric').get('instance')]['node_group_capacity_type'] = node['metric']['eks_amazonaws_com_capacityType']
+                        nodes_dct[node.get('metric').get('instance')]['node_group_name'] = node['metric']['eks_amazonaws_com_nodegroup']
+                        if nodes_dct[node.get('metric').get('instance')]['node_group_name']:
+                            nodes_dct[node.get('metric').get('instance')]['cluster_env'] = 'EKS'
+                    except KeyError:
+                        pass # If labels are not found, means that it's not an EKS cluster.
+            
             output['result'] = nodes_dct
             output['success'] = True
 
@@ -1426,7 +1444,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
         return output
     
     def topNodeJson(self, node=".*", color=False):
-        nodes_dct = self.topNode(node=node)
+        nodes_dct = self.topNode(node=node, option='json')
         if not nodes_dct.get('success'):
             print(f"ERROR -- Failed to get nodes \n{nodes_dct.get('fail_reason')}")
             exit(1)
@@ -1440,7 +1458,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
     def topNodeTable(self, option=""):
         """
         """
-        nodes_json = self.topNode()
+        nodes_json = self.topNode(option=option)
         # import rich
         # rich.print(nodes_json)
         if not nodes_json.get('success'):
@@ -1453,7 +1471,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
             table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS', 'CLUSTER', 'INSTANCE TYPE', 'AZ', 'ENV', 'NG CAPACITY TYPE']]
             
         if option == 'cloud':
-            for  node, value in nodes_json.get('result').items():
+            for node, value in nodes_json.get('result').items():
                 row = [
                         node,
                         helper_.bytes_to_kb_mb_gb(value.get('memory_total')),
@@ -1501,7 +1519,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
             "result": {}
         }
         try:
-            query = f'kubelet_node_name{{kubernetes_io_hostname=~"{node}"}}'
+            query = f'kubelet_node_name{{kubernetes_io_hostname=~"{node}"}}' # 'machine_cpu_cores' also has the needed labels
             result = self.run_query(query)
             if not result.get('status') == 'success':
                 output['fail_reason'] =  f"could not get metric's value: \n{query}"
