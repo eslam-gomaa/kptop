@@ -1,5 +1,13 @@
 
 class GlobalAttrs:
+    
+    env_connection_method = "pod_portForward"
+    
+    env_prometheus_pod_name = None
+    env_prometheus_pod_port = "9090"
+    env_prometheus_pod_namespace = "default"    
+    env_kube_config_file = ""
+    
     env_prometheus_server = "??"
     env_basic_auth_enabled = False
     env_prometheus_username = None

@@ -1,4 +1,3 @@
-from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.read_env import ReadEnv
 # Read environment variables
 read_environment_variables = ReadEnv()
@@ -17,6 +16,8 @@ pod_metrics = PrometheusPodsMetrics()
 node_metrics = PrometheusNodeMetrics()
 prometheus_api = PrometheusAPI()
 from kubePtop.logging import Logging
+from kubePtop.global_attrs import GlobalAttrs
+
 
 
 class Cli():
