@@ -59,7 +59,7 @@ pip3 install kptop --upgrade
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**There are 2 options:** ['prometheus_endpoint', 'pod_portForward'] | <br />      | Yes      |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** ['prometheus_endpoint', 'pod_portForward'] | <br />      | Yes      |
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
