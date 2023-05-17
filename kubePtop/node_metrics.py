@@ -1414,7 +1414,9 @@ class PrometheusNodeMetrics(PrometheusAPI):
                         nodes_dct[node.get('metric').get('instance')]['node_os'] = node['metric']['beta_kubernetes_io_os']
                         nodes_dct[node.get('metric').get('instance')]['region'] = node['metric']['topology_kubernetes_io_region']
                         nodes_dct[node.get('metric').get('instance')]['az'] = node['metric']['topology_kubernetes_io_zone']
-                        nodes_dct[node.get('metric').get('instance')]['instance_type'] = node['metric']['node_kubernetes_io_instance_type']                    
+                        nodes_dct[node.get('metric').get('instance')]['instance_type'] = node['metric']['node_kubernetes_io_instance_type'] 
+                        nodes_dct[node.get('metric').get('instance')]['node_group_name'] = node['metric']['eks_amazonaws_com_nodegroup']                    
+                                          
                     except KeyError:
                         pass # If labels are not found, means that most probably this is a Local cluster
 
@@ -1468,7 +1470,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
 
         table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS' ]]
         if option == 'cloud':
-            table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS', 'CLUSTER', 'INSTANCE TYPE', 'AZ', 'ENV', 'NG CAPACITY TYPE']]
+            table = [['NODE', 'MEM TOTAL', 'MEM USAGE', 'MEM FREE', 'CPU CORES', 'CPU USAGE%', 'RUNNING PODS', 'CLUSTER', 'INSTANCE TYPE', 'AZ', 'ENV', 'NG CAPACITY TYPE', 'NG']]
             
         if option == 'cloud':
             for node, value in nodes_json.get('result').items():
@@ -1486,7 +1488,7 @@ class PrometheusNodeMetrics(PrometheusAPI):
                         value.get('az'),
                         value.get('cluster_env'),
                         value.get('node_group_capacity_type'),
-                        # value.get('node_group_name'),
+                        value.get('node_group_name'),
                     ]
                 table.append(row)
         else:
