@@ -29,24 +29,18 @@ class ReadEnv:
         """
         Read Environment variables
         """
-        # Mandatory ENVs
-        # try:
-        #     GlobalAttrs.env_prometheus_server  = os.environ['KPTOP_PROMETHEUS_SERVER']
-        # except (KeyError) as e:
-        #     raise SystemExit(f"\nERROR -- ENV not found => {e}")
-
-        # Basic Auth ENVs
         
-        # Default to "pod_portForward" if the ENV is not set.
         check_conn_method = self.check_env(['KPTOP_CONNECTION_METHOD'])
         if check_conn_method['missing']:
             print(f"INFO -- ENV: {check_conn_method.get('missing_envs')} is missing\n")
-            print('github link')            
+            # print('github link')            
             exit(1)
-        try:
-            os.environ['KPTOP_CONNECTION_METHOD']
-        except KeyError:
-                os.environ['KPTOP_CONNECTION_METHOD'] = "pod_portForward"
+            
+        
+        if os.environ['KPTOP_CONNECTION_METHOD'] not in ['pod_portForward', 'prometheus_endpoint']:
+            print("ERROR -- KPTOP_CONNECTION_METHOD allowed options are: 'pod_portForward' or 'prometheus_endpoint' ")
+            # print('github link')
+            exit(1)
         
         try:    
             if os.environ['KPTOP_CONNECTION_METHOD'] == "pod_portForward":
