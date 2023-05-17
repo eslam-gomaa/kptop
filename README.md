@@ -57,18 +57,51 @@ pip3 install kptop --upgrade
 ## Environment Variables
 <a id=env></a>
 
+| ENV | Description                                                                          | Default | Required |
+| ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**There are 2 options:** ['prometheus_endpoint', 'pod_portForward'] | <br />      | Yes      |
 
-| ENV                              | Description                                                  | Default | Required |
-| -------------------------------- | ------------------------------------------------------------ | ------- | -------- |
-| `KPTOP_PROMETHEUS_SERVER`        | Prometheus server URL                                        |         | Yes      |
-| `KPTOP_BASIC_AUTH_ENABLED`       | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| `KPTOP_PROMETHEUS_USERNAME`      | Prometheus username                                          |         | No       |
-| `KPTOP_PROMETHEUS_PASSWORD`      | Prometheus password                                          |         | No       |
-| `KPTOP_INSECURE`                 | Verify SSL certificate                                       | False   | No       |
-| `KPTOP_NODE_EXPORTER_NODE_LABEL` | node exporter "node label"                                   | "node"  | NO       |
-| `KPTOP_START_GRAPHS_WITH_ZERO`   | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
-| `KPTOP_LOGGING_DIR`              | Choose a different logging directory                         | /tmp/   | NO       |
-| `KPTOP_GRAPH_WIDTH`              | Choose a custom graphs width                                 | 45      | NO       |
+There are 2 options to connect KPtop to Prometheus:
+1. With a Prometheus server endpoint
+    - Suitable if Prometheus is exposed (with an ingress for example)
+2. With 'K8s pod port-forward' (Through K8s API-Server)
+    - Suitable if Prometheus is Not exposed (Only rechable within the K8s cluster)
+
+
+#### `prometheus_endpoint` ENVs
+
+| ENV | Description                                                     | Default | Required |
+| ----- | ----------------------------------------------------------------- | --------- | ---------- |
+| `KPTOP_PROMETHEUS_SERVER`    | Prometheus server URL                                           |         | Yes      |
+| `KPTOP_BASIC_AUTH_ENABLED`    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
+| `KPTOP_PROMETHEUS_USERNAME`    | Prometheus username                                             |         | No       |
+| `KPTOP_PROMETHEUS_PASSWORD`    | Prometheus password                                             |         | No       |
+| `KPTOP_INSECURE`    | Verify SSL certificate                                          | False   | No       |
+
+
+<br>
+
+### `pod_portForward` ENVs
+
+| ENV | Description                                            | Default | Required |
+| ----- | -------------------------------------------------------- | --------- | ---------- |
+| `KPTOP_PROMETHEUS_POD_NAME`    | Prometheus pod name                                    |         | Yes      |
+| `KPTOP_PROMETHEUS_POD_PORT`    | Prometheus port number                                 | 9090    | No       |
+| `KPTOP_PROMETHEUS_POD_NAMESPACE`    | The name space in which the Prometheus pod is deployed | default | No       |
+| `KUBECONFIG`    | custom K8s kube config file                            | *default path*        | No       |
+
+
+<br>
+
+### General ENVs
+
+
+| ENV | Description                                                            | Default | Required |
+| ----- | ------------------------------------------------------------------------ | --------- | ---------- |
+| `KPTOP_NODE_EXPORTER_NODE_LABEL`    | node exporter "node label"                                             | "node"  | NO       |
+| `KPTOP_START_GRAPHS_WITH_ZERO`    | By default graphs begin with '0'  to let the graph take its full hight | True    | NO       |
+| `KPTOP_LOGGING_DIR`    | Choose a different logging directory                                   | /tmp/   | NO       |
+| `KPTOP_GRAPH_WIDTH`    | Choose a custom graphs width                                           | 45      | NO       |
 
 
 <br>

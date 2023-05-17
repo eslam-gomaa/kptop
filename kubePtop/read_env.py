@@ -1,6 +1,5 @@
 import os
 from kubePtop.global_attrs import GlobalAttrs
-# gattrs = GlobalAttrs()
 
 class ReadEnv:
     def __init__(self):
@@ -39,6 +38,11 @@ class ReadEnv:
         # Basic Auth ENVs
         
         # Default to "pod_portForward" if the ENV is not set.
+        check_conn_method = self.check_env(['KPTOP_CONNECTION_METHOD'])
+        if check_conn_method['missing']:
+            print(f"INFO -- ENV: {check_conn_method.get('missing_envs')} is missing\n")
+            print('github link')            
+            exit(1)
         try:
             os.environ['KPTOP_CONNECTION_METHOD']
         except KeyError:
