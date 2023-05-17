@@ -1,7 +1,7 @@
 
 class GlobalAttrs:
     
-    env_connection_method = "pod_portForward"
+    env_connection_method = None
     
     env_prometheus_pod_name = None
     env_prometheus_pod_port = "9090"
