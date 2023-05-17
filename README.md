@@ -129,18 +129,24 @@ There are 2 options to connect KPtop to Prometheus:
 
 ## Usage
 
-<br>
-
-Different ways to connect to Prometheus server:
-1. You have direct access to it (Like in dev environments)
-2. Prometheus is exposed publically/over-vpn (mostly with an Ingress)
-3. You can use [kubectl port-forward command](./docs/port-forward.md)
-4. You also can run `kptop` as a Kubernetes pod  (to be built))
-
 
 <br>
+
+Add the ENVs and you're good to go.
+
+_*Examples*_
 
 ```bash
+export KPTOP_CONNECTION_METHOD="pod_portForward"
+export KPTOP_PROMETHEUS_POD_NAME="my-prometheus-server-0"
+export KPTOP_PROMETHEUS_POD_PORT="9090"
+export KPTOP_PROMETHEUS_POD_NAMESPACE="monitoring"
+```
+
+> Or
+
+```bash
+export KPTOP_CONNECTION_METHOD="prometheus_endpoint"
 export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
 ```
 
