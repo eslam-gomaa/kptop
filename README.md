@@ -81,7 +81,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 <br>
 
-### `pod_portForward` ENVs
+#### `pod_portForward` ENVs
 
 | ENV | Description                                            | Default | Required |
 | ----- | -------------------------------------------------------- | --------- | ---------- |
@@ -93,7 +93,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 <br>
 
-### General ENVs
+#### General ENVs
 
 
 | ENV | Description                                                            | Default | Required |
