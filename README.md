@@ -5,6 +5,9 @@ A Python tool that provides Monitoring for Kubernetes Nodes, Pods, Containers, a
 
 https://user-images.githubusercontent.com/33789516/208325820-27111e21-81cb-446d-a5a4-0d73a615ea70.mp4
 
+<br>
+
+### 📌 Try out the new beta features [kptop_0.0.7 (Introducing K8s Pod port-forward connection method))](https://github.com/eslam-gomaa/kptop/releases/tag/v0.0.7)
 
 
 <br>
