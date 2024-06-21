@@ -1,0 +1,161 @@
+dashboard:
+  name: Kafka cluster
+  description: Staging Kafka dashboard
+  layout:
+    header:
+      enable: false
+      size: 3
+      ratio: 1
+    body:
+      boxes:
+        left:
+          enable: true
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            {}
+            # left_a:
+            #   size: 0
+            #   ratio: 1
+            # left_b:
+            #   size: 0
+            #   ratio: 1
+            # left_c:
+            #   size: 0
+            #   ratio: 1
+            # left_d:
+            #   size: 0
+            #   ratio: 1
+        middle:
+          enable: false
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            middle_a:
+              size: 0
+              ratio: 1
+            middle_b:
+              size: 0
+              ratio: 1
+            middle_c:
+              size: 0
+              ratio: 1
+        right:
+          enable: true
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            right_a:
+              size: 0
+              ratio: 1
+            right_b:
+              size: 0
+              ratio: 1
+
+  variables:
+
+  defaultDataSource:
+    type: prometheus
+    endpoint: ""
+    secure: false
+    basicAuthEnabled: false
+    basicAuthUserNameVariable: ""
+    basicAuthPasswordVariable: ""
+
+  cliArguments:
+    topic:
+      arg: "--topic"
+      required: False
+      description: ""
+
+  visualization:
+    - name: Kafka Data In per second.
+      box: right_a
+      visible: true
+      # initial_message: "Loading ..."
+      type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
+      metricUnit: kb/s # byte_to_kb_mb_gb_tb # dynamic_byte_convert
+      metric: >
+        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total[5m])) by (strimzi_io_cluster, topic)) / 1024
+      custom_key: >
+        f"🌺 {labels['topic']}"
+      asciiGraphOptions:
+        height: 0
+        width: 0
+        maxHeight: 17
+        maxWidth: 45
+        updateIntervalSeconds: 1
+      historyData:
+        enable: true
+        time: 5m
+
+    - name: Kafka Data Out per second.
+      visible: true
+      box: right_b
+      initial_message: "Loading ..."
+      type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
+      metricUnit: kb/s
+      metric: >
+        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total[5m])) by (strimzi_io_cluster, topic)) / 1024
+      custom_key: >
+        f"🌺 {labels['topic']}"
+      asciiGraphOptions:
+        height: 0
+        width: 0
+        maxHeight: 17
+        maxWidth: 45
+        updateIntervalSeconds: 10
+        historyData:
+          enable: true
+          time: 5m
+
+    - name: Kafka brokers memory usage
+      visible: true
+      box: left
+      initial_message: "Loading ..."
+      type: progressBarList
+      metricUnit: mb
+      metrics:
+        total_value_metric: |
+          # Memory limits
+          sum(container_spec_memory_limit_bytes{namespace="kafka", pod=~".*"}) by (pod, topology_ebs_csi_aws_com_zone)
+        usage_value_metric: |
+          # memory usage sorted by higher usage
+          sort_desc(sum(container_memory_usage_bytes{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod, topology_ebs_csi_aws_com_zone))
+      custom_key: |
+        f"{labels['pod']}"
+      progressBarListOptions:
+        maxItemsCount: 10
+        lineBreak: true
+        showBarPercentage: true
+        barWidth: 25
+        updateIntervalSeconds: 2
+
+  # visualization2:
+  #   - name: Kafka Data In per second
+  #     box: right_a
+  #     split:
+  #       - name: Kafka Data In per second.
+  #         box: right_a
+  #         initial_message: "Loading ..."
+  #         type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
+  #         metricUnit: bytes # || bytes  || kilobytes (kb) || megabytes (mb) || number || percentage ...
+  #         printUnit: kb
+  #         metric: >
+  #           topk(10, sum(irate(kafka_server_brokertopicmetrics_bytesin_total[5m])) by (strimzi_io_cluster, topic))
+  #         custom_key: >
+  #           f"{labels['topic']}"
+
+  #       - name: Kafka Data Out per second. (Top 10)
+  #         box: right_a
+  #         initial_message: "Loading ..."
+  #         type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
+  #         metricUnit: bytes # || bytes  || kilobytes (kb) || megabytes (mb) || number || percentage ...
+  #         printUnit: kb
+  #         metric: >
+  #           topk(10, sum(irate(kafka_server_brokertopicmetrics_bytesout_total[5m])) by (strimzi_io_cluster, topic))
+  #         custom_key: >
+  #           f"{labels['topic']}"
