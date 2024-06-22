@@ -182,6 +182,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         left_enable = layout_dct['body']['boxes'].get('left', {}).get('enable', False)
         right_enable = layout_dct['body']['boxes'].get('right', {}).get('enable', False)
         middle_enable = layout_dct['body']['boxes'].get('middle', {}).get('enable', False)
+        split_mode = layout_dct.get('split_mode', 'row')
 
         # if left_enable and right_enable and middle_enable:
         #     layout["body"].split_row(Layout(name="left", size=layout_dct['body']['boxes']['left']['size']), Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']), Layout(name="right", size=layout_dct['body']['boxes']['right']['size']))
@@ -201,34 +202,60 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
         # If all are enabled
         if left_enable and right_enable and middle_enable:
-            layout["body"].split_row(
-                Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
-                Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
-                Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
-            )
+            if split_mode == 'row':
+                layout["body"].split_row(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
+            elif split_mode == 'column':
+                layout["body"].split_column(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
             self.layout_list = ['left', 'middle', 'right']
 
         # If two are enabled
         elif left_enable and right_enable:
-            layout["body"].split_row(
-                Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
-                Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
-            )
+            if split_mode == 'row':
+                layout["body"].split_row(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
+            elif split_mode == 'column':
+                layout["body"].split_column(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
             self.layout_list = ['left', 'right']
 
         elif left_enable and middle_enable:
-            layout["body"].split_row(
-                Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
-                Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size'])
-            )
+            if split_mode == 'row':
+                layout["body"].split_row(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size'])
+                )
+            elif split_mode == 'column':
+                layout["body"].split_column(
+                    Layout(name="left", size=layout_dct['body']['boxes']['left']['size']),
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size'])
+                )
             self.layout_list = ['left', 'middle']
 
         elif right_enable and middle_enable:
-            layout["body"].split_row(
-                Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
-                Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
-            )
-            self.layout_list = ['middle', 'right']
+            if split_mode == 'row':
+                layout["body"].split_row(
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
+                self.layout_list = ['middle', 'right']
+            elif split_mode == 'column':
+                layout["body"].split_column(
+                    Layout(name="middle", size=layout_dct['body']['boxes']['middle']['size']),
+                    Layout(name="right", size=layout_dct['body']['boxes']['right']['size'])
+                )
+                self.layout_list = ['middle', 'right']
 
         # If one is enabled
         elif left_enable:
@@ -477,6 +504,75 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
         time.sleep(update_interval_)
 
+
+def build_markdown_table(self, name, layout_box_name, progress_bar_list_options, metric_unit, total_value_metric, usage_value_metric, custom_key=None):
+
+    while True:
+        # Get usage data
+        total_data = self.get_metric_data(total_value_metric, custom_key=custom_key)
+        if not total_data['success']:
+            return f"[red]Failed to get data from query 'total_value_metric': [bold]{total_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{total_value_metric}"
+
+        usage_data = self.get_metric_data(usage_value_metric, custom_key=custom_key)
+        if not usage_data['success']:
+            return f"[red]Failed to get data from query 'usage_value_metric': [bold]{usage_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{usage_value_metric}"
+
+        data = {}
+        for k, v in usage_data['data'].items():
+            try:
+                data[k] = {
+                    "value": v['value'],
+                    "total": total_data['data'][k].get('value')
+                }
+            except KeyError as e:
+                pass
+
+        if progress_bar_list_options:
+            max_items_list = progress_bar_list_options.get('maxItemsCount', 20)
+            line_break = progress_bar_list_options.get('lineBreak', True)
+            show_bar_percentage = progress_bar_list_options.get('showBarPercentage', True)
+            bar_width = progress_bar_list_options.get('barWidth', 20)
+            bar_width = progress_bar_list_options.get('barWidth', 20)
+            update_interval_ = progress_bar_list_options.get("updateIntervalSeconds", 5)
+
+        else:
+            max_items_list = 20
+            line_break = True
+            show_bar_percentage = True
+            bar_width = 20
+            update_interval_ = 5
+
+        progress_bars = []
+        for progress_bar_name, progress_bar_data in islice(data.items(), max_items_list):
+            if show_bar_percentage:
+                progress_bar = Progress(
+                    TextColumn("[progress.description]{task.description}"),
+                    BarColumn(bar_width=bar_width),
+                    # TaskProgressColumn(),
+                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                    TextColumn("{task.fields[status]}"),
+                )
+            else:
+                progress_bar = Progress(
+                    TextColumn("[progress.description]{task.description}"),
+                    BarColumn(bar_width=bar_width),
+                    TextColumn("{task.fields[status]}"),
+                )
+
+            task_mem_total = progress_bar.add_task(description=f"[white]Mem Total  ", status="Loading", total=float(data[progress_bar_name]['total']))
+            progress_bar.update(task_mem_total, completed=float(data[progress_bar_name]['value']), total=float(data[progress_bar_name]['total']), description=f"[white]{progress_bar_name}  ", status=f"  {helper_.bytes_to_kb_mb_gb(float(data[progress_bar_name]['value']))} / {helper_.bytes_to_kb_mb_gb(float(data[progress_bar_name]['total']))}")
+            progress_bars.append(progress_bar)
+            if line_break:
+                progress_bars.append(Rule(style='#AAAAAA'))
+
+
+        data_group = Group(
+            # Markdown("Produced Data per Second for top 10 topics", justify='right'),
+            *progress_bars,
+        )
+        # return data_group
+        self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+    time.sleep(update_interval_)
 
 
 # layout["body2_b_b"].update(Panel(group_network_io, title="[b]Network IO", padding=(1, 1)))
