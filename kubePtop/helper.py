@@ -6,6 +6,47 @@ class Helper:
     def __init__(self):
         pass
 
+    def seconds_to_human_readable(self, seconds):
+        units = [
+            ('d', 24 * 3600),
+            ('h', 3600),
+            ('m', 60),
+            ('s', 1)
+        ]
+
+        result = []
+
+        for unit, duration in units:
+            if seconds >= duration:
+                value, seconds = divmod(seconds, duration)
+                result.append(f"{int(value)}{unit}")  # تحويل القيمة إلى عدد صحيح
+
+        if not result:
+            result.append("0s")
+
+        return ' '.join(result)
+
+    def milliseconds_to_human_readable(self, milliseconds):
+        seconds = milliseconds / 1000
+        units = [
+            ('d', 24 * 3600),
+            ('h', 3600),
+            ('m', 60),
+            ('s', 1)
+        ]
+
+        result = []
+
+        for unit, duration in units:
+            if seconds >= duration:
+                value, seconds = divmod(seconds, duration)
+                result.append(f"{int(value)}{unit}")
+
+        if not result:
+            result.append("0s")
+
+        return ' '.join(result)
+
     def bytes_to_kb_mb_gb(self,size_bytes):
         """
         Converts bytes to kb, mb, gb
@@ -47,7 +88,7 @@ class Helper:
         """
         kb = bytes / 1000
         return kb / 1024
-    
+
     def sec_to_m_h(self, total_seconds):
         """
         Converts seconds to Minutes or Hours
@@ -65,7 +106,7 @@ class Helper:
             unit = "hour/s"
         return f"{out} {unit}"
 
-    
+
     def sec_to_m_h_d(self, total_seconds):
         """
         Converts seconds to Minutes, Hours or Days
