@@ -3,18 +3,17 @@ def run():
     from kubePtop.cli import Cli
 
 
-run()
+# run()
 
-# from kubePtop.node_metrics import PrometheusNodeMetrics
-# from kubePtop.read_env import ReadEnv
-# env = ReadEnv()
-# env.read_env()
-# import rich
+from kubePtop.dashboard_monitor import customDashboardMonitoring
+from kubePtop.read_env import ReadEnv
+env = ReadEnv()
+env.read_env()
+import rich
 
-# test = PrometheusNodeMetrics()
+test = customDashboardMonitoring()
+rich.print(test.build_custom_dashboard("./dashboard.yaml"))
 # rich.print(test.nodeManagedK8sInfo('.*'))
 # print(test.topNode())
 # test.topNodeTable(option="cloud")
 # test.topNodeJson('ip-10-129-143-105.eu-west-1.compute.internal')
-
-
