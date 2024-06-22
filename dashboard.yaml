@@ -11,20 +11,19 @@ dashboard:
       boxes:
         left:
           enable: true
-          size: 0
+          size: 200
           ratio: 1
           split_mode: column
           split:
-            {}
-            # left_a:
-            #   size: 0
-            #   ratio: 1
-            # left_b:
-            #   size: 0
-            #   ratio: 1
-            # left_c:
-            #   size: 0
-            #   ratio: 1
+            left_a:
+              size: 20
+              ratio: 1
+            left_b:
+              size: 30
+              ratio: 1
+            left_c:
+              size: 0
+              ratio: 1
             # left_d:
             #   size: 0
             #   ratio: 1
@@ -75,17 +74,15 @@ dashboard:
   visualization:
     - name: Kafka Data In per second.
       box: right_a
-      visible: true
-      # initial_message: "Loading ..."
+      enable: true
       type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
       metricUnit: kb/s # byte_to_kb_mb_gb_tb # dynamic_byte_convert
       metric: >
         topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total[5m])) by (strimzi_io_cluster, topic)) / 1024
-      custom_key: >
-        f"🌺 {labels['topic']}"
+      custom_key: "🚀 {{topic}}"
       asciiGraphOptions:
         height: 0
-        width: 0
+        width: 80
         maxHeight: 17
         maxWidth: 45
         updateIntervalSeconds: 1
@@ -94,18 +91,16 @@ dashboard:
         time: 5m
 
     - name: Kafka Data Out per second.
-      visible: true
+      enable: true
       box: right_b
-      initial_message: "Loading ..."
-      type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
+      type: asciiGraph # || progressBarList || asciiText
       metricUnit: kb/s
       metric: >
         topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total[5m])) by (strimzi_io_cluster, topic)) / 1024
-      custom_key: >
-        f"🌺 {labels['topic']}"
+      custom_key: "{{topic}}"
       asciiGraphOptions:
         height: 0
-        width: 0
+        width: 80
         maxHeight: 17
         maxWidth: 45
         updateIntervalSeconds: 10
@@ -114,9 +109,8 @@ dashboard:
           time: 5m
 
     - name: Kafka brokers memory usage
-      visible: true
-      box: left
-      initial_message: "Loading ..."
+      enable: true
+      box: left_a
       type: progressBarList
       metricUnit: mb
       metrics:
@@ -126,8 +120,7 @@ dashboard:
         usage_value_metric: |
           # memory usage sorted by higher usage
           sort_desc(sum(container_memory_usage_bytes{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod, topology_ebs_csi_aws_com_zone))
-      custom_key: |
-        f"{labels['pod']}"
+      custom_key: "{{pod}}"
       progressBarListOptions:
         maxItemsCount: 10
         lineBreak: true
@@ -135,28 +128,59 @@ dashboard:
         barWidth: 25
         updateIntervalSeconds: 2
 
-  # visualization2:
-  #   - name: Kafka Data In per second
-  #     box: right_a
-  #     split:
-  #       - name: Kafka Data In per second.
-  #         box: right_a
-  #         initial_message: "Loading ..."
-  #         type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
-  #         metricUnit: bytes # || bytes  || kilobytes (kb) || megabytes (mb) || number || percentage ...
-  #         printUnit: kb
-  #         metric: >
-  #           topk(10, sum(irate(kafka_server_brokertopicmetrics_bytesin_total[5m])) by (strimzi_io_cluster, topic))
-  #         custom_key: >
-  #           f"{labels['topic']}"
+    - name: Kafka Pods Table
+      enable: true
+      box: left_b
 
-  #       - name: Kafka Data Out per second. (Top 10)
-  #         box: right_a
-  #         initial_message: "Loading ..."
-  #         type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
-  #         metricUnit: bytes # || bytes  || kilobytes (kb) || megabytes (mb) || number || percentage ...
-  #         printUnit: kb
-  #         metric: >
-  #           topk(10, sum(irate(kafka_server_brokertopicmetrics_bytesout_total[5m])) by (strimzi_io_cluster, topic))
-  #         custom_key: >
-  #           f"{labels['topic']}"
+      type: simpleTable
+      metricUnit: byte
+      metric: |
+        sum(container_memory_usage_bytes{namespace="kafka", pod=~".*(zookeeper|brokers|kafka).*"}) by (pod, namespace, karpenter_sh_capacity_type, topology_kubernetes_io_zone,node_kubernetes_io_instance_type)
+      # custom_key: |
+      #   f"{labels['pod']}"
+      simpleTableOptions:
+        tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
+        showValue: true
+        headersUppercase: true
+        auto_convert_value_from_byte: true
+        showTableIndex: true
+        updateIntervalSeconds: 2
+
+    - name: Kafka Used Storage Table
+      enable: true
+      box: left_c
+
+      type: advancedTable
+      metricUnit: byte
+      columns:
+        memory usage:
+          metric: |
+            sort_desc(sum(container_memory_usage_bytes{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+        memory limit:
+          metric: |
+            sort_desc(sum(container_spec_memory_limit_bytes{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+        memory cache:
+          metric: |
+            sort_desc(sum(container_memory_cache{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+        memory swap:
+          metric: |
+            sum(container_memory_swap{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone)
+          metricUnit: byte
+        file descriptors:
+          metric: |
+            sort_desc(sum(container_file_descriptors{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: counter
+        up time:
+          metric: |
+            sum(time() - kube_pod_start_time{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod)
+          metricUnit: seconds
+      custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
+      advancedTableOptions:
+        tableType: grid # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
+        headersUppercase: true
+        autoConvertValue: true
+        showTableIndex: true
+        updateIntervalSeconds: 3
