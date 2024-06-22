@@ -1,3 +1,4 @@
+from math import floor
 import time
 # from tabulate import tabulate
 # # import textwrap
@@ -10,8 +11,10 @@ from rich.panel import Panel
 from rich.progress import SpinnerColumn, Progress, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn, TimeElapsedColumn
 from rich.layout import Layout
 import os
+from tabulate import tabulate
 import yaml, json
 import logging
+import ast
 from itertools import islice
 # logging.basicConfig(
 #     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -87,23 +90,31 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         visualization_dct = layout_structure_dct['dashboard']['visualization']
 
         for visualization in visualization_dct:
-            if visualization['type'] == 'asciiGraph':
-                if 'custom_key' in visualization:
-                    graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization['asciiGraphOptions'], metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization['custom_key'])
+            if visualization.get('enable', True):
+                if visualization['type'] == 'asciiGraph':
+                    if 'custom_key' in visualization:
+                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization['custom_key'])
+                    else:
+                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
+                    # self.layout[visualization['box']].update(Panel(graph, title=f"[b]{visualization['name']}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+
+                elif visualization['type'] == 'progressBarList':
+                    if 'custom_key' in visualization:
+                        progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'], custom_key=visualization['custom_key'])
+                    else:
+                        progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'])
+
+                elif visualization['type'] == 'simpleTable':
+                    progress_bar_list = self.build_simple_table_handler(name=visualization['name'], layout_box_name=visualization['box'], simple_table_options=visualization.get('simpleTableOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
+
+                elif visualization['type'] == 'advancedTable':
+                    if 'custom_key' in visualization:
+                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'], custom_key=visualization['custom_key'])
+                    else:
+                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'])
+
                 else:
-                    graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization['asciiGraphOptions'], metric_unit=visualization['metricUnit'], metric=visualization['metric'])
-
-                # self.layout[visualization['box']].update(Panel(graph, title=f"[b]{visualization['name']}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-
-            elif visualization['type'] == 'progressBarList':
-                if 'custom_key' in visualization:
-                    progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization['progressBarListOptions'], metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'], custom_key=visualization['custom_key'])
-                else:
-                    progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization['progressBarListOptions'], metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'])
-                # self.layout[visualization['box']].update(Panel(progress_bar_list, title=f"[b]{visualization['name']}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-
-            else:
-                pass
+                    pass
         import time
         import traceback
         Logging.log.info("Starting the Layout.")
@@ -324,6 +335,22 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         self.layout = layout
         return layout
 
+    def convert_data_unit(self, value, metric_unit):
+        if metric_unit == 'byte':
+            value = helper_.bytes_to_kb_mb_gb(value)
+        elif metric_unit == 'seconds':
+            value =  helper_.seconds_to_human_readable(value)
+        elif metric_unit == 'milliseconds':
+            value =  helper_.milliseconds_to_human_readable(value)
+        elif metric_unit == 'timestamp':
+            value =  helper_.convert_epoch_timestamp(value)
+        return value
+
+    def safe_eval(self, custom_key, labels):
+        for key, value in labels.items():
+            custom_key = custom_key.replace(f"{{{{{key}}}}}", f"{value}")
+        return custom_key
+
     def get_metric_data(self, metric, custom_key=None):
         out = {
             "success": False,
@@ -349,13 +376,20 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             key = ""
             if custom_key:
                 try:
-                    key = str(eval(custom_key))
+                    # key = str(eval(custom_key))
+                    key = self.safe_eval(custom_key, labels)
                 except KeyError as e:
                     out['fail_reason'] = f"Label NOT found {e} --> Query: {metric}"
+                    # key = f"Label NOT found: {e}"
+                    # key = str(eval(custom_key.replace(e, 'not_found')))
                 except SyntaxError as e:
                     out['fail_reason'] = f"Python Syntax Error: {e} --> {custom_key}"
+                    key = "Python Syntax Error"
+
                 except Exception as e:
                     out['fail_reason'] = f"failed to replace the key with custom_key: {e}"
+                    key = str(e)
+
             else:
                 key = str(i['metric'])
 
@@ -368,6 +402,9 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         return out
 
     def build_ascii_graph_handler(self, name, layout_box_name, graph_options, metric_unit, metric, custom_key=None):
+        # Print loading message
+        self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        # Start thread
         thread = threading.Thread(target=self.build_ascii_graph, args=(name, layout_box_name, graph_options, metric_unit, metric, custom_key))
         thread.name = name
         thread.daemon = True
@@ -379,7 +416,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             metric_data_dct = self.get_metric_data(metric=metric, custom_key=custom_key)
 
             if not metric_data_dct['success']:
-                return f"[red]Failed to get data from query 'metric': [bold]{metric_data_dct['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{metric}"
+                self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data_dct['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
             data_graph = AsciiGraph()
 
@@ -417,19 +454,11 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
 
-        # self.layout[layout_box_name].update(Panel("Loading", title="[b]Network IO", padding=(1, 1)))
-        # rich.print(self.layout)
-        # exit(1)
-
-        # group_disk_io = Group(
-        #     Markdown("Bytes Read", justify='center'),
-        #     Text.from_ansi(disk_read_bytes_graph.graph + f"\n {disk_read_bytes_graph.colors_description_str}"),
-        #     Rule(style='#AAAAAA'),
-        #     Markdown("Bytes Written", justify='center'),
-        #     Text.from_ansi(disk_written_bytes_graph.graph + f"\n {disk_written_bytes_graph.colors_description_str}")
-        # )
 
     def build_progress_bar_list_handler(self, name, layout_box_name, progress_bar_list_options, metric_unit, total_value_metric, usage_value_metric, custom_key=None):
+        # Print loading message
+        self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        # Start thread
         thread = threading.Thread(target=self.build_progress_bar_list, args=(name, layout_box_name, progress_bar_list_options, metric_unit, total_value_metric, usage_value_metric, custom_key))
         thread.name = name
         thread.daemon = True
@@ -441,11 +470,11 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             # Get usage data
             total_data = self.get_metric_data(total_value_metric, custom_key=custom_key)
             if not total_data['success']:
-                return f"[red]Failed to get data from query 'total_value_metric': [bold]{total_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{total_value_metric}"
+                self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data_dct['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{total_value_metric}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
             usage_data = self.get_metric_data(usage_value_metric, custom_key=custom_key)
             if not usage_data['success']:
-                return f"[red]Failed to get data from query 'usage_value_metric': [bold]{usage_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{usage_value_metric}"
+                self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data_dct['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{usage_value_metric}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
             data = {}
             for k, v in usage_data['data'].items():
@@ -502,109 +531,140 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             )
             # return data_group
             self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-        time.sleep(update_interval_)
+            time.sleep(update_interval_)
+
+    def build_simple_table_handler(self, name, layout_box_name, simple_table_options, metric_unit, metric, custom_key=None):
+        # Print loading message
+        self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        # Start thread
+        thread = threading.Thread(target=self.build_simple_table, args=(name, layout_box_name, simple_table_options, metric_unit, metric))
+        thread.name = name
+        thread.daemon = True
+        thread.start()
 
 
-def build_markdown_table(self, name, layout_box_name, progress_bar_list_options, metric_unit, total_value_metric, usage_value_metric, custom_key=None):
+    def build_simple_table(self, name, layout_box_name, simple_table_options, metric_unit, metric, custom_key=None):
 
-    while True:
-        # Get usage data
-        total_data = self.get_metric_data(total_value_metric, custom_key=custom_key)
-        if not total_data['success']:
-            return f"[red]Failed to get data from query 'total_value_metric': [bold]{total_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{total_value_metric}"
-
-        usage_data = self.get_metric_data(usage_value_metric, custom_key=custom_key)
-        if not usage_data['success']:
-            return f"[red]Failed to get data from query 'usage_value_metric': [bold]{usage_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n{usage_value_metric}"
-
-        data = {}
-        for k, v in usage_data['data'].items():
-            try:
-                data[k] = {
-                    "value": v['value'],
-                    "total": total_data['data'][k].get('value')
-                }
-            except KeyError as e:
-                pass
-
-        if progress_bar_list_options:
-            max_items_list = progress_bar_list_options.get('maxItemsCount', 20)
-            line_break = progress_bar_list_options.get('lineBreak', True)
-            show_bar_percentage = progress_bar_list_options.get('showBarPercentage', True)
-            bar_width = progress_bar_list_options.get('barWidth', 20)
-            bar_width = progress_bar_list_options.get('barWidth', 20)
-            update_interval_ = progress_bar_list_options.get("updateIntervalSeconds", 5)
-
+        if simple_table_options:
+            table_type_ = simple_table_options.get("tableType", 'plain')
+            show_value_ = simple_table_options.get("showValue", True)
+            header_upper_case_ = simple_table_options.get("headersUppercase", True)
+            auto_convert_value_ = simple_table_options.get("autoConvertValue", True)
+            show_table_index_ = simple_table_options.get("showTableIndex", True)
+            update_interval_ = simple_table_options.get("updateIntervalSeconds", 5)
         else:
-            max_items_list = 20
-            line_break = True
-            show_bar_percentage = True
-            bar_width = 20
+            table_type_ = 'plain'
+            show_value_ = True
+            header_upper_case_ = True
+            auto_convert_value_ = True
+            show_table_index_ = True
             update_interval_ = 5
 
-        progress_bars = []
-        for progress_bar_name, progress_bar_data in islice(data.items(), max_items_list):
-            if show_bar_percentage:
-                progress_bar = Progress(
-                    TextColumn("[progress.description]{task.description}"),
-                    BarColumn(bar_width=bar_width),
-                    # TaskProgressColumn(),
-                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                    TextColumn("{task.fields[status]}"),
-                )
-            else:
-                progress_bar = Progress(
-                    TextColumn("[progress.description]{task.description}"),
-                    BarColumn(bar_width=bar_width),
-                    TextColumn("{task.fields[status]}"),
-                )
+        while True:
+            # Get metric data
+            metric_data_dct = self.get_metric_data(metric, custom_key=custom_key)
+            if not metric_data_dct['success']:
+                self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data_dct['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
-            task_mem_total = progress_bar.add_task(description=f"[white]Mem Total  ", status="Loading", total=float(data[progress_bar_name]['total']))
-            progress_bar.update(task_mem_total, completed=float(data[progress_bar_name]['value']), total=float(data[progress_bar_name]['total']), description=f"[white]{progress_bar_name}  ", status=f"  {helper_.bytes_to_kb_mb_gb(float(data[progress_bar_name]['value']))} / {helper_.bytes_to_kb_mb_gb(float(data[progress_bar_name]['total']))}")
-            progress_bars.append(progress_bar)
-            if line_break:
-                progress_bars.append(Rule(style='#AAAAAA'))
+            first_dict_item = next(iter(metric_data_dct['data'].items()))[0]
+            dict_keys = list(ast.literal_eval(first_dict_item).keys())
+
+            if show_value_:
+                dict_keys.append('values')
+
+            if header_upper_case_:
+                dict_keys = [key.upper() for key in dict_keys]
 
 
-        data_group = Group(
-            # Markdown("Produced Data per Second for top 10 topics", justify='right'),
-            *progress_bars,
-        )
-        # return data_group
-        self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-    time.sleep(update_interval_)
+            table = [dict_keys]
+            data = {}
+            for labels, value in metric_data_dct['data'].items():
+                labels_dct = ast.literal_eval(labels)
+                row_list = list(labels_dct.values())
+                if show_value_:
+                    value_ = int(float(value['value']))
+                    if auto_convert_value_:
+                        if metric_unit == 'byte':
+                            value_ = helper_.bytes_to_kb_mb_gb(value_)
+                        elif metric_unit == 'cpu_seconds':
+                            value_ = value_
+                    row_list.append(value_)
+                row = row_list
+                table.append(row)
 
 
-# layout["body2_b_b"].update(Panel(group_network_io, title="[b]Network IO", padding=(1, 1)))
+            out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
+            data_group = Group(
+                out,
+            )
+            # return data_group
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            time.sleep(update_interval_)
 
 
+    def build_advanced_table_handler(self, name, layout_box_name, advanced_table_options, metric_unit, columns, custom_key=None):
+        # Print loading message
+        self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        # Start thread
+        thread = threading.Thread(target=self.build_advanced_table, args=(name, layout_box_name, advanced_table_options, metric_unit, columns, custom_key))
+        thread.name = name
+        thread.daemon = True
+        thread.start()
 
-    # def build_custom_dashboard2(self, dashboard_dct):
+    def build_advanced_table(self, name, layout_box_name, advanced_table_options, metric_unit, columns, custom_key=None):
 
-    #     # Load Yaml into a Dict (Is it a Valid Yaml ?)
+        if advanced_table_options:
+            table_type_ = advanced_table_options.get("tableType", 'plain')
+            # show_value_ = advanced_table_options.get("showValue", True)
+            header_upper_case_ = advanced_table_options.get("headersUppercase", True)
+            auto_convert_value_ = advanced_table_options.get("autoConvertValue", True)
+            show_table_index_ = advanced_table_options.get("showTableIndex", True)
+            update_interval_ = advanced_table_options.get("updateIntervalSeconds", 5)
+        else:
+            table_type_ = 'plain'
+            # show_value_ = True
+            header_upper_case_ = True
+            auto_convert_value_ = True
+            show_table_index_ = True
+            update_interval_ = 5
 
-    #     # Yaml Schema Validation (does it have expected input ?)
+        box_name = name
+        data = {}
 
-    #     # Load the CLI parameters (Take the CLI input)
+        header = list(columns.keys())
+        header.insert(0, 'name')
 
-    #     # Load the variables (CLI Input) into Class attributes
-
-    #     # Build the graphs
-
-    #     # Build the Layout
-    #     layout = self.make_layout({})
+        if header_upper_case_:
+            header = [key.upper() for key in header]
 
 
-    #     # Visualize Data
-    #     visualizations = [{}]
-    #     for v in visualizations:
-    #         if v[type] == "asciiGraph":
-    #             self.build_ascii_graph(name="",
-    #                                    layout="",
-    #                                    metric_unit="",
-    #                                    print_unit="",
-    #                                    metric="")
+        while True:
+            table = [header]
+            for column, column_info in columns.items():
+                metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
 
+                if not metric_data['success']:
+                    self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{column_info['metric']}", title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+
+                for name, value in metric_data['data'].items():
+                    value_ = float(value['value'])
+                    if auto_convert_value_:
+                        value_ = self.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                    try:
+                        data[name][column] = value_
+                    except KeyError:
+                        data[name] = {
+                            column: value_
+                        }
+
+            for name, value in data.items():
+                row = [name] + [value.get(col, '?') for col in columns.keys()]  # Ensure order matches headers
+                table.append(row)
+
+            out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
+            data_group = Group(out)
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            time.sleep(update_interval_)
 
 
     def node_monitor_dashboard_default(self, node_name):
