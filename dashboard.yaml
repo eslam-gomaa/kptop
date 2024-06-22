@@ -55,7 +55,7 @@ dashboard:
               size: 0
               ratio: 1
 
-  variables:
+  # variables:
 
   defaultDataSource:
     type: prometheus
@@ -69,7 +69,7 @@ dashboard:
     topic:
       arg: "--topic"
       required: False
-      description: ""
+      default: .*
 
   visualization:
     - name: Kafka Data In per second.
@@ -78,8 +78,9 @@ dashboard:
       type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
       metricUnit: kb/s # byte_to_kb_mb_gb_tb # dynamic_byte_convert
       metric: >
-        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total[5m])) by (strimzi_io_cluster, topic)) / 1024
+        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🚀 {{topic}}"
+      evaluateCliArgument: true
       asciiGraphOptions:
         height: 0
         width: 80
