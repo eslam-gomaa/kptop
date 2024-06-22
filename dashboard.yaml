@@ -2,6 +2,7 @@ dashboard:
   name: Kafka cluster
   description: Staging Kafka dashboard
   layout:
+    split_mode: row # row
     header:
       enable: false
       size: 3
