@@ -1,20 +1,39 @@
-def run():
-    # It runs at the initilization
-    from kubePtop.cli import Cli
+# def run():
+#     # It runs at the initilization
+#     from kubePtop.cli import Cli
 
 
 # run()
 
-from kubePtop.dashboard_monitor import customDashboardMonitoring
+# from kubePtop.dashboard_monitor import customDashboardMonitoring
 from kubePtop.read_env import ReadEnv
 env = ReadEnv()
 env.read_env()
-import rich
+from kubePtop.cli_args import Cli
+cli = Cli()
 
-test = customDashboardMonitoring()
+
+# import rich
+
+# test = customDashboardMonitoring()
+
+# Read cli
+# if --dashboard
+# # .parse_dashboard['data'].get('dashboard').get('variables', {})
+#
+# elif --command
+# else -> print help
+
+
+
+
+
+
+
+
 # rich.print(test._find_variables_in_query('topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic", namespace=~"$namespace"}[5m])) by (strimzi_io_cluster, topic)) / 1024'))
 # exit(1)
-rich.print(test.build_custom_dashboard("./dashboard.yaml"))
+# rich.print(test.build_custom_dashboard("./dashboard.yaml"))
 # rich.print(test.nodeManagedK8sInfo('.*'))
 # print(test.topNode())
 # test.topNodeTable(option="cloud")
