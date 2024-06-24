@@ -106,9 +106,6 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         # Build the Layout structure
         self.make_layout(layout_structure_dct=dashboard_data['data'])
 
-        # Build the dashboard variables
-        # self.build_variables(variables=dashboard_data['data'].get('dashboard').get('variables', {}), inital_args=inital_args)
-
         # vistualize the metrics on the layout
         self.variables = dashboard_variables
         self.update_layout_visualization(layout_structure_dct=dashboard_data['data'])
@@ -137,7 +134,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
                 elif visualization['type'] == 'advancedTable':
                     if 'custom_key' in visualization:
-                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'], custom_key=visualization['custom_key'])
+                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['advancedTableColumns'], custom_key=visualization['custom_key'])
                     else:
                         progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'])
 
@@ -147,9 +144,8 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         import traceback
         Logging.log.info("Starting the Layout.")
         try:
-            with Live(self.layout, auto_refresh=True, screen=True, refresh_per_second=GlobalAttrs.live_update_interval):
+            with Live(self.layout, auto_refresh=True, screen=layout_structure_dct['dashboard']['layout'].get('fullScreen', True), refresh_per_second=GlobalAttrs.live_update_interval):
                 while True:
-                    # rich.print(self.layout)
                     Logging.log.info(f"waiting for the update interval '{GlobalAttrs.live_update_interval}' before updating the Layout ")
                     time.sleep(GlobalAttrs.live_update_interval)
                     Logging.log.info(f"Updating the layout")
@@ -662,7 +658,13 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         box_name = name
         data = {}
 
-        header = list(columns.keys())
+        columns_dct = {}
+        for column in columns:
+            key = next(iter(column))
+            new_dct = {k: v for k, v in column.items() if k != key}
+            columns_dct[key] = new_dct
+
+        header = list(columns_dct.keys())
         header.insert(0, 'name')
 
         if header_upper_case_:
@@ -671,7 +673,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
         while True:
             table = [header]
-            for column, column_info in columns.items():
+            for column, column_info in columns_dct.items():
                 metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
 
                 if not metric_data['success']:
@@ -689,7 +691,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                         }
 
             for name, value in data.items():
-                row = [name] + [value.get(col, '?') for col in columns.keys()]  # Ensure order matches headers
+                row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
                 table.append(row)
 
             out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
