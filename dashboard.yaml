@@ -2,7 +2,8 @@ dashboard:
   name: Kafka cluster
   description: Staging Kafka dashboard
   layout:
-    split_mode: row # row
+    splitMode: row # row
+    fullScreen: true
     header:
       enable: false
       size: 3
@@ -16,10 +17,10 @@ dashboard:
           split_mode: column
           split:
             left_a:
-              size: 20
+              size: 25
               ratio: 1
             left_b:
-              size: 30
+              size: 25
               ratio: 1
             left_c:
               size: 0
@@ -55,40 +56,47 @@ dashboard:
               size: 0
               ratio: 1
 
-  defaultDataSource:
-    type: prometheus
-    endpoint: ""
-    secure: false
-    basicAuthEnabled: false
-    basicAuthUserNameVariable: ""
-    basicAuthPasswordVariable: ""
+  # defaultDataSource:
+  #   type: prometheus
+  #   endpoint: ""
+  #   secure: false
+  #   basicAuthEnabled: false
+  #   basicAuthUserNameVariable: ""
+  #   basicAuthPasswordVariable: ""
 
   variables:
     - name: topic
       default: .*
       cliArgument:
         enable: true
-        short: -T
+        short: -t
         required: true
+        description: "Kafka Topic Name"
     - name: namespace
       default: .*
       cliArgument:
         enable: true
-        short: -N
+        short: -n
         required: false
-
-  # cliArguments:
-  #   topic:
-  #     arg: "--topic"
-  #     required: False
-  #     default: .*
+    - name: kafka-topics-namespace
+      default: kafka-resources
+      cliArgument:
+        enable: true
+        short: -tn
+        required: false
+    - name: pod
+      default: .*
+      cliArgument:
+        enable: true
+        short: -po
+        required: false
 
   visualization:
     - name: Kafka Data In per second.
       box: right_a
       enable: true
       type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
-      metricUnit: kb/s # byte_to_kb_mb_gb_tb # dynamic_byte_convert
+      metricUnit: kb # byte_to_kb_mb_gb_tb # dynamic_byte_convert
       metric: >
         topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🍅 {{topic}}"
@@ -97,7 +105,7 @@ dashboard:
         width: 80
         maxHeight: 17
         maxWidth: 45
-        updateIntervalSeconds: 1
+        updateIntervalSeconds: 5
       historyData:
         enable: true
         time: 5m
@@ -106,21 +114,21 @@ dashboard:
       enable: true
       box: right_b
       type: asciiGraph # || progressBarList || asciiText
-      metricUnit: kb/s
+      metricUnit: kb
       metric: >
-        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total[5m])) by (strimzi_io_cluster, topic)) / 1024
+        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🥕 {{topic}}"
       asciiGraphOptions:
         height: 0
         width: 80
         maxHeight: 17
         maxWidth: 45
-        updateIntervalSeconds: 10
-        historyData:
-          enable: true
-          time: 5m
+        updateIntervalSeconds: 5
+        # historyData:
+        #   enable: true
+        #   time: 5m
 
-    - name: Kafka brokers memory usage
+    - name: Kafka pods memory usage (Sorted by higher memory usage)
       enable: true
       box: left_a
       type: progressBarList
@@ -128,66 +136,64 @@ dashboard:
       metrics:
         total_value_metric: |
           # Memory limits
-          sum(container_spec_memory_limit_bytes{namespace="kafka", pod=~".*"}) by (pod, topology_ebs_csi_aws_com_zone)
+          sum(container_spec_memory_limit_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
         usage_value_metric: |
           # memory usage sorted by higher usage
-          sort_desc(sum(container_memory_usage_bytes{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod, topology_ebs_csi_aws_com_zone))
+          sort_desc(sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
       custom_key: "{{pod}}"
       progressBarListOptions:
         maxItemsCount: 10
         lineBreak: true
         showBarPercentage: true
         barWidth: 25
-        updateIntervalSeconds: 2
+        updateIntervalSeconds: 5
 
-    - name: Kafka Pods Table
+    - name: Kafka Pods memory usage (simpleTable example)
       enable: true
       box: left_b
-
       type: simpleTable
       metricUnit: byte
       metric: |
-        sum(container_memory_usage_bytes{namespace="kafka", pod=~".*(zookeeper|brokers|kafka).*"}) by (pod, namespace, karpenter_sh_capacity_type, topology_kubernetes_io_zone,node_kubernetes_io_instance_type)
+        sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, namespace, karpenter_sh_capacity_type, topology_kubernetes_io_zone,node_kubernetes_io_instance_type)
       # custom_key: |
       #   f"{labels['pod']}"
       simpleTableOptions:
         tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
         showValue: true
         headersUppercase: true
-        auto_convert_value_from_byte: true
+        autoConvertValue: true
         showTableIndex: true
-        updateIntervalSeconds: 2
-
-    - name: Kafka Used Storage Table
+        updateIntervalSeconds: 5
+    - name: Kafka pods details (advancedTable example)
       enable: true
       box: left_c
-
       type: advancedTable
       metricUnit: byte
-      columns:
-        memory usage:
+      advancedTableColumns:
+        - memory usage:
           metric: |
-            sort_desc(sum(container_memory_usage_bytes{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+            sort_desc(sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory limit:
+        - memory limit:
           metric: |
-            sort_desc(sum(container_spec_memory_limit_bytes{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+            sort_desc(sum(container_spec_memory_limit_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory cache:
+        - memory cache:
           metric: |
-            sort_desc(sum(container_memory_cache{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod, topology_ebs_csi_aws_com_zone))
+            sort_desc(sum(container_memory_cache{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory swap:
+        - memory swap:
           metric: |
-            sum(container_memory_swap{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone)
+            sum(container_memory_swap{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
           metricUnit: byte
-        file descriptors:
+          autoConvertValdue: true
+        - file descriptors:
           metric: |
-            sort_desc(sum(container_file_descriptors{namespace="kafka", pod=~".*broker.*"}) by (pod, topology_ebs_csi_aws_com_zone))
+            sort_desc(sum(container_file_descriptors{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: counter
-        up time:
+        - up time:
           metric: |
-            sum(time() - kube_pod_start_time{namespace="kafka", pod=~".*(zookeeper|brokers).*"}) by (pod)
+            sum(time() - kube_pod_start_time{namespace="$namespace", pod=~"$pod"}) by (pod)
           metricUnit: seconds
       custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
       advancedTableOptions:
