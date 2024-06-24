@@ -2,7 +2,8 @@ dashboard:
   name: Kafka cluster
   description: Staging Kafka dashboard
   layout:
-    split_mode: row # row
+    splitMode: row # row
+    fullScreen: true
     header:
       enable: false
       size: 3
@@ -55,13 +56,13 @@ dashboard:
               size: 0
               ratio: 1
 
-  defaultDataSource:
-    type: prometheus
-    endpoint: ""
-    secure: false
-    basicAuthEnabled: false
-    basicAuthUserNameVariable: ""
-    basicAuthPasswordVariable: ""
+  # defaultDataSource:
+  #   type: prometheus
+  #   endpoint: ""
+  #   secure: false
+  #   basicAuthEnabled: false
+  #   basicAuthUserNameVariable: ""
+  #   basicAuthPasswordVariable: ""
 
   variables:
     - name: topic
@@ -95,7 +96,7 @@ dashboard:
       box: right_a
       enable: true
       type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
-      metricUnit: kb/s # byte_to_kb_mb_gb_tb # dynamic_byte_convert
+      metricUnit: kb # byte_to_kb_mb_gb_tb # dynamic_byte_convert
       metric: >
         topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🍅 {{topic}}"
@@ -113,7 +114,7 @@ dashboard:
       enable: true
       box: right_b
       type: asciiGraph # || progressBarList || asciiText
-      metricUnit: kb/s
+      metricUnit: kb
       metric: >
         topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🥕 {{topic}}"
@@ -123,9 +124,9 @@ dashboard:
         maxHeight: 17
         maxWidth: 45
         updateIntervalSeconds: 5
-        historyData:
-          enable: true
-          time: 5m
+        # historyData:
+        #   enable: true
+        #   time: 5m
 
     - name: Kafka pods memory usage (Sorted by higher memory usage)
       enable: true
@@ -150,7 +151,6 @@ dashboard:
     - name: Kafka Pods memory usage (simpleTable example)
       enable: true
       box: left_b
-
       type: simpleTable
       metricUnit: byte
       metric: |
@@ -161,37 +161,37 @@ dashboard:
         tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
         showValue: true
         headersUppercase: true
-        auto_convert_value_from_byte: true
+        autoConvertValue: true
         showTableIndex: true
         updateIntervalSeconds: 5
-
     - name: Kafka pods details (advancedTable example)
       enable: true
       box: left_c
       type: advancedTable
       metricUnit: byte
-      columns:
-        memory usage:
+      advancedTableColumns:
+        - memory usage:
           metric: |
             sort_desc(sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory limit:
+        - memory limit:
           metric: |
             sort_desc(sum(container_spec_memory_limit_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory cache:
+        - memory cache:
           metric: |
             sort_desc(sum(container_memory_cache{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
-        memory swap:
+        - memory swap:
           metric: |
             sum(container_memory_swap{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
           metricUnit: byte
-        file descriptors:
+          autoConvertValdue: true
+        - file descriptors:
           metric: |
             sort_desc(sum(container_file_descriptors{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: counter
-        up time:
+        - up time:
           metric: |
             sum(time() - kube_pod_start_time{namespace="$namespace", pod=~"$pod"}) by (pod)
           metricUnit: seconds
