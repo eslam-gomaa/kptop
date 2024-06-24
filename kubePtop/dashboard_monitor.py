@@ -121,7 +121,6 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                         graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization['custom_key'])
                     else:
                         graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
-                    # self.layout[visualization['box']].update(Panel(graph, title=f"[b]{visualization['name']}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
                 elif visualization['type'] == 'progressBarList':
                     if 'custom_key' in visualization:
@@ -669,7 +668,6 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
         if header_upper_case_:
             header = [key.upper() for key in header]
-
 
         while True:
             table = [header]
