@@ -4,9 +4,13 @@ import rich
 import os
 import logging
 from kubePtop.dashboard_monitor import customDashboardMonitoring
+from kubePtop.command_run import commandRun
 from kubePtop.dashboard_yaml_loader import dashboardYamlLoader
+from kubePtop.command_yaml_loader import commandYamlLoader
 dashboard_yaml_loader = dashboardYamlLoader()
+command_yaml_loader = commandYamlLoader()
 custom_dashboard_monitoring = customDashboardMonitoring()
+custom_command_run = commandRun()
 
 class Cli():
     def __init__(self):
@@ -121,6 +125,43 @@ class Cli():
         # Load Command #
         ################
         elif initial_args.command:
-            print('command')
+            parsed_command = command_yaml_loader.load_command_data(command_name="./command.yaml")
+            # rich.print(parsed_command)
+            # exit(1)
+
+            if not parsed_command['success']:
+                logging.error(f"Failed to load command: '{initial_args.command}'")
+                logging.error(parsed_command['fail_reason'])
+                exit(1)
+
+            variables = parsed_command['data'].get('command').get('variables', [])
+            if variables:
+                # Combine default CLI args and dashboard variables
+                all_variables = self.default_cli_args + variables
+            else:
+                all_variables = self.default_cli_args
+
+            # Rebuild the parser with all variables
+            final_parser = self.build_parser(all_variables)
+            # Parse all arguments with the final parser
+            final_args, unknown_args = initial_parser.parse_known_args()
+            # Store the arguments in the variables dictionary
+            args_dict = vars(final_args)
+
+            if args_dict['vhelp']:
+                final_parser.print_help()
+                exit(0)
+
+            for arg, value in args_dict.items():
+                self.variables[arg] = value
+
+            args = final_parser.parse_args()
+            args_dict = vars(args)
+            for arg, value in args_dict.items():
+                if value == 'ALL':
+                    value = ".*"
+                self.variables[arg] = value
+
+            custom_command_run.run_custom_command(command_data=parsed_command, command_variables=self.variables)
         else:
             pass
