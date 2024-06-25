@@ -19,7 +19,7 @@ class Helper:
         for unit, duration in units:
             if seconds >= duration:
                 value, seconds = divmod(seconds, duration)
-                result.append(f"{int(value)}{unit}")  # تحويل القيمة إلى عدد صحيح
+                result.append(f"{int(value)}{unit}")
 
         if not result:
             result.append("0s")
@@ -156,3 +156,25 @@ class Helper:
 
     def convert_epoch_timestamp(self, timestamp):
         return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+
+    def convert_data_unit(self, value, metric_unit):
+        if metric_unit == 'None':
+            return value
+        if value == float('inf'):
+            value = "INF"
+        elif metric_unit == 'byte':
+            value = self.bytes_to_kb_mb_gb(value)
+        elif metric_unit == 'seconds':
+            value =  self.seconds_to_human_readable(value)
+        elif metric_unit == 'milliseconds':
+            value =  self.milliseconds_to_human_readable(value)
+        elif metric_unit == 'timestamp':
+            value =  self.convert_epoch_timestamp(value)
+        elif  metric_unit == 'percentage':
+            value =  f"{round(value)}%"
+        return value
+
+    def safe_eval(self, custom_key, labels):
+        for key, value in labels.items():
+            custom_key = custom_key.replace(f"{{{{{key}}}}}", f"{value}")
+        return custom_key
