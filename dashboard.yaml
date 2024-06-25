@@ -105,7 +105,7 @@ dashboard:
         width: 80
         maxHeight: 17
         maxWidth: 45
-        updateIntervalSeconds: 5
+        updateIntervalSeconds: 2
       historyData:
         enable: true
         time: 5m
@@ -123,7 +123,7 @@ dashboard:
         width: 80
         maxHeight: 17
         maxWidth: 45
-        updateIntervalSeconds: 5
+        updateIntervalSeconds: 2
         # historyData:
         #   enable: true
         #   time: 5m
@@ -168,12 +168,21 @@ dashboard:
       enable: true
       box: left_c
       type: advancedTable
-      metricUnit: byte
       advancedTableColumns:
         - memory usage:
           metric: |
             sort_desc(sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
+        - memory usage %:
+          metric: |
+            sort_desc(
+              (
+                sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
+                /
+                sum(container_spec_memory_limit_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
+              ) * 100
+            )
+          metricUnit: percentage
         - memory limit:
           metric: |
             sort_desc(sum(container_spec_memory_limit_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
@@ -190,7 +199,7 @@ dashboard:
         - file descriptors:
           metric: |
             sort_desc(sum(container_file_descriptors{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
-          metricUnit: counter
+          metricUnit: None
         - up time:
           metric: |
             sum(time() - kube_pod_start_time{namespace="$namespace", pod=~"$pod"}) by (pod)
