@@ -119,24 +119,24 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             if visualization.get('enable', True):
                 if visualization['type'] == 'asciiGraph':
                     if 'custom_key' in visualization:
-                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization.get('custom_key', ''))
+                        self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization.get('custom_key', ''))
                     else:
-                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
+                        self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
 
                 elif visualization['type'] == 'progressBarList':
                     if 'custom_key' in visualization:
-                        progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'], custom_key=visualization['custom_key'])
+                        self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'], custom_key=visualization['custom_key'])
                     else:
-                        progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'])
+                        self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'])
 
                 elif visualization['type'] == 'simpleTable':
-                    progress_bar_list = self.build_simple_table_handler(name=visualization['name'], layout_box_name=visualization['box'], simple_table_options=visualization.get('simpleTableOptions', {}), metric_unit=visualization.get('metricUnit', 'None'), metric=visualization['metric'])
+                    self.build_simple_table_handler(name=visualization['name'], layout_box_name=visualization['box'], simple_table_options=visualization.get('simpleTableOptions', {}), metric_unit=visualization.get('metricUnit', 'None'), metric=visualization['metric'])
 
                 elif visualization['type'] == 'advancedTable':
                     if 'custom_key' in visualization:
-                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization.get('metricUnit', ''), columns=visualization['advancedTableColumns'], custom_key=visualization.get('custom_key', ''))
+                        self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization.get('metricUnit', ''), columns=visualization['advancedTableColumns'], custom_key=visualization.get('custom_key', ''))
                     else:
-                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'])
+                        self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'])
 
                 else:
                     pass
@@ -354,7 +354,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             custom_key = custom_key.replace(f"{{{{{key}}}}}", f"{value}")
         return custom_key
 
-    def get_metric_data(self, metric, custom_key=None, evaluate_cli_argument_variables=False):
+    def get_metric_data(self, metric, custom_key=None, evaluate_cli_argument_variables=False, value_from_label=""):
         out = {
             "success": False,
             "data": None,
@@ -400,10 +400,16 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             else:
                 key = str(i['metric'])
 
-            dct[key] = {
-                "timestamp":i['value'][0],
-                "value":i['value'][1],
-            }
+            if value_from_label:
+                dct[key] = {
+                    "timestamp":i['value'][0],
+                    "value":i['metric'].get(value_from_label, 'label_not_found'),
+                }
+            else:
+                dct[key] = {
+                    "timestamp":i['value'][0],
+                    "value":i['value'][1]
+                }
         out['data'] = dct
         out['success'] = True
         return out
@@ -676,15 +682,20 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             try:
                 table = [header]
                 for column, column_info in columns_dct.items():
-                    metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
+
+                    metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
 
                     if not metric_data['success']:
                         self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
                     for name, value in metric_data['data'].items():
-                        value_ = float(value['value'])
-                        if auto_convert_value_:
-                            value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                        try:
+                            value_ = float(value['value'])
+                            if auto_convert_value_:
+                                value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                        except:
+                            value_ = value['value']
+
                         try:
                             data[name][column] = value_
                         except KeyError:

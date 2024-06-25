@@ -196,14 +196,19 @@ dashboard:
             sum(container_memory_swap{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone)
           metricUnit: byte
           autoConvertValdue: true
-        - file descriptors:
-          metric: |
-            sort_desc(sum(container_file_descriptors{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
-          metricUnit: None
+        # - file descriptors:
+        #   metric: |
+        #     sort_desc(sum(container_file_descriptors{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
+        #   metricUnit: None
         - up time:
           metric: |
             sum(time() - kube_pod_start_time{namespace="$namespace", pod=~"$pod"}) by (pod)
           metricUnit: seconds
+        - AWS AZ:
+          metric: |
+            sort_desc(sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+          valueFromLabel: topology_ebs_csi_aws_com_zone
       custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
       advancedTableOptions:
         tableType: grid # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
