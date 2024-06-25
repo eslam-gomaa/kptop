@@ -178,3 +178,12 @@ class Helper:
         for key, value in labels.items():
             custom_key = custom_key.replace(f"{{{{{key}}}}}", f"{value}")
         return custom_key
+
+    def check_thread_status(self, thread):
+        try:
+            if thread.is_alive():
+                return "[green]ALIVE"
+            else:
+                return "[red]DEAD"
+        except Exception as e:
+                return str(e)
