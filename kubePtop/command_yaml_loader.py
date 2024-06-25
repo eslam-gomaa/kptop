@@ -3,18 +3,11 @@ import yaml
 import json
 from cerberus import Validator
 import rich
-class dashboardYamlLoader:
+class commandYamlLoader:
     def __init__(self) -> None:
-        self.allowed_metric_unit_types = [
-            'None',
-            'kb',
-            'byte',
-            'mb',
-            'seconds',
-            'percentage'
-        ]
+        pass
 
-    def validate_dashboard_schema(self, dashboard_yaml_data):
+    def validate_command_schema(self, dashboard_yaml_data):
         schema_dct = {
 
             "dashboard": {
@@ -290,16 +283,19 @@ class dashboardYamlLoader:
                                     },
                                     'metricUnit': {
                                         'type': 'string',
-                                        'required': False,
-                                        'default': 'None',
-                                        'allowed': self.allowed_metric_unit_types
+                                        'required': True,
+                                        'allowed': [
+                                            'kb',
+                                            'byte',
+                                            'mb',
+                                            'seconds'
+                                        ]
                                     },
                                     'metric': {
                                         'type': 'string'
                                     },
                                     'custom_key': {
                                         'type': 'string',
-                                        'default': '',
                                         'required': False,
                                     },
                                     'asciiGraphOptions': {
@@ -449,9 +445,14 @@ class dashboardYamlLoader:
                                                 },
                                                 'metricUnit': {
                                                     'type': 'string',
-                                                    'required': False,
-                                                    'default': 'None',
-                                                    'allowed': self.allowed_metric_unit_types
+                                                    'required': True,
+                                                    'allowed': [
+                                                        'kb',
+                                                        'byte',
+                                                        'mb',
+                                                        'seconds',
+                                                        'counter'
+                                                    ]
                                                 }
                                             }
                                         }
@@ -550,20 +551,20 @@ class dashboardYamlLoader:
             exit(1)
 
 
-    def load_dashboard_data(self, dashboard_name):
+    def load_command_data(self, command_name):
         out = {
             "success": False,
             "data": None,
             "fail_reason": ""
         }
 
-        # Check if the yaml file exists in the dashboards directory
+        # Check if the yaml file exists in the command directory
         ## If so, return the file path
-        ### The dashboard dir is taken as ENV
-        yaml_file = dashboard_name
+        ### The command dir is taken as ENV
+        yaml_file = command_name
         # Check if the file does NOT exist
         if not os.path.isfile(yaml_file):
-            out['fail_reason'] = f"Dashboard File '{yaml_file}' does NOT exist"
+            out['fail_reason'] = f"Command File '{yaml_file}' does NOT exist"
             return out
 
         # Read the file
@@ -572,12 +573,11 @@ class dashboardYamlLoader:
                 content = file.read()
                 out['data'] = yaml.safe_load(content)
         except Exception as e:
-            out['fail_reason'] = f"Failed to open the dashboard file '{yaml_file}' > {e}"
+            out['fail_reason'] = f"Failed to open the command file '{yaml_file}' > {e}"
             return out
 
         # Yaml Schema validation
-        self.validate_dashboard_schema(out['data'])
-
+        # self.validate_command_schema(out['data'])
 
         out['success'] = True
         return out

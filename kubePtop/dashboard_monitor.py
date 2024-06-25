@@ -73,33 +73,33 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                     )
         return parser
 
-    def build_variables(self, inital_args, variables):
-        # Combine default CLI args and dashboard variables
-        all_variables = inital_args + variables
+    # def build_variables(self, inital_args, variables):
+    #     # Combine default CLI args and dashboard variables
+    #     all_variables = inital_args + variables
 
-        # Rebuild the parser with all variables
-        final_parser = self.build_parser(all_variables)
+    #     # Rebuild the parser with all variables
+    #     final_parser = self.build_parser(all_variables)
 
-        # Parse all arguments with the final parser, ignoring unknown args
-        final_args, unknown_args = final_parser.parse_known_args()
-        rich.print("Parsed arguments:", final_args)
-        rich.print("Unknown arguments:", unknown_args)
+    #     # Parse all arguments with the final parser, ignoring unknown args
+    #     final_args, unknown_args = final_parser.parse_known_args()
+    #     rich.print("Parsed arguments:", final_args)
+    #     rich.print("Unknown arguments:", unknown_args)
 
-        # Store the arguments in the variables dictionary
-        args_dict = vars(final_args)
-        if args_dict.get('vhelp'):
-            final_parser.print_help()
-            return
+    #     # Store the arguments in the variables dictionary
+    #     args_dict = vars(final_args)
+    #     if args_dict.get('vhelp'):
+    #         final_parser.print_help()
+    #         return
 
-        for arg, value in args_dict.items():
-            self.variables[arg] = value
+    #     for arg, value in args_dict.items():
+    #         self.variables[arg] = value
 
-        for arg, value in args_dict.items():
-            if value == 'ALL':
-                value = ".*"
-            self.variables[arg] = value
+    #     for arg, value in args_dict.items():
+    #         if value == 'ALL':
+    #             value = ".*"
+    #         self.variables[arg] = value
 
-        return final_args
+    #     return final_args
 
     def build_custom_dashboard(self, dashboard_data, dashboard_variables):
 
@@ -118,7 +118,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             if visualization.get('enable', True):
                 if visualization['type'] == 'asciiGraph':
                     if 'custom_key' in visualization:
-                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization['custom_key'])
+                        graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'], custom_key=visualization.get('custom_key', ''))
                     else:
                         graph = self.build_ascii_graph_handler(name=visualization['name'], layout_box_name=visualization['box'], graph_options=visualization.get('asciiGraphOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
 
@@ -129,11 +129,11 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                         progress_bar_list = self.build_progress_bar_list_handler(name=visualization['name'], layout_box_name=visualization['box'], progress_bar_list_options=visualization.get('progressBarListOptions', {}), metric_unit=visualization['metricUnit'], total_value_metric=visualization['metrics']['total_value_metric'], usage_value_metric=visualization['metrics']['usage_value_metric'])
 
                 elif visualization['type'] == 'simpleTable':
-                    progress_bar_list = self.build_simple_table_handler(name=visualization['name'], layout_box_name=visualization['box'], simple_table_options=visualization.get('simpleTableOptions', {}), metric_unit=visualization['metricUnit'], metric=visualization['metric'])
+                    progress_bar_list = self.build_simple_table_handler(name=visualization['name'], layout_box_name=visualization['box'], simple_table_options=visualization.get('simpleTableOptions', {}), metric_unit=visualization.get('metricUnit', 'None'), metric=visualization['metric'])
 
                 elif visualization['type'] == 'advancedTable':
                     if 'custom_key' in visualization:
-                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['advancedTableColumns'], custom_key=visualization['custom_key'])
+                        progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization.get('metricUnit', ''), columns=visualization['advancedTableColumns'], custom_key=visualization.get('custom_key', ''))
                     else:
                         progress_bar_list = self.build_advanced_table_handler(name=visualization['name'], layout_box_name=visualization['box'], advanced_table_options=visualization.get('advancedTableOptions', {}), metric_unit=visualization['metricUnit'], columns=visualization['columns'])
 
@@ -337,16 +337,16 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         self.layout = layout
         return layout
 
-    def convert_data_unit(self, value, metric_unit):
-        if metric_unit == 'byte':
-            value = helper_.bytes_to_kb_mb_gb(value)
-        elif metric_unit == 'seconds':
-            value =  helper_.seconds_to_human_readable(value)
-        elif metric_unit == 'milliseconds':
-            value =  helper_.milliseconds_to_human_readable(value)
-        elif metric_unit == 'timestamp':
-            value =  helper_.convert_epoch_timestamp(value)
-        return value
+    # def convert_data_unit(self, value, metric_unit):
+    #     if metric_unit == 'byte':
+    #         value = helper_.bytes_to_kb_mb_gb(value)
+    #     elif metric_unit == 'seconds':
+    #         value =  helper_.seconds_to_human_readable(value)
+    #     elif metric_unit == 'milliseconds':
+    #         value =  helper_.milliseconds_to_human_readable(value)
+    #     elif metric_unit == 'timestamp':
+    #         value =  helper_.convert_epoch_timestamp(value)
+    #     return value
 
     def safe_eval(self, custom_key, labels):
         for key, value in labels.items():
@@ -383,7 +383,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             if custom_key:
                 try:
                     # key = str(eval(custom_key))
-                    key = self.safe_eval(custom_key, labels)
+                    key = helper_.safe_eval(custom_key, labels)
                 except KeyError as e:
                     out['fail_reason'] = f"Label NOT found {e} --> Query: {metric}"
                     # key = f"Label NOT found: {e}"
@@ -425,7 +425,6 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                     # Replace the variable in the query string
                     query = query.replace(variable, self.variables[variable[1:]])
         return query
-
 
     def build_ascii_graph_handler(self, name, layout_box_name, graph_options, metric_unit, metric, custom_key=None):
         # Print loading message
@@ -470,7 +469,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
             # Organize the graph lines & items visualization
             data_group = Group(
-                Markdown("Produced Data per Second for top 10 topics", justify='right'),
+                Markdown("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
                 Text.from_ansi(graph.graph),
                 Rule(style='#AAAAAA'),
                 # Markdown("Bytes Written", justify='center'),
@@ -552,11 +551,10 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
 
             data_group = Group(
-                # Markdown("Produced Data per Second for top 10 topics", justify='right'),
                 *progress_bars,
             )
             # return data_group
-            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", subtitle="[grey30]Thread: ALIVE  /  Prometheus: CONNECTED", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
 
     def build_simple_table_handler(self, name, layout_box_name, simple_table_options, metric_unit, metric, custom_key=None):
@@ -621,6 +619,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
             out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
             data_group = Group(
+                Text("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
                 out,
             )
             # return data_group
@@ -680,7 +679,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                 for name, value in metric_data['data'].items():
                     value_ = float(value['value'])
                     if auto_convert_value_:
-                        value_ = self.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                        value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
                     try:
                         data[name][column] = value_
                     except KeyError:
@@ -693,6 +692,9 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
                 table.append(row)
 
             out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
-            data_group = Group(out)
+            data_group = Group(
+                Markdown("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
+                out
+            )
             self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
