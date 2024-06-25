@@ -452,6 +452,11 @@ class dashboardYamlLoader:
                                                     'required': False,
                                                     'default': 'None',
                                                     'allowed': self.allowed_metric_unit_types
+                                                },
+                                                'valueFromLabel': {
+                                                    'type': 'string',
+                                                    'required': False,
+                                                    'default': "",
                                                 }
                                             }
                                         }
