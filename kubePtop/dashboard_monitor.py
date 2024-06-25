@@ -40,6 +40,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         }
         self.layout = None
         self.variables = {}
+        self.threads = {}
 
     def run_query(self, query):
         if GlobalAttrs.env_connection_method == 'prometheus_endpoint':
@@ -432,6 +433,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         # Start thread
         thread = threading.Thread(target=self.build_ascii_graph, args=(name, layout_box_name, graph_options, metric_unit, metric, custom_key))
         thread.name = name
+        self.threads[name] = thread
         thread.daemon = True
         thread.start()
 
@@ -469,14 +471,13 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
             # Organize the graph lines & items visualization
             data_group = Group(
-                Markdown("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
                 Text.from_ansi(graph.graph),
                 Rule(style='#AAAAAA'),
                 # Markdown("Bytes Written", justify='center'),
                 Text.from_ansi(graph.colors_description_str)
             )
 
-            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
 
 
@@ -486,6 +487,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         # Start thread
         thread = threading.Thread(target=self.build_progress_bar_list, args=(name, layout_box_name, progress_bar_list_options, metric_unit, total_value_metric, usage_value_metric, custom_key))
         thread.name = name
+        self.threads[name] = thread
         thread.daemon = True
         thread.start()
 
@@ -553,8 +555,9 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             data_group = Group(
                 *progress_bars,
             )
+
             # return data_group
-            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", subtitle="[grey30]Thread: ALIVE  /  Prometheus: CONNECTED", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
 
     def build_simple_table_handler(self, name, layout_box_name, simple_table_options, metric_unit, metric, custom_key=None):
@@ -563,6 +566,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         # Start thread
         thread = threading.Thread(target=self.build_simple_table, args=(name, layout_box_name, simple_table_options, metric_unit, metric))
         thread.name = name
+        self.threads[name] = thread
         thread.daemon = True
         thread.start()
 
@@ -619,11 +623,10 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
 
             out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
             data_group = Group(
-                Text("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
                 out,
             )
             # return data_group
-            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
 
 
@@ -634,6 +637,7 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
         thread = threading.Thread(target=self.build_advanced_table, args=(name, layout_box_name, advanced_table_options, metric_unit, columns, custom_key))
         thread.name = name
         thread.daemon = True
+        self.threads[name] = thread
         thread.start()
 
     def build_advanced_table(self, name, layout_box_name, advanced_table_options, metric_unit, columns, custom_key=None):
@@ -669,32 +673,35 @@ class customDashboardMonitoring(PrometheusNodeMetrics):
             header = [key.upper() for key in header]
 
         while True:
-            table = [header]
-            for column, column_info in columns_dct.items():
-                metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
+            try:
+                table = [header]
+                for column, column_info in columns_dct.items():
+                    metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
 
-                if not metric_data['success']:
-                    self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+                    if not metric_data['success']:
+                        self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
-                for name, value in metric_data['data'].items():
-                    value_ = float(value['value'])
-                    if auto_convert_value_:
-                        value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
-                    try:
-                        data[name][column] = value_
-                    except KeyError:
-                        data[name] = {
-                            column: value_
-                        }
+                    for name, value in metric_data['data'].items():
+                        value_ = float(value['value'])
+                        if auto_convert_value_:
+                            value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                        try:
+                            data[name][column] = value_
+                        except KeyError:
+                            data[name] = {
+                                column: value_
+                            }
 
-            for name, value in data.items():
-                row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
-                table.append(row)
+                for name, value in data.items():
+                    row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
+                    table.append(row)
 
-            out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
-            data_group = Group(
-                Markdown("Thread status: ALIVE 🟢  /  Prometheus: CONNECTED 🟢", justify='right'),
-                out
-            )
-            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+                out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
+                data_group = Group(
+                    out
+                )
+                self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[box_name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+            except Exception as e:
+                self.layout[layout_box_name].update(Panel(str(traceback.format_exc()), title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+
             time.sleep(update_interval_)
