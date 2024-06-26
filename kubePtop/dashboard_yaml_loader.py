@@ -555,29 +555,31 @@ class dashboardYamlLoader:
             exit(1)
 
 
-    def load_dashboard_data(self, dashboard_name):
+    def load_dashboard_data(self, command_content_content):
         out = {
             "success": False,
             "data": None,
             "fail_reason": ""
         }
 
+
+
         # Check if the yaml file exists in the dashboards directory
         ## If so, return the file path
         ### The dashboard dir is taken as ENV
-        yaml_file = dashboard_name
-        # Check if the file does NOT exist
-        if not os.path.isfile(yaml_file):
-            out['fail_reason'] = f"Dashboard File '{yaml_file}' does NOT exist"
-            return out
+        # yaml_file = dashboard_name
+        # # Check if the file does NOT exist
+        # if not os.path.isfile(yaml_file):
+        #     out['fail_reason'] = f"Dashboard File '{yaml_file}' does NOT exist"
+        #     return out
 
         # Read the file
         try:
-            with open(yaml_file, 'r') as file:
-                content = file.read()
-                out['data'] = yaml.safe_load(content)
+            # with open(yaml_file, 'r') as file:
+                # content = file.read()
+            out['data'] = yaml.safe_load(command_content_content)
         except Exception as e:
-            out['fail_reason'] = f"Failed to open the dashboard file '{yaml_file}' > {e}"
+            out['fail_reason'] = f"Failed to open the dashboard file content > {e}"
             return out
 
         # Yaml Schema validation
