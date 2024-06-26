@@ -98,7 +98,7 @@ dashboard:
       type: asciiGraph # || progressBar || asciiText || markdown || markdown Table ||Table
       metricUnit: kb # byte_to_kb_mb_gb_tb # dynamic_byte_convert
       metric: >
-        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
+        sort_desc(sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🍅 {{topic}}"
       asciiGraphOptions:
         height: 0
@@ -116,7 +116,7 @@ dashboard:
       type: asciiGraph # || progressBarList || asciiText
       metricUnit: kb
       metric: >
-        topk(20, sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
+        sort_desc(sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
       custom_key: "🥕 {{topic}}"
       asciiGraphOptions:
         height: 0

@@ -28,6 +28,9 @@ class GlobalAttrs:
     start_graphs_with_zero = True
     graphs_width = 45
 
+    default_dashboards_dir = "/var/kptop/dashboards"
+    default_commands_dir = "/var/kptop/commands"
+
     debug = False
 
     def __init__(self):

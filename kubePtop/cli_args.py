@@ -3,6 +3,10 @@ import yaml
 import rich
 import os
 import logging
+from datetime import datetime
+from pathlib import Path
+from tabulate import tabulate
+from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.dashboard_monitor import customDashboardMonitoring
 from kubePtop.command_run import commandRun
 from kubePtop.dashboard_yaml_loader import dashboardYamlLoader
@@ -36,6 +40,26 @@ class Cli():
                 }
             },
             {
+                "name": "list-dashboards",
+                "default": ".*",
+                "cliArgument": {
+                    "enable": True,
+                    "short": "-ld",
+                    "required": False,
+                    "description": "List dasboards names"
+                }
+            },
+            {
+                "name": "list-commands",
+                "default": ".*",
+                "cliArgument": {
+                    "enable": True,
+                    "short": "-lc",
+                    "required": False,
+                    "description": "List commands names"
+                }
+            },
+            {
                 "name": "vhelp",
                 "default": ".*",
                 "cliArgument": {
@@ -49,12 +73,11 @@ class Cli():
         self.variables = {}
         self.build_variables()
 
-
     def build_parser(self, variables):
         parser = argparse.ArgumentParser(description='Process some CLI arguments.')
         for var in variables:
             if var['cliArgument']['enable']:
-                if var['name'] == 'vhelp':
+                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands']:
                     parser.add_argument(
                         f"--{var['name']}",
                         var['cliArgument']['short'],
@@ -73,6 +96,65 @@ class Cli():
         return parser
 
 
+    def _list_files_in_directory(self, directory_path):
+        out = {
+            "success": False,
+            "data": None,
+            "fail_reason": ""
+        }
+        try:
+            p = Path(directory_path)
+            files_info = [
+                {
+                    "name": file.stem,
+                    "creation_date": datetime.fromtimestamp(file.stat().st_ctime).strftime('%d-%m-%Y %H:%M:%S'),
+                    "modification_date": datetime.fromtimestamp(file.stat().st_mtime).strftime('%d-%m-%Y %H:%M:%S')
+                }
+                for file in p.iterdir() if file.is_file() and file.suffix in ['.yaml', '.yml']
+            ]
+            if len(files_info) < 1:
+                out['fail_reason'] = f"No files found in '{directory_path}'"
+                return out
+
+            out['data'] = files_info
+            out["success"] = True
+            return out
+        except FileNotFoundError as e:
+            out["fail_reason"] = f"Directory {directory_path} not found > {e}"
+            return out
+
+    def _load_file_content(self, directory_path, file_name):
+        out = {
+            "success": False,
+            "data": None,
+            "fail_reason": ""
+        }
+        yaml_extensions = ['.yaml', '.yml']
+
+        file_path = None
+        for ext in yaml_extensions:
+            try:
+                potential_path = Path(directory_path) / (file_name + ext)
+                if potential_path.exists():
+                    file_path = potential_path
+                    break
+            except Exception as e:
+                out["fail_reason"] = e
+                return out
+
+        if not file_path:
+            out["fail_reason"] = f"File '{file_name}'.yml||yaml is NOT Found in {directory_path}"
+            return out
+
+        try:
+            with open(file_path, 'r') as file:
+                out["data"] = file.read()
+                out["success"] = True
+        except Exception as e:
+            out["fail_reason"] = f"File is NOT Found"
+        return out
+
+
     def build_variables(self):
         initial_parser = self.build_parser(self.default_cli_args)
         # rich.print(initial_parser)
@@ -83,12 +165,62 @@ class Cli():
             initial_parser.print_help()
             exit(1)
 
+        if initial_args.list_dashboards and initial_args.list_commands:
+                    rich.print("\n[yellow bold]Can NOT specify '--list-dashboards' & '--list-commands' together\n")
+                    initial_parser.print_help()
+                    exit(1)
+
+
+        ###################
+        # List Dashboards #
+        ###################
+        if initial_args.list_dashboards:
+            check = self._list_files_in_directory(GlobalAttrs.default_dashboards_dir)
+            if not check['success']:
+                rich.print(f"Could NOT list dashboards.\n[yellow]{check['fail_reason']}\n")
+                exit(1)
+
+            table = [['DASHBOARD', 'CREATION TIME', 'UPDATE TIME']]
+
+            for file in check['data']:
+                row = [file['name'], file['creation_date'], file['modification_date']]
+                table.append(row)
+            out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
+            print(out)
+            print()
+            exit(0)
+
+        #################
+        # List Commands #
+        #################
+        if initial_args.list_commands:
+            check = self._list_files_in_directory(GlobalAttrs.default_commands_dir)
+            if not check['success']:
+                rich.print(f"Could NOT list commands.\n[yellow]{check['fail_reason']}\n")
+                exit(1)
+
+            table = [['COMMAND', 'CREATION TIME', 'UPDATE TIME']]
+
+            for file in check['data']:
+                row = [file['name'], file['creation_date'], file['modification_date']]
+                table.append(row)
+            out = tabulate(table, headers='firstrow', tablefmt='plain', showindex=False)
+            print(out)
+            print()
+            exit(0)
+
         ##################
         # Load Dashboard #
         ##################
         elif initial_args.dashboard:
-            # rich.print(dashboard_yaml_loader.validate_dashboard_schema('d'))
-            parsed_dashboard = dashboard_yaml_loader.load_dashboard_data(dashboard_name="./dashboard.yaml")
+            # Load dashboard yaml file
+            check = self._load_file_content(GlobalAttrs.default_dashboards_dir, initial_args.dashboard)
+            if not check['success']:
+                rich.print(f"Dashboard is NOT found\n[yellow]{check['fail_reason']}\n")
+                exit(1)
+
+            # Parse and validate the dashboard yaml file
+            parsed_dashboard = dashboard_yaml_loader.load_dashboard_data(command_content_content=check['data'])
 
             if not parsed_dashboard['success']:
                 logging.error(f"Failed to load dashboard: '{initial_args.dashboard}'")
@@ -125,10 +257,14 @@ class Cli():
         # Load Command #
         ################
         elif initial_args.command:
-            parsed_command = command_yaml_loader.load_command_data(command_name="./command.yaml")
-            # rich.print(parsed_command)
-            # exit(1)
+            # Load command yaml file
+            check = self._load_file_content(GlobalAttrs.default_commands_dir, initial_args.command)
+            if not check['success']:
+                rich.print(f"Command is NOT found\n[yellow]{check['fail_reason']}\n")
+                exit(1)
 
+            # Parse and validate the command yaml file
+            parsed_command = command_yaml_loader.load_command_data(command_content_content=check['data'])
             if not parsed_command['success']:
                 logging.error(f"Failed to load command: '{initial_args.command}'")
                 logging.error(parsed_command['fail_reason'])
