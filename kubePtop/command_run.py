@@ -4,14 +4,14 @@ import os
 from tabulate import tabulate
 import logging
 from kubePtop.global_attrs import GlobalAttrs
-from kubePtop.node_metrics import PrometheusNodeMetrics
+from kubePtop.session import PrometheusAPI
 # from kubePtop.ascii_graph import AsciiGraph
 from kubePtop.helper import Helper
 helper_ = Helper()
 
 from kubePtop.logging import Logging
 
-class commandRun(PrometheusNodeMetrics):
+class commandRun(PrometheusAPI):
     def __init__(self):
         super().__init__()
         self.layout_list = []
