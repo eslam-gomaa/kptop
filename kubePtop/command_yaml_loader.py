@@ -551,29 +551,27 @@ class commandYamlLoader:
             exit(1)
 
 
-    def load_command_data(self, command_name):
+    def load_command_data(self, command_content_content):
         out = {
             "success": False,
             "data": None,
             "fail_reason": ""
         }
 
-        # Check if the yaml file exists in the command directory
-        ## If so, return the file path
-        ### The command dir is taken as ENV
-        yaml_file = command_name
-        # Check if the file does NOT exist
-        if not os.path.isfile(yaml_file):
-            out['fail_reason'] = f"Command File '{yaml_file}' does NOT exist"
-            return out
+        # # Check if the yaml file exists in the command directory
+        # ## If so, return the file path
+        # ### The command dir is taken as ENV
+        # yaml_file = command_name
+        # # Check if the file does NOT exist
+        # if not os.path.isfile(yaml_file):
+        #     out['fail_reason'] = f"Command File '{yaml_file}' does NOT exist"
+        #     return out
 
         # Read the file
         try:
-            with open(yaml_file, 'r') as file:
-                content = file.read()
-                out['data'] = yaml.safe_load(content)
+            out['data'] = yaml.safe_load(command_content_content)
         except Exception as e:
-            out['fail_reason'] = f"Failed to open the command file '{yaml_file}' > {e}"
+            out['fail_reason'] = f"Failed to parse the command file content > {e}"
             return out
 
         # Yaml Schema validation
