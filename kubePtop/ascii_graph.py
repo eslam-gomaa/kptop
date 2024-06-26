@@ -312,7 +312,6 @@ class AsciiGraph:
         else:
             self.width = width
 
-
         self.names = names
 
         # if len(names) > len(self.colors):

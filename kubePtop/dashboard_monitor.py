@@ -24,14 +24,14 @@ import traceback
 
 
 from kubePtop.global_attrs import GlobalAttrs
-from kubePtop.node_metrics import PrometheusNodeMetrics
+from kubePtop.session import PrometheusAPI
 from kubePtop.ascii_graph import AsciiGraph
 from kubePtop.helper import Helper
 helper_ = Helper()
 
 from kubePtop.logging import Logging
 
-class customDashboardMonitoring(PrometheusNodeMetrics):
+class customDashboardMonitoring(PrometheusAPI):
     def __init__(self):
         super().__init__()
         self.layout_list = []
