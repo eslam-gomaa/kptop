@@ -1,4 +1,3 @@
-
 class Bcolors:
     def __init__(self):
         self.HEADER = '\033[95m'
