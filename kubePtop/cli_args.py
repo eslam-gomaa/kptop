@@ -1,4 +1,5 @@
 import argparse
+from sys import getallocatedblocks
 import yaml
 import rich
 import os
@@ -69,6 +70,16 @@ class Cli():
                     "description": "List the variables cli arguments of the dashboard/command manifests"
                 }
             },
+            {
+                "name": "debug",
+                "default": ".*",
+                "cliArgument": {
+                    "enable": True,
+                    "short": "-d",
+                    "required": False,
+                    "description": "Debug mode"
+                }
+            },
         ]
         self.variables = {}
         self.build_variables()
@@ -77,7 +88,7 @@ class Cli():
         parser = argparse.ArgumentParser(description='Process some CLI arguments.')
         for var in variables:
             if var['cliArgument']['enable']:
-                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands']:
+                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands', 'debug']:
                     parser.add_argument(
                         f"--{var['name']}",
                         var['cliArgument']['short'],
@@ -170,6 +181,12 @@ class Cli():
                     initial_parser.print_help()
                     exit(1)
 
+
+        ##############
+        # Debug Mode #
+        ##############
+        if initial_args.debug:
+            GlobalAttrs.debug = True
 
         ###################
         # List Dashboards #
