@@ -52,27 +52,27 @@ class customDashboardMonitoring(PrometheusAPI):
 
         return query
 
-    def build_parser(self, variables):
-        parser = argparse.ArgumentParser(description='Process some CLI arguments.')
-        for var in variables:
-            if var['cliArgument']['enable']:
-                if var['name'] == 'vhelp':
-                    parser.add_argument(
-                        f"--{var['name']}",
-                        var['cliArgument']['short'],
-                        required=var['cliArgument']['required'],
-                        action='store_true',
-                        help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
-                    )
-                else:
-                    parser.add_argument(
-                        f"--{var['name']}",
-                        var['cliArgument']['short'],
-                        required=var['cliArgument']['required'],
-                        default=var['default'],
-                        help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
-                    )
-        return parser
+    # def build_parser(self, variables):
+    #     parser = argparse.ArgumentParser(description='Process some CLI arguments.')
+    #     for var in variables:
+    #         if var['cliArgument']['enable']:
+    #             if var['name'] == 'vhelp':
+    #                 parser.add_argument(
+    #                     f"--{var['name']}",
+    #                     var['cliArgument']['short'],
+    #                     required=var['cliArgument']['required'],
+    #                     action='store_true',
+    #                     help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
+    #                 )
+    #             else:
+    #                 parser.add_argument(
+    #                     f"--{var['name']}",
+    #                     var['cliArgument']['short'],
+    #                     required=var['cliArgument']['required'],
+    #                     default=var['default'],
+    #                     help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
+    #                 )
+    #     return parser
 
     # def build_variables(self, inital_args, variables):
     #     # Combine default CLI args and dashboard variables
