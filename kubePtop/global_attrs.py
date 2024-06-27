@@ -1,17 +1,17 @@
 
 class GlobalAttrs:
 
-    env_connection_method = None
+    env_connection_method = ""
 
-    env_prometheus_pod_name = None
+    env_prometheus_pod_name = ""
     env_prometheus_pod_port = "9090"
     env_prometheus_pod_namespace = "default"
     env_kube_config_file = ""
 
     env_prometheus_server = "??"
     env_basic_auth_enabled = False
-    env_prometheus_username = None
-    env_prometheus_password = None
+    env_prometheus_username = ""
+    env_prometheus_password = ""
     env_insecure = False
 
     log_dir = "/tmp/"
