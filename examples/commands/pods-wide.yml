@@ -1,0 +1,93 @@
+command:
+  name: Pods Info
+  description: Kubernetes Pods info of a specific namespace
+
+  variables:
+    - name: pod
+      default: .*
+      cliArgument:
+        enable: true
+        short: -po
+        required: false
+    - name: namespace
+      default: default
+      cliArgument:
+        enable: true
+        short: -n
+        required: false
+
+  execute:
+    type: advancedTable
+    columns:
+      - memory resources:
+        metric: |
+          sum(kube_pod_container_resource_requests{resource="memory", unit="byte", namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+        metricUnit: byte
+      - memory limits:
+        metric: |
+          sum(kube_pod_container_resource_limits{resource="memory", unit="byte", namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+        metricUnit: byte
+      - cpu resources:
+        metric: |
+          sum(kube_pod_container_resource_requests{resource="cpu", unit="core", namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+        metricUnit: None
+      - cpu limits:
+        metric: |
+          sum(kube_pod_container_resource_limits{resource="cpu", unit="core", namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+        metricUnit: None
+      - node:
+        metric: |
+          sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone, instance, kubernetes_io_arch, node_kubernetes_io_instance_type, topology_kubernetes_io_zone, karpenter_sh_capacity_type)
+        metricUnit: byte
+        valueFromLabel: instance
+      # - node:
+      #   metric: |
+      #     sort_desc(
+      #       (
+      #         sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+      #         /
+      #         sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+      #       ) * 100
+      #     )
+      #   metricUnit: percentage
+      - arch:
+        metric: |
+          sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone, instance, kubernetes_io_arch, node_kubernetes_io_instance_type, topology_kubernetes_io_zone, karpenter_sh_capacity_type)
+        metricUnit: byte
+        valueFromLabel: kubernetes_io_arch
+      - instance type:
+        metric: |
+          sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone, instance, kubernetes_io_arch, node_kubernetes_io_instance_type, topology_kubernetes_io_zone, karpenter_sh_capacity_type)
+        metricUnit: byte
+        valueFromLabel: node_kubernetes_io_instance_type
+      - aws az:
+        metric: |
+          sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone, instance, kubernetes_io_arch, node_kubernetes_io_instance_type, topology_kubernetes_io_zone, karpenter_sh_capacity_type)
+        metricUnit: byte
+        valueFromLabel: topology_kubernetes_io_zone
+      - capacity type:
+        metric: |
+          sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone, instance, kubernetes_io_arch, node_kubernetes_io_instance_type, topology_kubernetes_io_zone, karpenter_sh_capacity_type)
+        metricUnit: byte
+        valueFromLabel: karpenter_sh_capacity_type
+
+      # - memory max usage:
+      #   metric: |
+      #     sum(container_memory_max_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+      #   metricUnit: byte
+      # - CPU Usage %:
+      #   metric: |
+      #     100 * sum(rate(container_cpu_usage_seconds_total{image!="", container!="POD", namespace=~"$namespace", pod=~"$pod", pod!=""}[5m])) by (pod, namespace) /
+      #     sum(kube_pod_container_resource_limits{namespace=~"$namespace", pod=~"$pod", container!="POD", pod!=""}) by (pod, namespace)
+      #   metricUnit: percentage
+      # - up time:
+      #   metric: |
+      #     sum(time() - kube_pod_start_time{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+      #   metricUnit: seconds
+    custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
+    advancedTableOptions:
+      tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
+      headersUppercase: true
+      autoConvertValue: true
+      showTableIndex: false
+      updateIntervalSeconds: 3
