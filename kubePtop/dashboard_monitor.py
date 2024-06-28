@@ -102,10 +102,10 @@ class customDashboardMonitoring(PrometheusAPI):
 
     #     return final_args
 
-    def build_custom_dashboard(self, dashboard_data, dashboard_variables):
+    def build_custom_dashboard(self, dashboard_data, dashboard_variables, print_layout=False):
 
         # Build the Layout structure
-        self.make_layout(layout_structure_dct=dashboard_data['data'])
+        self.make_layout(layout_structure_dct=dashboard_data['data'], print_layout=print_layout)
 
         # vistualize the metrics on the layout
         self.variables = dashboard_variables
@@ -331,7 +331,7 @@ class customDashboardMonitoring(PrometheusAPI):
                     layout['middle'].split_row(*layout_objects)
 
         if print_layout:
-            rich.print_json(json.dumps(layout_dct, indent=4))
+            # rich.print_json(json.dumps(layout_dct, indent=4))
             rich.print(layout)
             exit(0)
 
