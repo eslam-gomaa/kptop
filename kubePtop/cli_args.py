@@ -16,7 +16,6 @@ dashboard_yaml_loader = dashboardYamlLoader()
 command_yaml_loader = commandYamlLoader()
 custom_dashboard_monitoring = customDashboardMonitoring()
 custom_command_run = commandRun()
-
 class Cli():
     def __init__(self):
         self.default_cli_args = [
@@ -240,6 +239,7 @@ class Cli():
         # Load Dashboard #
         ##################
         elif initial_args.dashboard:
+
             # Load dashboard yaml file
             check = self._load_file_content(GlobalAttrs.default_dashboards_dir, initial_args.dashboard)
             if not check['success']:
@@ -326,5 +326,6 @@ class Cli():
                 self.variables[arg] = value
 
             custom_command_run.run_custom_command(command_data=parsed_command, command_variables=self.variables)
-        else:
-            pass
+        elif unknown_args:
+            rich.print(f"[yellow]ERROR -- Unknown args !!    {' '.join(unknown_args)}")
+            initial_parser.print_usage()
