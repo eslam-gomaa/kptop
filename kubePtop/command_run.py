@@ -38,7 +38,7 @@ class commandRun(PrometheusAPI):
             self.build_advanced_table_command(name=command_dct['name'], layout_box_name=None, advanced_table_options=command_dct['execute'].get('advancedTableOptions', {}), metric_unit='kb', columns=command_dct['execute'].get('columns', {}), custom_key=command_dct['execute']['custom_key'])
 
 
-    def get_metric_data(self, metric, custom_key=None, evaluate_cli_argument_variables=False):
+    def get_metric_data(self, metric, custom_key=None, evaluate_cli_argument_variables=False, value_from_label=""):
         out = {
             "success": False,
             "data": None,
@@ -84,10 +84,16 @@ class commandRun(PrometheusAPI):
             else:
                 key = str(i['metric'])
 
-            dct[key] = {
-                "timestamp":i['value'][0],
-                "value":i['value'][1],
-            }
+            if value_from_label:
+                dct[key] = {
+                    "timestamp":i['value'][0],
+                    "value":i['metric'].get(value_from_label, 'label_not_found'),
+                }
+            else:
+                dct[key] = {
+                    "timestamp":i['value'][0],
+                    "value":i['value'][1]
+                }
         out['data'] = dct
         out['success'] = True
         return out
@@ -145,16 +151,42 @@ class commandRun(PrometheusAPI):
 
         table = [header]
         for column, column_info in columns_dct.items():
-            metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
+            # metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key)
+        #     metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
+
+
+            # if not metric_data['success']:
+            #     rich.print(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}")
+            #     exit(1)
+
+        #     for name, value in metric_data['data'].items():
+        #         value_ = float(value['value'])
+        #         if auto_convert_value_:
+        #             value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+        #         try:
+        #             data[name][column] = value_
+        #         except KeyError:
+        #             data[name] = {
+        #                 column: value_
+        #             }
+
+        # for name, value in data.items():
+        #     row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
+        #     table.append(row)
+            metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
 
             if not metric_data['success']:
                 rich.print(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}")
                 exit(1)
 
             for name, value in metric_data['data'].items():
-                value_ = float(value['value'])
-                if auto_convert_value_:
-                    value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                try:
+                    value_ = float(value['value'])
+                    if auto_convert_value_:
+                        value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                except:
+                    value_ = value['value']
+
                 try:
                     data[name][column] = value_
                 except KeyError:
@@ -165,6 +197,8 @@ class commandRun(PrometheusAPI):
         for name, value in data.items():
             row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
             table.append(row)
+
+
 
         out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
         rich.print(out)
