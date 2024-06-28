@@ -285,9 +285,11 @@ class commandYamlLoader:
                                         'type': 'string',
                                         'required': True,
                                         'allowed': [
-                                            'kb',
                                             'byte',
+                                            'kb',
                                             'mb',
+                                            'gb',
+                                            'tb',
                                             'seconds'
                                         ]
                                     },
@@ -450,8 +452,9 @@ class commandYamlLoader:
                                                         'kb',
                                                         'byte',
                                                         'mb',
+                                                        'gb',
+                                                        'tb',
                                                         'seconds',
-                                                        'counter'
                                                     ]
                                                 }
                                             }
