@@ -1,7 +1,7 @@
 
 # Kube-Prometheus-Top [ kptop ]
 
-A Python tool that offers Grafana-like CLI monitoring based on Prometheus metrics, with Kubernetes integration through PodPortForward
+A Python tool that offers beautiful CLI monitoring based on Prometheus metrics, with Kubernetes integration through PodPortForward
 
 Allowing you to create your own custom CLI dashboards & CLI commands with custom layouts, variables, CLI arguments !
 
@@ -137,21 +137,22 @@ export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
 
 <br>
 
-## [2] move your dashboards/commands to the configured directories
-
-```
-KPTOP_DEFAULT_DASHBOARDS_DIRECTORY
-KPTOP_DEFAULT_COMMANDS_DIRECTORY
-```
-
-> Create / Update as required
+## [2] Configure the location of your dashboards & commands
 
 
-
-## Run !
+Example:
 
 ```bash
-python kptop_tool.py --list-dashboards
+export KPTOP_DEFAULT_DASHBOARDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
+export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
+```
+
+
+
+## Run dashboards / commands !
+
+```bash
+kptop --list-dashboards
 ```
 
 ```
@@ -163,32 +164,47 @@ strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
 ```bash
-python kptop_tool.py --dashboard pods --vhelp
+kptop --dashboard pods -n kafka
+```
+
+
+<br>
+
+
+```bash
+kptop --list-commands
 ```
 
 ```
-usage: kptop_tool.py [-h] [--dashboard DASHBOARD] [--command COMMAND] [--list-dashboards] [--list-commands] [--vhelp] [--debug] [--print-layout] [--version] [--namespace NAMESPACE] [--pod POD]
-
-Process some CLI arguments.
-
-options:
-  -h, --help            show this help message and exit
-  --dashboard DASHBOARD, -D DASHBOARD
-                        dashboard name to display
-  --command COMMAND, -C COMMAND
-                        command name to display
-  --list-dashboards, -ld
-                        List dasboards names
-  --list-commands, -lc  List commands names
-  --vhelp, -vh          List the variables cli arguments of the dashboard/command manifests
-  --debug, -d           Debug mode
-  --print-layout, -pl   Print empty layout structure
-  --version, -V         Print kptop version
-  --namespace NAMESPACE, -n NAMESPACE
-                        Specify the namespace variable value - default: ".*"
-  --pod POD, -po POD    Specify the pod variable value - default: ".*"
+COMMAND    CREATION TIME        UPDATE TIME
+pods       29-06-2024 12:33:02  29-06-2024 12:33:02
+pvcs       29-06-2024 12:33:02  29-06-2024 12:33:02
+pods-wide  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
 ```bash
-python kptop_tool.py --dashboard pods -n kafka
+kptop --command pods-wide -n kafka
+```
+
+```
+NAME                                                             MEMORY REQUESTS    MEMORY LIMITS    CPU REQUESTS    CPU LIMITS    NODE                                          ARCH    INSTANCE TYPE    AWS AZ      CAPACITY TYPE
+kafka-test-entity-operator-798859b74d-5jh58        1.0 gb             2.0 gb           0.4             2.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-cp-schema-registry-546f5f8b5d-2j48f     6.0 gb             8.0 gb           0.5             1.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-cruise-control-5c4cf6749-ss7l2          512.0 mb           2.0 gb           1.0             2.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-strimzi-canary-8686978cb7-dbrf4         64.0 mb            64.0 mb          0.1             0.1           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-brokers-az-c-300                        5.0 gb             8.0 gb           1.0             2.0           ip-0-0-184-231.eu-west-1.compute.internal  arm64   m7g.large        eu-west-1c  on-demand
+kafka-test-brokers-az-a-100                        5.0 gb             8.0 gb           1.0             2.0           ip-0-0-60-93.eu-west-1.compute.internal    arm64   m7g.large        eu-west-1a  on-demand
+kafka-test-cp-schema-registry-546f5f8b5d-486b9     6.0 gb             8.0 gb           0.5             1.0           ip-0-0-30-147.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-testing-kafka-k8s-exporter-6fb7c6dqknnl 512.0 mb           1.0 gb           0.1             0.3           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-kafka-exporter-c58966cd6-r2tsj          256.0 mb           512.0 mb         0.1             0.5           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-kafdrop-67ff5d5b4-77khq                 256.0 mb           1.0 gb           0.2             0.5           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-brokers-az-b-200                        5.0 gb             8.0 gb           1.0             2.0           ip-0-0-100-105.eu-west-1.compute.internal  arm64   m7g.large        eu-west-1b  on-demand
+kafka-test-kafka-ui-55fcf964d7-n5j7r               256.0 mb           1.0 gb           0.2             0.5           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-zookeeper-0                             2.0 gb             4.0 gb           1.0             2.0           ip-0-0-30-147.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-zookeeper-2                             2.0 gb             4.0 gb           1.0             2.0           ip-0-0-155-163.eu-west-1.compute.internal  amd64   m5.xlarge        eu-west-1c  on-demand
+kafka-test-cp-schema-registry-546f5f8b5d-pwlzk     6.0 gb             8.0 gb           0.5             1.0           ip-0-0-155-163.eu-west-1.compute.internal  amd64   m5.xlarge        eu-west-1c  on-demand
+burrow-release-kafka-burrow-79c657bfff-q4lx7       128.0 mb           256.0 mb         0.1             0.1           ip-0-0-30-147.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
+kafka-test-zookeeper-1                             2.0 gb             4.0 gb           1.0             2.0           ip-0-0-71-148.eu-west-1.compute.internal   amd64   c5.large         eu-west-1b  on-demand
+kafka-test-cruise-control-ui-569ccc5897-8jqdq      ?                  ?                ?               ?             ip-0-0-33-177.eu-west-1.compute.internal   amd64   c5.large         eu-west-1a  on-demand
+kafka-test-cruise-control-ui-569ccc5897-zl987      ?                  ?                ?               ?             ip-0-0-33-177.eu-west-1.compute.internal   amd64   c5.large         eu-west-1a  on-demand
 ```
