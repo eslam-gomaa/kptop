@@ -520,11 +520,11 @@ class dashboardYamlLoader:
                                                 'required': True,
                                                 'default': True,
                                             },
-                                            'autoConvertValue': {
-                                                'type': 'boolean',
-                                                'required': True,
-                                                'default': False,
-                                            },
+                                            # 'autoConvertValue': {
+                                            #     'type': 'boolean',
+                                            #     'required': True,
+                                            #     'default': False,
+                                            # },
                                             'showTableIndex': {
                                                 'type': 'boolean',
                                                 'required': True,
