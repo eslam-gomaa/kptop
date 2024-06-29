@@ -19,15 +19,6 @@ dashboard:
             left_a:
               size: 0
               ratio: 1
-            # left_b:
-            #   size: 25
-            #   ratio: 1
-            # left_c:
-            #   size: 0
-            #   ratio: 1
-            # left_d:
-            #   size: 0
-            #   ratio: 1
         middle:
           enable: false
           size: 0
@@ -102,8 +93,9 @@ dashboard:
       box: right_a
       type: asciiGraph # || progressBarList || asciiText
       metricUnit: mb
+      # Sorting is important if you expect lots of results
       metric: >
-        sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024
+        sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024)
       custom_key: "🥕 {{pod}}"
       asciiGraphOptions:
         height: 0
@@ -161,6 +153,7 @@ dashboard:
           metric: |
             sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
+          autoConvertValue: true
         - memory usage %:
           metric: |
             sort_desc(
@@ -171,19 +164,22 @@ dashboard:
               ) * 100
             )
           metricUnit: percentage
+          autoConvertValue: true
         - memory limit:
           metric: |
             sort_desc(sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
+          autoConvertValue: true
         - memory cache:
           metric: |
             sort_desc(sum(container_memory_cache{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
+          autoConvertValue: true
         - memory swap:
           metric: |
             sum(container_memory_swap{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
           metricUnit: byte
-          autoConvertValdue: true
+          autoConvertValue: true
         # - file descriptors:
         #   metric: |
         #     sort_desc(sum(container_file_descriptors{namespace=~"$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
@@ -193,15 +189,17 @@ dashboard:
             100 * sum(irate(container_cpu_usage_seconds_total{image!="", container!="POD", namespace=~"$namespace", pod!=""}[5m])) by (pod, namespace) /
             sum(kube_pod_container_resource_limits{namespace=~"$namespace", container!="POD", pod!=""}) by (pod, namespace)
           metricUnit: percentage
+          autoConvertValue: true
         - AWS AZ:
           metric: |
             sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
           metricUnit: byte
+          autoConvertValue: true
           valueFromLabel: topology_ebs_csi_aws_com_zone
       custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
       advancedTableOptions:
         tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
         headersUppercase: true
-        autoConvertValue: true
+        # autoConvertValue: true
         showTableIndex: true
         updateIntervalSeconds: 3
