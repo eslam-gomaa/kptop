@@ -89,6 +89,16 @@ class Cli():
                     "description": "Print empty layout structure"
                 }
             },
+            {
+                "name": "version",
+                "default": ".*",
+                "cliArgument": {
+                    "enable": True,
+                    "short": "-V",
+                    "required": False,
+                    "description": "Print kptop version"
+                }
+            },
         ]
         self.variables = {}
         self.run()
@@ -97,7 +107,7 @@ class Cli():
         parser = argparse.ArgumentParser(description='Process some CLI arguments.')
         for var in variables:
             if var['cliArgument']['enable']:
-                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands', 'debug', 'print-layout']:
+                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands', 'debug', 'print-layout', 'version']:
                     parser.add_argument(
                         f"--{var['name']}",
                         var['cliArgument']['short'],
@@ -190,6 +200,14 @@ class Cli():
                     initial_parser.print_help()
                     exit(1)
 
+
+
+        ################
+        # Show Version #
+        ################
+        if initial_args.version:
+            rich.print(GlobalAttrs.version)
+            exit(1)
 
         ##############
         # Debug Mode #
