@@ -656,14 +656,12 @@ class customDashboardMonitoring(PrometheusAPI):
             table_type_ = advanced_table_options.get("tableType", 'plain')
             # show_value_ = advanced_table_options.get("showValue", True)
             header_upper_case_ = advanced_table_options.get("headersUppercase", True)
-            auto_convert_value_ = advanced_table_options.get("autoConvertValue", True)
             show_table_index_ = advanced_table_options.get("showTableIndex", True)
             update_interval_ = advanced_table_options.get("updateIntervalSeconds", 5)
         else:
             table_type_ = 'plain'
             # show_value_ = True
             header_upper_case_ = True
-            auto_convert_value_ = True
             show_table_index_ = True
             update_interval_ = 5
 
@@ -685,7 +683,7 @@ class customDashboardMonitoring(PrometheusAPI):
         while True:
             table = [header]
             for column, column_info in columns_dct.items():
-
+                auto_convert_value_ = column_info.get('autoConvertValue', False)
                 metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
 
                 if not metric_data['success']:
