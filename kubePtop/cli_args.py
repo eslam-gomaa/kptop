@@ -101,7 +101,6 @@ class Cli():
             },
         ]
         self.variables = {}
-        self.run()
 
     def build_parser(self, variables):
         parser = argparse.ArgumentParser(description='Process some CLI arguments.')
