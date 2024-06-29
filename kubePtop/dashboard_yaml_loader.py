@@ -471,6 +471,7 @@ class dashboardYamlLoader:
                                     },
                                     'advancedTableOptions': {
                                         'type': 'dict',
+                                        'allow_unknown': False,
                                         'schema': {
                                             'tableType': {
                                                 'type': 'string',
@@ -520,11 +521,6 @@ class dashboardYamlLoader:
                                                 'required': True,
                                                 'default': True,
                                             },
-                                            # 'autoConvertValue': {
-                                            #     'type': 'boolean',
-                                            #     'required': True,
-                                            #     'default': False,
-                                            # },
                                             'showTableIndex': {
                                                 'type': 'boolean',
                                                 'required': True,
@@ -543,7 +539,6 @@ class dashboardYamlLoader:
                 }
             },
         }
-        # return schema_dct
 
         v = Validator(schema_dct)
         v.validate(dashboard_yaml_data)
