@@ -163,10 +163,18 @@ pvcs           29-06-2024 12:33:02  29-06-2024 12:33:02
 strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
+> [Example dashboard | pods.yml](../examples/commands/pods-wide.yml)
+
+
 ```bash
 kptop --dashboard pods -n kafka
 ```
 
+> [Example dashboard | pods.yml](../examples/commands/pods-wide.yml)
+
+```bash
+kptop --dashboard pvcs -n kafka
+```
 
 <br>
 
@@ -181,6 +189,9 @@ pods       29-06-2024 12:33:02  29-06-2024 12:33:02
 pvcs       29-06-2024 12:33:02  29-06-2024 12:33:02
 pods-wide  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
+
+
+> [Example command | pods-wide.yml](../examples/commands/pods-wide.yml)
 
 ```bash
 kptop --command pods-wide -n kafka
