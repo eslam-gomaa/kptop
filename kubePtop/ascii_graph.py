@@ -321,7 +321,8 @@ class AsciiGraph:
         if len(names) > len(self.colors):
             index = len(self.colors)
             while len(self.colors) < len(names):
-                self.colors.append(asciichartpy.colored(char=list(names)[index] + " ", color=asciichartpy.black))
+                # self.colors.append(asciichartpy.colored(char=list(names)[index] + " ", color=asciichartpy.black))
+                self.colors.append(asciichartpy.black)
                 index +=1
 
         for name in names:

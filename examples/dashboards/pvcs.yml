@@ -1,0 +1,127 @@
+dashboard:
+  name: Kafka cluster
+  description: Staging Kafka dashboard
+  layout:
+    splitMode: column # row
+    fullScreen: true
+    header:
+      enable: false
+      size: 3
+      ratio: 1
+    body:
+      boxes:
+        left:
+          enable: true
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            left_a:
+              size: 0
+              ratio: 1
+            left_b:
+              size: 0
+              ratio: 1
+        middle: {}
+        right: {}
+
+  variables:
+    - name: namespace
+      default: .*
+      cliArgument:
+        enable: true
+        short: -n
+        required: false
+    - name: pvc
+      default: .*
+      cliArgument:
+        enable: true
+        short: -pv
+        required: false
+    - name: pod
+      default: .*
+      cliArgument:
+        enable: true
+        short: -po
+        required: false
+
+  visualization:
+    - name: Persistent Volumes Usage [Sorted] (asciiGraph example)
+      box: left_a
+      enable: true
+      type: asciiGraph
+      metricUnit: mb
+      metric: |
+        sort_desc(
+          sum(kubelet_volume_stats_used_bytes{namespace=~"$namespace", persistentvolumeclaim=~"$pvc"}) by (namespace, persistentvolumeclaim) / 1024 / 1024
+        )
+      custom_key: "🍅 {{persistentvolumeclaim}}"
+      asciiGraphOptions:
+        height: 0
+        width: 200
+        maxHeight: 17
+        maxWidth: 45
+        updateIntervalSeconds: 2
+      historyData:
+        enable: true
+        time: 5m
+
+    - name: Persistent Volumes Usage (advancedTable example)
+      enable: true
+      box: left_b
+      type: advancedTable
+      advancedTableColumns:
+        - disk capacity:
+          metric: |
+            sum(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+        - disk used:
+          metric: |
+            sum(kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+        - disk used %:
+          metric: |
+            (sum(kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname, node_kubernetes_io_instance_type) /
+             sum(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname, node_kubernetes_io_instance_type)) * 100
+          metricUnit: percentage
+        - disk available:
+          metric: |
+            sum(kubelet_volume_stats_available_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+        - namespace:
+          metric: |
+            sum(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+          valueFromLabel: namespace
+        - pod:
+          metric: |
+            sum(kube_pod_spec_volumes_persistentvolumeclaims_info{persistentvolumeclaim=~"$pvc", namespace=~"$namespace", pod=~"$pod"}) by (pod, persistentvolumeclaim, volume)
+          metricUnit: byte
+          valueFromLabel: pod
+        # - node:
+        #   metric: |
+        #     sum(kubelet_volume_stats_capacity_bytes) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+        #   metricUnit: byte
+        #   valueFromLabel: kubernetes_io_hostname
+        - instance type:
+          metric: |
+            sum(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+          valueFromLabel: node_kubernetes_io_instance_type
+        - AWS Zone:
+          metric: |
+            sum(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"$pvc", namespace=~"$namespace"}) by (persistentvolumeclaim, namespace, topology_kubernetes_io_zone, kubernetes_io_hostname,  node_kubernetes_io_instance_type)
+          metricUnit: byte
+          valueFromLabel: topology_kubernetes_io_zone
+        - Inodes Usage %:
+          metric: |
+            sum((kubelet_volume_stats_inodes_used{namespace=~"$namespace", persistentvolumeclaim=~"$pvc"} / (kubelet_volume_stats_inodes_used{namespace=~"$namespace", persistentvolumeclaim=~"$pvc"} + kubelet_volume_stats_inodes_free{namespace=~"$namespace", persistentvolumeclaim=~"$pvc"})) * 100) by (namespace, persistentvolumeclaim)
+          metricUnit: percentage
+
+      custom_key: "💾 {{persistentvolumeclaim}}"
+      advancedTableOptions:
+        tableType: simple # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
+        headersUppercase: true
+        autoConvertValue: true
+        showTableIndex: true
+        updateIntervalSeconds: 3

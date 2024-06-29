@@ -10,6 +10,8 @@ class dashboardYamlLoader:
             'kb',
             'byte',
             'mb',
+            'gb',
+            'tb',
             'seconds',
             'percentage'
         ]
@@ -81,10 +83,12 @@ class dashboardYamlLoader:
                                             'schema': {
                                                 'left': {
                                                     'type': 'dict',
+                                                    'required': True,
                                                     'schema': {
                                                         'enable': {
                                                             'type': 'boolean',
-                                                            'required': True
+                                                            'required': False,
+                                                            'default': False,
                                                         },
                                                         'size': {
                                                             'type': 'integer',
@@ -126,10 +130,12 @@ class dashboardYamlLoader:
                                                 },
                                                 'middle': {
                                                     'type': 'dict',
+                                                    'required': True,
                                                     'schema': {
                                                         'enable': {
                                                             'type': 'boolean',
-                                                            'required': True
+                                                            'required': False,
+                                                            'default': False
                                                         },
                                                         'size': {
                                                             'type': 'integer',
@@ -171,10 +177,12 @@ class dashboardYamlLoader:
                                                 },
                                                 'right': {
                                                     'type': 'dict',
+                                                    'required': True,
                                                     'schema': {
                                                         'enable': {
                                                             'type': 'boolean',
-                                                            'required': True
+                                                            'required': False,
+                                                            'default': False,
                                                         },
                                                         'size': {
                                                             'type': 'integer',

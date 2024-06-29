@@ -22,7 +22,6 @@ from rich.markdown import Markdown
 from rich.text import Text
 import traceback
 
-
 from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.session import PrometheusAPI
 from kubePtop.ascii_graph import AsciiGraph
@@ -102,10 +101,10 @@ class customDashboardMonitoring(PrometheusAPI):
 
     #     return final_args
 
-    def build_custom_dashboard(self, dashboard_data, dashboard_variables):
+    def build_custom_dashboard(self, dashboard_data, dashboard_variables, print_layout=False):
 
         # Build the Layout structure
-        self.make_layout(layout_structure_dct=dashboard_data['data'])
+        self.make_layout(layout_structure_dct=dashboard_data['data'], print_layout=print_layout)
 
         # vistualize the metrics on the layout
         self.variables = dashboard_variables
@@ -331,7 +330,7 @@ class customDashboardMonitoring(PrometheusAPI):
                     layout['middle'].split_row(*layout_objects)
 
         if print_layout:
-            rich.print_json(json.dumps(layout_dct, indent=4))
+            # rich.print_json(json.dumps(layout_dct, indent=4))
             rich.print(layout)
             exit(0)
 
@@ -435,7 +434,12 @@ class customDashboardMonitoring(PrometheusAPI):
 
     def build_ascii_graph_handler(self, name, layout_box_name, graph_options, metric_unit, metric, custom_key=None):
         # Print loading message
-        self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        try:
+            self.layout[layout_box_name].update(Panel(GlobalAttrs.initial_message, title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+        except KeyError as e:
+            logging.error(e)
+            print(f"ERROR -- while starting '{name}' box" + str(e))
+            exit(1)
         # Start thread
         thread = threading.Thread(target=self.build_ascii_graph, args=(name, layout_box_name, graph_options, metric_unit, metric, custom_key))
         thread.name = name
@@ -679,40 +683,36 @@ class customDashboardMonitoring(PrometheusAPI):
             header = [key.upper() for key in header]
 
         while True:
-            try:
-                table = [header]
-                for column, column_info in columns_dct.items():
+            table = [header]
+            for column, column_info in columns_dct.items():
 
-                    metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
+                metric_data = self.get_metric_data(column_info['metric'], custom_key=custom_key, value_from_label=column_info.get('valueFromLabel', ''))
 
-                    if not metric_data['success']:
-                        self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
+                if not metric_data['success']:
+                    self.layout[layout_box_name].update(Panel(f"[red]Failed to get data from query 'total_value_metric': [bold]{metric_data['fail_reason']}[/bold][/red]\n\n[bold]METRIC:[/bold]\n[grey53]{metric_data['metric']}", title=f"[b]{name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
 
-                    for name, value in metric_data['data'].items():
-                        try:
-                            value_ = float(value['value'])
-                            if auto_convert_value_:
-                                value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
-                        except:
-                            value_ = value['value']
+                for name, value in metric_data['data'].items():
+                    try:
+                        value_ = float(value['value'])
+                        if auto_convert_value_:
+                            value_ = helper_.convert_data_unit(value=value_, metric_unit=column_info['metricUnit'])
+                    except:
+                        value_ = value['value']
 
-                        try:
-                            data[name][column] = value_
-                        except KeyError:
-                            data[name] = {
-                                column: value_
-                            }
+                    try:
+                        data[name][column] = value_
+                    except KeyError:
+                        data[name] = {
+                            column: value_
+                        }
 
-                for name, value in data.items():
-                    row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
-                    table.append(row)
+            for name, value in data.items():
+                row = [name] + [value.get(col, '?') for col in columns_dct.keys()]  # Ensure order matches headers
+                table.append(row)
 
-                out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
-                data_group = Group(
-                    out
-                )
-                self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[box_name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-            except Exception as e:
-                self.layout[layout_box_name].update(Panel(str(traceback.format_exc()), title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-
+            out = tabulate(table, headers='firstrow', tablefmt=table_type_, showindex=show_table_index_)
+            data_group = Group(
+                out
+            )
+            self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[box_name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
             time.sleep(update_interval_)
