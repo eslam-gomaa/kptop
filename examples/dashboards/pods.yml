@@ -1,6 +1,6 @@
 dashboard:
-  name: Kafka cluster
-  description: Staging Kafka dashboard
+  name: Kafka pods
+  description: Kafka Pods resources usage overview
   layout:
     splitMode: row # row
     fullScreen: true
@@ -47,14 +47,6 @@ dashboard:
               size: 0
               ratio: 1
 
-  # defaultDataSource:
-  #   type: prometheus
-  #   endpoint: ""
-  #   secure: false
-  #   basicAuthEnabled: false
-  #   basicAuthUserNameVariable: ""
-  #   basicAuthPasswordVariable: ""
-
   variables:
     - name: namespace
       default: .*
@@ -70,24 +62,6 @@ dashboard:
         required: false
 
   visualization:
-    # - name: Kafka Data In per second.
-    #   box: right_a
-    #   enable: true
-    #   type: asciiGraph
-    #   metricUnit: kb # byte_to_kb_mb_gb_tb # dynamic_byte_convert
-    #   metric: >
-    #     sort_desc(sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~"$topic"}[5m])) by (strimzi_io_cluster, topic)) / 1024
-    #   custom_key: "🍅 {{topic}}"
-    #   asciiGraphOptions:
-    #     height: 0
-    #     width: 80
-    #     maxHeight: 17
-    #     maxWidth: 45
-    #     updateIntervalSeconds: 2
-    #   historyData:
-    #     enable: true
-    #     time: 5m
-
     - name: Pods Memory Usage
       enable: true
       box: right_a
@@ -103,10 +77,6 @@ dashboard:
         maxHeight: 17
         maxWidth: 45
         updateIntervalSeconds: 2
-    #
-    # historyData:
-    #   enable: true
-    #   time: 5m
 
     - name: Kafka pods memory usage (Sorted by higher memory usage)
       enable: true
@@ -128,22 +98,6 @@ dashboard:
         barWidth: 25
         updateIntervalSeconds: 5
 
-    # - name: Kafka Pods memory usage (simpleTable example)
-    #   enable: true
-    #   box: left_b
-    #   type: simpleTable
-    #   metricUnit: byte
-    #   metric: |
-    #     sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod"}) by (pod, namespace, karpenter_sh_capacity_type, topology_kubernetes_io_zone,node_kubernetes_io_instance_type)
-    #   # custom_key: |
-    #   #   f"{labels['pod']}"
-    #   simpleTableOptions:
-    #     tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
-    #     showValue: true
-    #     headersUppercase: true
-    #     autoConvertValue: true
-    #     showTableIndex: true
-    #     updateIntervalSeconds: 5
     - name: Kafka pods details (advancedTable example)
       enable: true
       box: left_a
@@ -196,10 +150,9 @@ dashboard:
           metricUnit: byte
           autoConvertValue: true
           valueFromLabel: topology_ebs_csi_aws_com_zone
-      custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
+      custom_key: "{{pod}}"
       advancedTableOptions:
         tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
         headersUppercase: true
-        # autoConvertValue: true
         showTableIndex: true
         updateIntervalSeconds: 3

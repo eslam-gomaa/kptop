@@ -6,3 +6,5 @@ cli = Cli()
 
 def run():
     cli.run()
+
+run()
