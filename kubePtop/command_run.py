@@ -35,7 +35,7 @@ class commandRun(PrometheusAPI):
         self.variables = command_variables
         command_dct = command_data['data']['command']
         if command_dct['execute']['type'] == 'advancedTable':
-            self.build_advanced_table_command(name=command_dct['name'], layout_box_name=None, advanced_table_options=command_dct['execute'].get('advancedTableOptions', {}), metric_unit='kb', columns=command_dct['execute'].get('columns', {}), custom_key=command_dct['execute']['custom_key'])
+            self.build_advanced_table_command(name=command_dct['name'], layout_box_name=None, advanced_table_options=command_dct['execute'].get('advancedTableOptions', {}), metric_unit='kb', columns=command_dct['execute'].get('advancedTableColumns', {}), custom_key=command_dct['execute']['custom_key'])
 
 
     def get_metric_data(self, metric, custom_key=None, evaluate_cli_argument_variables=False, value_from_label=""):

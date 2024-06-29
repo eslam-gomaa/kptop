@@ -18,7 +18,7 @@ command:
 
   execute:
     type: advancedTable
-    columns:
+    advancedTableColumns:
       - memory usage:
         metric: |
           sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
@@ -52,7 +52,7 @@ command:
       - file descriptors:
         metric: |
           sort_desc(sum(container_file_descriptors{namespace=~"$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
-        metricUnit: counter
+        metricUnit: None
       - up time:
         metric: |
           sum(time() - kube_pod_start_time{namespace=~"$namespace", pod=~"$pod"}) by (pod)
