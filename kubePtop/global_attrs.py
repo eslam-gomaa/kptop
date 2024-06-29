@@ -32,6 +32,7 @@ class GlobalAttrs:
     default_commands_dir = "/var/kptop/commands"
 
     debug = False
+    version = "v0.0.9"
 
     def __init__(self):
         pass
