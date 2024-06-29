@@ -16,7 +16,6 @@ dashboard_yaml_loader = dashboardYamlLoader()
 command_yaml_loader = commandYamlLoader()
 custom_dashboard_monitoring = customDashboardMonitoring()
 custom_command_run = commandRun()
-
 class Cli():
     def __init__(self):
         self.default_cli_args = [
@@ -80,15 +79,25 @@ class Cli():
                     "description": "Debug mode"
                 }
             },
+            {
+                "name": "print-layout",
+                "default": ".*",
+                "cliArgument": {
+                    "enable": True,
+                    "short": "-pl",
+                    "required": False,
+                    "description": "Print empty layout structure"
+                }
+            },
         ]
         self.variables = {}
-        self.build_variables()
+        self.run()
 
     def build_parser(self, variables):
         parser = argparse.ArgumentParser(description='Process some CLI arguments.')
         for var in variables:
             if var['cliArgument']['enable']:
-                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands', 'debug']:
+                if var['name'] in ['vhelp', 'list-dashboards', 'list-commands', 'debug', 'print-layout']:
                     parser.add_argument(
                         f"--{var['name']}",
                         var['cliArgument']['short'],
@@ -166,7 +175,7 @@ class Cli():
         return out
 
 
-    def build_variables(self):
+    def run(self):
         initial_parser = self.build_parser(self.default_cli_args)
         # rich.print(initial_parser)
         initial_args, unknown_args = initial_parser.parse_known_args()
@@ -230,6 +239,7 @@ class Cli():
         # Load Dashboard #
         ##################
         elif initial_args.dashboard:
+
             # Load dashboard yaml file
             check = self._load_file_content(GlobalAttrs.default_dashboards_dir, initial_args.dashboard)
             if not check['success']:
@@ -268,7 +278,7 @@ class Cli():
                     value = ".*"
                 self.variables[arg] = value
 
-            custom_dashboard_monitoring.build_custom_dashboard(dashboard_data=parsed_dashboard, dashboard_variables=self.variables)
+            custom_dashboard_monitoring.build_custom_dashboard(dashboard_data=parsed_dashboard, dashboard_variables=self.variables, print_layout=initial_args.print_layout)
 
         ################
         # Load Command #
@@ -316,5 +326,6 @@ class Cli():
                 self.variables[arg] = value
 
             custom_command_run.run_custom_command(command_data=parsed_command, command_variables=self.variables)
-        else:
-            pass
+        elif unknown_args:
+            rich.print(f"[yellow]ERROR -- Unknown args !!    {' '.join(unknown_args)}")
+            initial_parser.print_usage()
