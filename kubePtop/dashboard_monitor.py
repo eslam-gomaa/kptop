@@ -683,7 +683,6 @@ class customDashboardMonitoring(PrometheusAPI):
             header = [key.upper() for key in header]
 
         while True:
-            # try:
             table = [header]
             for column, column_info in columns_dct.items():
 
@@ -716,7 +715,4 @@ class customDashboardMonitoring(PrometheusAPI):
                 out
             )
             self.layout[layout_box_name].update(Panel(data_group, title=f"[b]{box_name}", subtitle=f"Thread: {helper_.check_thread_status(self.threads[box_name])}", subtitle_align="left", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-            # except Exception as e:
-            #     self.layout[layout_box_name].update(Panel(str(traceback.format_exc()), title=f"[b]{box_name}", padding=(1, 1), expand=True, safe_box=True, highlight=True, height=0))
-
             time.sleep(update_interval_)

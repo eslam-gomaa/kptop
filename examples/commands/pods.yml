@@ -18,7 +18,7 @@ command:
 
   execute:
     type: advancedTable
-    columns:
+    advancedTableColumns:
       - memory usage:
         metric: |
           sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
