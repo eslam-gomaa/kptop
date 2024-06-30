@@ -37,9 +37,9 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 ## Environment Variables
 <a id=env></a>
 
-| ENV | Description                                                                          | Default | Required |
-| ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** [`prometheus_endpoint`, `pod_portForward`] | <br />      | Yes      |
+> ENV > Description                                                                          > Default > Required >
+> ----- > -------------------------------------------------------------------------------------- > --------- > ---------- >
+> `KPTOP_CONNECTION_METHOD`    > The way to connect to Prometheus server<br />**options:** [`prometheus_endpoint`, `pod_portForward`] > <br />      > Yes      >
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
@@ -50,38 +50,38 @@ There are 2 options to connect KPtop to Prometheus:
 
 ### `prometheus_endpoint` ENVs
 
-| ENV | Description                                                     | Default | Required |
-| ----- | ----------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_PROMETHEUS_SERVER`    | Prometheus server URL                                           |         | Yes      |
-| `KPTOP_BASIC_AUTH_ENABLED`    | Whether basic authentication is needed to connect to Prometheus | False   | No       |
-| `KPTOP_PROMETHEUS_USERNAME`    | Prometheus username                                             |         | No       |
-| `KPTOP_PROMETHEUS_PASSWORD`    | Prometheus password                                             |         | No       |
-| `KPTOP_INSECURE`    | Verify SSL certificate                                          | False   | No       |
+> ENV > Description                                                     > Default > Required >
+> ----- > ----------------------------------------------------------------- > --------- > ---------- >
+> `KPTOP_PROMETHEUS_SERVER`    > Prometheus server URL                                           >         > Yes      >
+> `KPTOP_BASIC_AUTH_ENABLED`    > Whether basic authentication is needed to connect to Prometheus > False   > No       >
+> `KPTOP_PROMETHEUS_USERNAME`    > Prometheus username                                             >         > No       >
+> `KPTOP_PROMETHEUS_PASSWORD`    > Prometheus password                                             >         > No       >
+> `KPTOP_INSECURE`    > Verify SSL certificate                                          > False   > No       >
 
 
 <br>
 
 ### `pod_portForward` ENVs
 
-| ENV | Description                                            | Default | Required |
-| ----- | -------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_PROMETHEUS_POD_NAME`    | Prometheus pod name                                    |         | Yes      |
-| `KPTOP_PROMETHEUS_POD_PORT`    | Prometheus port number                                 | 9090    | No       |
-| `KPTOP_PROMETHEUS_POD_NAMESPACE`    | The name space in which the Prometheus pod is deployed | default | No       |
-| `KUBECONFIG`    | custom K8s kube config file                            | *default path*        | No       |
+> ENV > Description                                            > Default > Required >
+> ----- > -------------------------------------------------------- > --------- > ---------- >
+> `KPTOP_PROMETHEUS_POD_NAME`    > Prometheus pod name                                    >         > Yes      >
+> `KPTOP_PROMETHEUS_POD_PORT`    > Prometheus port number                                 > 9090    > No       >
+> `KPTOP_PROMETHEUS_POD_NAMESPACE`    > The name space in which the Prometheus pod is deployed > default > No       >
+> `KUBECONFIG`    > custom K8s kube config file                            > *default path*        > No       >
 
 
 <br>
 
 ### General ENVs
 
-| ENV                                  | Description                                                  | Default               | Required |
-| ------------------------------------ | ------------------------------------------------------------ | --------------------- | -------- |
-| `KPTOP_START_GRAPHS_WITH_ZERO`       | By default graphs begin with '0'  to let the graph take its full hight | True                  | NO       |
-| `KPTOP_LOGGING_DIR`                  | Choose a different logging directory                         | /tmp/                 | NO       |
-| `KPTOP_GRAPH_WIDTH`                  | Choose a custom graphs width                                 | 45                    | NO       |
-| `KPTOP_DEFAULT_DASHBOARDS_DIRECTORY` | Default directory contains the dashboards yaml files         | /var/kptop/dashboards | NO       |
-| `KPTOP_DEFAULT_COMMANDS_DIRECTORY`   | Default directory contains the commands yaml files           | /var/kptop/commands   | NO       |
+> ENV                                  > Description                                                  > Default               > Required >
+> ------------------------------------ > ------------------------------------------------------------ > --------------------- > -------- >
+> `KPTOP_START_GRAPHS_WITH_ZERO`       > By default graphs begin with '0'  to let the graph take its full hight > True                  > NO       >
+> `KPTOP_LOGGING_DIR`                  > Choose a different logging directory                         > /tmp/                 > NO       >
+> `KPTOP_GRAPH_WIDTH`                  > Choose a custom graphs width                                 > 45                    > NO       >
+> `KPTOP_DEFAULT_DASHBOARDS_DIRECTORY` > Default directory contains the dashboards yaml files         > /var/kptop/dashboards > NO       >
+> `KPTOP_DEFAULT_COMMANDS_DIRECTORY`   > Default directory contains the commands yaml files           > /var/kptop/commands   > NO       >
 
 
 
@@ -93,16 +93,16 @@ There are 2 options to connect KPtop to Prometheus:
 <a id=cli></a>
 
 
-| ENV                         | Description                                                  |
-| --------------------------- | ------------------------------------------------------------ |
-| `--dashboard` , `-D`        | Specify a dashboard YAML file                                |
-| `--command` , `-C`          | Specify a command YAML file                                  |
-| `--list-dashboards` , `-ld` | List all the available dashboards                            |
-| `--list-commands` , `-lc`   | List all the available commands                              |
-| `--debug`,  `-d`            | Enable debugging logging mode                                |
-| `--version`,  `-V`          | Show kptop version                                           |
-| `--print-layout`,  `-pl`    | Print the dashboard empty layout                             |
-| `--vhelp` ,  `-vh`          | Print the arguments including "the variables arguments defined in your command yaml file" |
+> ENV                         > Description                                                  >
+> --------------------------- > ------------------------------------------------------------ >
+> `--dashboard` , `-D`        > Specify a dashboard YAML file                                >
+> `--command` , `-C`          > Specify a command YAML file                                  >
+> `--list-dashboards` , `-ld` > List all the available dashboards                            >
+> `--list-commands` , `-lc`   > List all the available commands                              >
+> `--debug`,  `-d`            > Enable debugging logging mode                                >
+> `--version`,  `-V`          > Show kptop version                                           >
+> `--print-layout`,  `-pl`    > Print the dashboard empty layout                             >
+> `--vhelp` ,  `-vh`          > Print the arguments including "the variables arguments defined in your command yaml file" >
 
 
 <br>
@@ -170,7 +170,7 @@ pvcs           29-06-2024 12:33:02  29-06-2024 12:33:02
 strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
-[**Example dashboard | pods.yml**](../examples/commands/pods-wide.yml)
+[**Example dashboard > pods.yml**](../examples/commands/pods-wide.yml)
 
 
 ```bash
@@ -181,7 +181,7 @@ kptop --dashboard pods
 
 <br>
 
-[**Example dashboard | pods.yml**](../examples/commands/pods-wide.yml)
+[**Example dashboard > pods.yml**](../examples/commands/pods-wide.yml)
 
 ```bash
 kptop --dashboard pvcs
@@ -192,7 +192,7 @@ kptop --dashboard pvcs
 
 <br>
 
-[**Example dashboard | strimzi-kafka-test.yml**](../examples/dashboards/strimzi-kafka-test.yml)
+[**Example dashboard > strimzi-kafka-test.yml**](../examples/dashboards/strimzi-kafka-test.yml)
 
 ```bash
 kptop --dashboard strimzi-kafka-test -n kafka
@@ -217,7 +217,7 @@ pods-wide  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
 
-[**Example command | pods-wide.yml**](../examples/commands/pods-wide.yml)
+[**Example command > pods-wide.yml**](../examples/commands/pods-wide.yml)
 
 ```bash
 kptop --command pods-wide -n kafka
