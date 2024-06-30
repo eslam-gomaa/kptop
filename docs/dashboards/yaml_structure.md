@@ -42,7 +42,7 @@ Required
 {: .label .label-yellow }
 
 Dict
-{: .label .label-purple }
+{: .label .label-blue }
 
 |               | type | description                                           | default | required |
 | --------------- | ------ | ------------------------------------------------------- | --------- | ---------- |
