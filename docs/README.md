@@ -8,7 +8,7 @@ Allowing you to create your own custom CLI dashboards & CLI commands with custom
 <br>
 
 # Motivation
-Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data
+Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data.
 
 
 <br>
@@ -198,7 +198,7 @@ kptop --command pods-wide -n kafka
 ```
 
 ```
-NAME                                                             MEMORY REQUESTS    MEMORY LIMITS    CPU REQUESTS    CPU LIMITS    NODE                                          ARCH    INSTANCE TYPE    AWS AZ      CAPACITY TYPE
+NAME                                               MEMORY REQUESTS    MEMORY LIMITS    CPU REQUESTS    CPU LIMITS    NODE                                       ARCH    INSTANCE TYPE    AWS AZ      CAPACITY TYPE
 kafka-test-entity-operator-798859b74d-5jh58        1.0 gb             2.0 gb           0.4             2.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
 kafka-test-cp-schema-registry-546f5f8b5d-2j48f     6.0 gb             8.0 gb           0.5             1.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
 kafka-test-cruise-control-5c4cf6749-ss7l2          512.0 mb           2.0 gb           1.0             2.0           ip-0-0-16-205.eu-west-1.compute.internal   amd64   m5.xlarge        eu-west-1a  on-demand
