@@ -230,3 +230,14 @@ kafka-test-zookeeper-1                             2.0 gb             4.0 gb    
 kafka-test-cruise-control-ui-569ccc5897-8jqdq      ?                  ?                ?               ?             ip-0-0-33-177.eu-west-1.compute.internal   amd64   c5.large         eu-west-1a  on-demand
 kafka-test-cruise-control-ui-569ccc5897-zl987      ?                  ?                ?               ?             ip-0-0-33-177.eu-west-1.compute.internal   amd64   c5.large         eu-west-1a  on-demand
 ```
+
+<br>
+
+---
+
+Logging
+
+Default log file location is "`/tmp/kptop.log`"
+
+
+<br>
