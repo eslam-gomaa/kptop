@@ -31,7 +31,10 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 # Dashboard YAML structure
 {: .fs-9 }
 
-Create monitoring dasboards on the terminal easily with simple yaml files !
+
+
+[**Full dashboards Examples Directory**](../../examples/dashboards)
+
 
 <br>
 
