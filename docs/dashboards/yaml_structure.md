@@ -212,3 +212,56 @@ visualization:
 | advancedTableColumns   | `Dict`     | **Required with ​`advancedTable`​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
 | progressBarListMetrics | `Dict`     | **Required with ​​`progressBarList`​ Data type**<br />Two Prometheus metrics, "usage" & "total" , to calculate and display the percentage of each result item and display as a progressBar |                           | True     |
 | asciiGraphMetric       | `String`     | **Required with ​`asciiGraph`​ Data type**<br />A single Prometheus Metric, where each result item is a line on the graph                                                            |                           | True     |
+
+
+<br>
+
+### asciiGraphOptions
+
+Optional
+{: .label .label-green }
+
+Dict
+{: .label .label-blue }
+
+|                       | type | description          | default | required |
+| ----------------------- | ------ | ---------------------- | --------- | ---------- |
+| height                | `Integer`     | Graph height         | 17<br />    | False    |
+| width<br />               | `Integer`     | Graph width          | 45      | False    |
+| maxHeight             | `Integer`     |                      | 20      | False    |
+| maxWidth<br />            | `Integer`     | <br />                   | 50      | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval | 5       | False    |
+
+### progressBarListOptions
+
+|                       | type | description                               | default | required |
+| ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
+| maxItemsCount         | `Integer`     | Maxumim number of items to visualize      | 20      | False    |
+| lineBreak<br />           | `Boolean`     | Print lines between progressBars          | True    | False    |
+| showBarPercentage     | `Boolean`     | show progress percentage for ProgressBars | True<br />  | False    |
+| barWidth<br />            | `Integer`     | ProgressBar width                         | 20<br />    | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval                      | 5       | False    |
+
+
+### simpleTableOptions
+
+|                       | type | description                               | default | required |
+| ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
+| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                            | plain   | False    |
+| showValue<br />           | `Boolean`     | Show value column                         | True    | False    |
+| headersUppercase      | `Boolean`     | show progress percentage for ProgressBars | True<br />  | False    |
+| autoConvertValue<br />    | `Boolean`     | ProgressBar width                         | True<br />  | False    |
+| showTableIndex        | `Boolean`     | Data update interval                      | True<br />  | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval                      | 5       | False    |
+
+
+### advancedTableOptions
+
+|                       | type | description                               | default | required |
+| ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
+| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                            | plain   | False    |
+| showValue<br />           | `Boolean`     | Show value column                         | True    | False    |
+| headersUppercase      | `Boolean`     | show progress percentage for ProgressBars | True<br />  | False    |
+| autoConvertValue<br />    | `Boolean`     | ProgressBar width                         | True<br />  | False    |
+| showTableIndex        | `Boolean`     | Data update interval                      | True<br />  | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval                      | 5       | False    |
