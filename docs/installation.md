@@ -1,12 +1,12 @@
 ---
 layout: default
-nav_order: 3
+nav_order: 1
 # permalink: /
 # parent: Home
-permalink: /commands
-title: Custom Commands
+permalink: /installation
+title: Installation
 markdown: Kramdown
-has_children: true
+has_children: false
 kramdown:
   parse_block_html: true
   auto_ids: true
@@ -29,41 +29,14 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 });
 </script>
 
-# Custom Commands
+# Install KPtop
 {: .fs-9 }
 
-Create monitoring dasboards on the terminal easily with a simple yaml file !
 
-<br>
+> Compatible with Python 3.6+
 
-## Examples
-- [pods.yml](../../examples/dashboards/pods.yml)
-- [pvcs.yml](../../examples/dashboards/pvcs.yml)
-
-<br>
-
----
-
-<br>
-
-## List commands
+[on PyPi](https://pypi.org/project/kptop)
 
 ```bash
-kptop --list-commands
+pip3 install kptop --upgrade
 ```
-
-
-## Run command
-
-
-```bash
-kptop --command <DASHBOARD-NAME>
-```
-
-<br>
-
----
-
-## Command YAMl structure
-
-To be added.
