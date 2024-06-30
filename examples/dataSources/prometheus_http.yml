@@ -1,0 +1,21 @@
+dataSoures:
+  - name: staging prometheus
+    type: prometheus # || prometheusPodPortForward || KubernetesAPI
+    prometheusOptions:
+      prometheusEndpoint: http://..
+      basicAuthEnabled: false
+      basicAuthUsernameEnv: abc
+      basicAuthPasswordEnv: abc
+
+  - name: staging prometheus
+    type: prometheusPodPortForward
+    prometheusPodPortForwardOptions:
+      prometheusPodName: prometheus-0
+      prometheusPodNamespace: monitoring
+      kubeConfigFilePath: /Users/USER/.kube/config #~/.kube/config # default
+
+  - name: staging eks
+    type: KubernetesAPI # || prometheusPodPortForward || KubernetesAPI
+    KubernetesAPIOptions:
+      kubeConfigFilePath: /Users/USER/.kube/config #~/.kube/config # default
+      kubeProfile: abc
