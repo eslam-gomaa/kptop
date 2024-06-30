@@ -171,14 +171,21 @@ strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 
 
 ```bash
-kptop --dashboard pods -n kafka
+kptop --dashboard pods
 ```
+
+![alt text](./images/dashboard-pods.png)
+
+<br>
 
 > [Example dashboard | pods.yml](../examples/commands/pods-wide.yml)
 
 ```bash
-kptop --dashboard pvcs -n kafka
+kptop --dashboard pvcs
 ```
+
+![alt text](./images/dashboard-pvcs.png)
+
 
 <br>
 
