@@ -192,7 +192,7 @@ kptop --dashboard pvcs
 
 <br>
 
-> [Example dashboard | strimzi-kafka-test.yml](../examples/commands/strimzi-kafka-test.yml)
+> [Example dashboard | strimzi-kafka-test.yml](../examples/dashboards/strimzi-kafka-test.yml)
 
 ```bash
 kptop --dashboard strimzi-kafka-test -n kafka
@@ -201,6 +201,8 @@ kptop --dashboard strimzi-kafka-test -n kafka
 
 ![alt text](./images/dashboard-strimzi-kafka-test.png)
 
+
+---
 
 
 ```bash
