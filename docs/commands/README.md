@@ -1,15 +1,21 @@
 
 # KPtop Custom Commands
 
-You can create monitoring command lines easily with a simple yaml file !
+Create monitoring command lines easily with a simple yaml file !
 
 
 
 ## Examples
-- [pods.yml](../examples/commands/pods.yml)
-- [pods-wide.yml](../examples/commands/pods-wide.yml)
-- [pvcs.yml](../examples/commands/pvcs.yml)
+- [pods.yml](../../examples/commands/pods.yml)
+- [pods-wide.yml](../../examples/commands/pods-wide.yml)
+- [pvcs.yml](../../examples/commands/pvcs.yml)
 
+
+<br>
+
+---
+
+<br>
 
 ## Command YAMl structure
 
