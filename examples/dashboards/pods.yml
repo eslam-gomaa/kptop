@@ -70,7 +70,7 @@ dashboard:
       # Sorting is important if you expect lots of results
       asciiGraphMetric: >
         sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024)
-      custom_key: "🥕 {{pod}}"
+      customKey: "🥕 {{pod}}"
       asciiGraphOptions:
         height: 0
         width: 80
@@ -90,7 +90,7 @@ dashboard:
         usage_value_metric: |
           # memory usage sorted by higher usage
           sort_desc(sum(container_memory_usage_bytes{namespace=~".*", pod=~".*", pod!=""}) by (pod))
-      custom_key: "{{pod}}"
+      customKey: "{{pod}}"
       progressBarListOptions:
         maxItemsCount: 50
         lineBreak: true
@@ -150,7 +150,7 @@ dashboard:
           metricUnit: byte
           autoConvertValue: true
           valueFromLabel: topology_ebs_csi_aws_com_zone
-      custom_key: "{{pod}}"
+      customKey: "{{pod}}"
       advancedTableOptions:
         tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
         headersUppercase: true
