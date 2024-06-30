@@ -1,12 +1,11 @@
 ---
 layout: default
-nav_order: 2
+nav_order: 1
 # permalink: /
-# parent: Home
-permalink: /dashboards
-title: Custom Dashboards
+parent: Custom Dashboards
+title: Dashboard YAML structure
 markdown: Kramdown
-has_children: true
+has_children: false
 kramdown:
   parse_block_html: true
   auto_ids: true
@@ -29,37 +28,9 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 });
 </script>
 
-# Custom Dashboards
+# Dashboard YAML structure
 {: .fs-9 }
 
 Create monitoring dasboards on the terminal easily with a simple yaml file !
-
-<br>
-
-## Examples
-- [pods.yml](../../examples/dashboards/pods.yml)
-- [pvcs.yml](../../examples/dashboards/pvcs.yml)
-
-<br>
-
----
-
-<br>
-
-## Usage
-
-### List dashboards
-
-```bash
-kptop --list-dashboards
-```
-
-
-### Run dashboard
-
-
-```bash
-kptop --dashboard <DASHBOARD-NAME>
-```
 
 <br>
