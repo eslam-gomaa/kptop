@@ -65,10 +65,10 @@ dashboard:
     - name: Pods Memory Usage
       enable: true
       box: right_a
-      type: asciiGraph # || progressBarList || asciiText
+      type: asciiGraph
       metricUnit: mb
       # Sorting is important if you expect lots of results
-      metric: >
+      asciiGraphMetric: >
         sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024)
       custom_key: "🥕 {{pod}}"
       asciiGraphOptions:
@@ -83,7 +83,7 @@ dashboard:
       box: right_b
       type: progressBarList
       metricUnit: mb
-      metrics:
+      progressBarListMetrics:
         total_value_metric: |
           # Memory limits
           sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
