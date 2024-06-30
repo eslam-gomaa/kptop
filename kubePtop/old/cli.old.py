@@ -1,4 +1,3 @@
-from kubePtop.global_attrs import GlobalAttrs
 from kubePtop.read_env import ReadEnv
 # Read environment variables
 read_environment_variables = ReadEnv()
@@ -17,6 +16,8 @@ pod_metrics = PrometheusPodsMetrics()
 node_metrics = PrometheusNodeMetrics()
 prometheus_api = PrometheusAPI()
 from kubePtop.logging import Logging
+from kubePtop.global_attrs import GlobalAttrs
+
 
 
 class Cli():
@@ -39,7 +40,8 @@ class Cli():
         self.list_option = ''
         self.list_nodes_option = []
         self.colorize_json = False
-        
+        self.dashboard = None
+
 
         # Read CLI arguments
         self.argparse()
@@ -49,12 +51,18 @@ class Cli():
             GlobalAttrs.debug = True
             Logging.log.setLevel(level="DEBUG")
 
+        if self.dashboard:
+            rich.print("Testing - Custom Dashboard")
+            exit(1)
+
+
+
         # kptop nodes <NODE-NAME>
         if self.node:
             if self.list_dashboards:
                 node_monitor.list_dashboards()
                 exit(0)
-            
+
             # kptop nodes <NODE-NAME> -o json
             if self.list_option == 'json':
                 node_metrics.topNodeJson(node=self.node, color=self.colorize_json)
@@ -83,7 +91,7 @@ class Cli():
                 rich.print(f"[yellow]{check_pod.get('fail_reason')}")
                 exit(1)
             pod_monitor.pod_monitor(pod=self.pod, namespace=self.namespace, container=self.container)
-        
+
         if self.list_pods:
             # kptop pods
             ns = self.namespace
@@ -116,6 +124,7 @@ class Cli():
         parser.add_argument('-s', '--sort-by-mem-usage', required=False, action='store_true', help='Sort top result by memory usage')
         parser.add_argument('-o', '--option', type=str, required=False, choices=['cloud', 'json'], help='options for "kptop node||pod" (currently supported in "kptop node")')
         parser.add_argument('-cj', '--colorize-json', required=False, action='store_true', help='Colorize Json output (with "-o json")')
+        parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Dashboard name to visualize')
         # parser.add_argument('-q', '--query', type=str, required=False, help='options for "Run a custom query')
 
         # parser.add_argument('-D', '--dashboard', type=str, required=False, metavar='', help='Specify a dashboard')
@@ -130,7 +139,7 @@ class Cli():
 
         if results.debug:
             self.debug = True
-        
+
         ### kptop --verify-prometheus
         if results.verify_prometheus:
             prometheus_api.verify_exporters()
@@ -155,7 +164,7 @@ class Cli():
                 rich.print(f"[bold]ERROR -- unkown argument '{results.top[0]}'\n")
                 self.parser.print_help()
                 exit(1)
-        
+
         ### Example: kptop pods <POD-NAME>
         if len(results.top) == 2:
             if results.top[0] in pod_aliases:
@@ -178,10 +187,10 @@ class Cli():
 
         if results.namespace:
             self.namespace = results.namespace
-            
+
         if results.option:
             self.list_option = results.option
-            
+
         if results.colorize_json:
             self.colorize_json = results.option
 
@@ -193,6 +202,9 @@ class Cli():
 
         if results.interval:
             GlobalAttrs.live_update_interval = results.interval
+
+        if results.dashboard:
+            self.dashboard = results.dashboard
 
         # if results.list_dashboards:
         #     self.list_dashboards = True

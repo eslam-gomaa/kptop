@@ -1,0 +1,158 @@
+dashboard:
+  name: Kafka pods
+  description: Kafka Pods resources usage overview
+  layout:
+    splitMode: row # row
+    fullScreen: true
+    header:
+      enable: false
+      size: 3
+      ratio: 1
+    body:
+      boxes:
+        left:
+          enable: true
+          size: 190
+          ratio: 1
+          split_mode: column
+          split:
+            left_a:
+              size: 0
+              ratio: 1
+        middle:
+          enable: false
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            middle_a:
+              size: 0
+              ratio: 1
+            middle_b:
+              size: 0
+              ratio: 1
+            middle_c:
+              size: 0
+              ratio: 1
+        right:
+          enable: true
+          size: 0
+          ratio: 1
+          split_mode: column
+          split:
+            right_a:
+              size: 0
+              ratio: 1
+            right_b:
+              size: 0
+              ratio: 1
+
+  variables:
+    - name: namespace
+      default: .*
+      cliArgument:
+        enable: true
+        short: -n
+        required: false
+    - name: pod
+      default: .*
+      cliArgument:
+        enable: true
+        short: -po
+        required: false
+
+  visualization:
+    - name: Pods Memory Usage
+      enable: true
+      box: right_a
+      type: asciiGraph # || progressBarList || asciiText
+      metricUnit: mb
+      # Sorting is important if you expect lots of results
+      metric: >
+        sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024)
+      custom_key: "🥕 {{pod}}"
+      asciiGraphOptions:
+        height: 0
+        width: 80
+        maxHeight: 17
+        maxWidth: 45
+        updateIntervalSeconds: 2
+
+    - name: Kafka pods memory usage (Sorted by higher memory usage)
+      enable: true
+      box: right_b
+      type: progressBarList
+      metricUnit: mb
+      metrics:
+        total_value_metric: |
+          # Memory limits
+          sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
+        usage_value_metric: |
+          # memory usage sorted by higher usage
+          sort_desc(sum(container_memory_usage_bytes{namespace=~".*", pod=~".*", pod!=""}) by (pod))
+      custom_key: "{{pod}}"
+      progressBarListOptions:
+        maxItemsCount: 50
+        lineBreak: true
+        showBarPercentage: true
+        barWidth: 25
+        updateIntervalSeconds: 5
+
+    - name: Kafka pods details (advancedTable example)
+      enable: true
+      box: left_a
+      type: advancedTable
+      advancedTableColumns:
+        - memory usage:
+          metric: |
+            sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+          autoConvertValue: true
+        - memory usage %:
+          metric: |
+            sort_desc(
+              (
+                sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+                /
+                sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+              ) * 100
+            )
+          metricUnit: percentage
+          autoConvertValue: true
+        - memory limit:
+          metric: |
+            sort_desc(sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+          autoConvertValue: true
+        - memory cache:
+          metric: |
+            sort_desc(sum(container_memory_cache{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+          autoConvertValue: true
+        - memory swap:
+          metric: |
+            sum(container_memory_swap{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone)
+          metricUnit: byte
+          autoConvertValue: true
+        # - file descriptors:
+        #   metric: |
+        #     sort_desc(sum(container_file_descriptors{namespace=~"$namespace", pod=~"$pod"}) by (pod, topology_ebs_csi_aws_com_zone))
+        #   metricUnit: None
+        - CPU Usage Percentage:
+          metric: |
+            100 * sum(irate(container_cpu_usage_seconds_total{image!="", container!="POD", namespace=~"$namespace", pod!=""}[5m])) by (pod, namespace) /
+            sum(kube_pod_container_resource_limits{namespace=~"$namespace", container!="POD", pod!=""}) by (pod, namespace)
+          metricUnit: percentage
+          autoConvertValue: true
+        - AWS AZ:
+          metric: |
+            sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod, topology_ebs_csi_aws_com_zone))
+          metricUnit: byte
+          autoConvertValue: true
+          valueFromLabel: topology_ebs_csi_aws_com_zone
+      custom_key: "{{pod}}"
+      advancedTableOptions:
+        tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
+        headersUppercase: true
+        showTableIndex: true
+        updateIntervalSeconds: 3
