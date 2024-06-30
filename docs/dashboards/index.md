@@ -39,6 +39,7 @@ Create monitoring dasboards on the terminal easily with a simple yaml file !
 ## Examples
 - [pods.yml](../../examples/dashboards/pods.yml)
 - [pvcs.yml](../../examples/dashboards/pvcs.yml)
+- [strimzi-kafka-test.yml](../../examples/dashboards/strimzi-kafka-test.yml)
 
 <br>
 
