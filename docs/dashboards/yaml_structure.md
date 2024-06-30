@@ -57,7 +57,7 @@ Dict
 ## layout
 
 Required
-{: .label .label-red }
+{: .label .label-yellow }
 
 Dict
 {: .label .label-green }
@@ -74,7 +74,7 @@ Dict
 ### left || middle || right
 
 Optional
-{: .label .label-red }
+{: .label .label-green }
 
 Dict
 {: .label .label-green }
