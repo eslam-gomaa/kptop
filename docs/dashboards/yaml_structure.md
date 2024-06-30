@@ -209,10 +209,10 @@ visualization:
 | progressBarListOptions | `Dict`     | Graph options with `progressBarList` data type                                                                                                          |                           | False    |
 | simpleTableOptions     | `Dict`     | Graph options with `simpleTable` data type                                                                                                          |                           | False    |
 | advancedTableOptions   | `Dict`     | Graph options with `advancedTable` data type                                                                                                          |                           | False    |
-| advancedTableColumns   | `Dict`     | **Required with ​`advancedTable`​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
-| progressBarListMetrics | `Dict`     | **Required with ​​`progressBarList`​ Data type**<br />Two Prometheus metrics, "usage" & "total" , to calculate and display the percentage of each result item and display as a progressBar |                           | True     |
+| simpleTableMetric      | `String`     | **Required with ​`simpleTable`​ Data type**<br />A single Prometheus Metric, where each result item is a row in the table and each label is a column.                                 |                           | True     |
+| advancedTableColumns   | `Dict`     | **Required with ​​`advancedTable`​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
+| progressBarListMetrics | `Dict`     | **Required with ​`progressBarList`​ Data type**<br />Two Prometheus metrics, "usage" & "total" , to calculate and display the percentage of each result item and display as a progressBar |                           | True     |
 | asciiGraphMetric       | `String`     | **Required with ​`asciiGraph`​ Data type**<br />A single Prometheus Metric, where each result item is a line on the graph                                                            |                           | True     |
-
 
 <br>
 
@@ -234,6 +234,12 @@ Dict
 
 ### progressBarListOptions
 
+Optional
+{: .label .label-green }
+
+Dict
+{: .label .label-blue }
+
 |                       | type | description                               | default | required |
 | ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
 | maxItemsCount         | `Integer`     | Maxumim number of items to visualize      | 20      | False    |
@@ -245,23 +251,67 @@ Dict
 
 ### simpleTableOptions
 
-|                       | type | description                               | default | required |
-| ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
-| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                            | plain   | False    |
-| showValue<br />           | `Boolean`     | Show value column                         | True    | False    |
-| headersUppercase      | `Boolean`     | show progress percentage for ProgressBars | True<br />  | False    |
-| autoConvertValue<br />    | `Boolean`     | ProgressBar width                         | True<br />  | False    |
-| showTableIndex        | `Boolean`     | Data update interval                      | True<br />  | False    |
-| updateIntervalSeconds | `Integer`     | Data update interval                      | 5       | False    |
+Optional
+{: .label .label-green }
+
+Dict
+{: .label .label-blue }
+
+|                       | type | description                                                                                                                                   | default | required |
+| ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---------- |
+| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                                                                                                                                | plain   | False    |
+| showValue<br />           | `Boolean`     | Show value column                                                                                                                             | True    | False    |
+| headersUppercase      | `Boolean`     | Show the table header in Upecase                                                                                                              | True<br />  | False    |
+| autoConvertValue<br />    | `Boolean`     | Auto convert the metric value based on the metricUnit .. for example, if metric value is in byte, it would be converted to kb, mb, gb .. etc. | False   | False    |
+| showTableIndex        | `Boolean`     | Show table Index on the left                                                                                                                  | True<br />  | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval                                                                                                                          | 5       | False    |
 
 
 ### advancedTableOptions
 
-|                       | type | description                               | default | required |
-| ----------------------- | ------ | ------------------------------------------- | --------- | ---------- |
-| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                            | plain   | False    |
-| showValue<br />           | `Boolean`     | Show value column                         | True    | False    |
-| headersUppercase      | `Boolean`     | show progress percentage for ProgressBars | True<br />  | False    |
-| autoConvertValue<br />    | `Boolean`     | ProgressBar width                         | True<br />  | False    |
-| showTableIndex        | `Boolean`     | Data update interval                      | True<br />  | False    |
-| updateIntervalSeconds | `Integer`     | Data update interval                      | 5       | False    |
+Optional
+{: .label .label-green }
+
+Dict
+{: .label .label-blue }
+
+|                       | type | description                                                                                                                                   | default | required |
+| ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---------- |
+| tableType             | `String`     | Table type  - [Allowed Options](https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format)                                                                                                                                | plain   | False    |
+| showValue<br />           | `Boolean`     | Show value column                                                                                                                             | True    | False    |
+| headersUppercase      | `Boolean`     | Show the table header in Upecase                                                                                                              | True<br />  | False    |
+| autoConvertValue<br />    | `Boolean`     | Auto convert the metric value based on the metricUnit .. for example, if metric value is in byte, it would be converted to kb, mb, gb .. etc. | False<br /> | False    |
+| showTableIndex        | `Boolean`     | Show table Index on the left                                                                                                                  | True<br />  | False    |
+| updateIntervalSeconds | `Integer`     | Data update interval                                                                                                                          | 5       | False    |
+
+<br>
+
+
+### advancedTableColumns
+
+Required
+{: .label .label-yellow }
+
+Dict
+{: .label .label-blue }
+
+|                      | type | description                                                                                                                                   | default | required |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ---------- |
+| COULMN NAME <br />EX: `- memory usage:`<br /> | `String`     | Column name (User Input name)                                                                                                                 | plain   | True     |
+| metric<br />             | `String`     | Prometheus metric to qurey                                                                                                                    | <br />      | True     |
+| metricUnit           | `String`     | metric result value unit<br />Options: [`None`, `kb`, `byte`, `mb`, `gb`, `tb`, `seconds`, `percentage`]                                                                                           | byte    | False    |
+| autoConvertValue<br />   | `Boolean`     | Auto convert the metric value based on the metricUnit .. for example, if metric value is in byte, it would be converted to kb, mb, gb .. etc. | False   | False    |
+
+
+### progressBarListMetrics
+
+Required
+{: .label .label-yellow }
+
+Dict
+{: .label .label-blue }
+
+|                      | type | description                                      | default | required |
+| ---------------------- | ------ | -------------------------------------------------- | --------- | ---------- |
+| total_value_metric   | `String`     | Prometheus metric to qurey - to get total values |         | True     |
+| total_value_metric<br /> | `String`     | Prometheus metric to qurey - to get usage values | <br />      | True     |
