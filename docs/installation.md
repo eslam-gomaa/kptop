@@ -32,6 +32,7 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 # Install KPtop
 {: .fs-9 }
 
+<br>
 
 > Compatible with Python 3.6+
 
