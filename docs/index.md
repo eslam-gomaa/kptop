@@ -190,6 +190,7 @@ kptop --dashboard pvcs
 ![alt text](./images/dashboard-pvcs.png)
 
 
+
 <br|
 
 [**Example dashboard > strimzi-kafka-test.yml**](../examples/dashboards/strimzi-kafka-test.yml)
