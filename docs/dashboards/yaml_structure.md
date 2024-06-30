@@ -36,8 +36,18 @@ Create monitoring dasboards on the terminal easily with a simple yaml file !
 <br>
 
 
-|               | type                             | description                                          | default | required |
-| --------------- | ---------------------------------- | ------------------------------------------------------ | --------- | ---------- |
-| name          | Default label<br />{: .label }<br /> | variable name ,, also used for the CLI argument name |         | True     |
-| description<br /> | `String`                                 | devault value for the variable                       |         | <br />       |
-| layout<br />      | `Dict`                                 | CLI argument options for the variable                | <br />      |          |
+## dashboard
+
+Required
+{: .label .label-red }
+
+Dict
+{: .label .label-green }
+
+|               | type | description                                           | default | required |
+| --------------- | ------ | ------------------------------------------------------- | --------- | ---------- |
+| name          | `String`<br />   | Dashboard name                                        |         | True     |
+| description<br /> | `String`     | Dashboard description                                 |         | False    |
+| layout<br />      | `Dict`     | The dashbaord layout structure                        | <br />      | True     |
+| variables     | `List`     | CLI argument options for the variable                 |         | False    |
+| visualization | `List`     | List of graphs to display on the defined layout boxes |         | True     |
