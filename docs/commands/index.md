@@ -44,8 +44,6 @@ Create monitoring dasboards on the terminal easily with a simple yaml file !
 
 ---
 
-<br>
-
 ## List commands
 
 ```bash
