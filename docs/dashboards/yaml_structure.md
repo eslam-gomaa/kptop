@@ -34,3 +34,8 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 Create monitoring dasboards on the terminal easily with a simple yaml file !
 
 <br>
+
+
+```yaml
+
+```
