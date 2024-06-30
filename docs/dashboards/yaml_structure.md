@@ -82,7 +82,22 @@ Dict
 |            | type | description                             | default | required |
 | ------------ | ------ | ----------------------------------------- | --------- | ---------- |
 | enable     | `Boolean`<br />   | Whether to enable the screen split mode | False   | False    |
-| size<br />     | `Integer`     | Layout Size                             | True    | False    |
-| ratio<br />    | `Dict`     | Layout Ratio                            | <br />      | False    |
+| size<br />     | `Integer`     | Layout Size                             | 0       | False    |
+| ratio<br />    | `Integer`     | Layout Ratio                            | 1       | False    |
 | split_mode | `Dict`     | Split option, Options: `column` , `row`              | "row"   | False    |
 | split      | `Dict`     | Furthur split                           |         | True     |
+
+
+#### .split
+
+Optional
+{: .label .label-green }
+
+Dict
+{: .label .label-blue }
+
+|            | type | description  | default | required |
+| ------------ | ------ | -------------- | --------- | ---------- |
+| SPLIT-NAME | `Dict`<br />   | **User Input - ​**             | False   | False    |
+| size<br />     | `Integer`     | Layout Size  | 0       | False    |
+| ratio<br />    | `Integer`     | Layout Ratio | 1       | False    |
