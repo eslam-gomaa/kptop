@@ -39,10 +39,10 @@ Create monitoring dasboards on the terminal easily with a simple yaml file !
 ## dashboard
 
 Required
-{: .label .label-red }
+{: .label .label-yellow }
 
 Dict
-{: .label .label-green }
+{: .label .label-purple }
 
 |               | type | description                                           | default | required |
 | --------------- | ------ | ------------------------------------------------------- | --------- | ---------- |
@@ -51,3 +51,21 @@ Dict
 | layout<br />      | `Dict`     | The dashbaord layout structure                        | <br />      | True     |
 | variables     | `List`     | CLI argument options for the variable                 |         | False    |
 | visualization | `List`     | List of graphs to display on the defined layout boxes |         | True     |
+
+---
+
+## layout
+
+Required
+{: .label .label-red }
+
+Dict
+{: .label .label-green }
+
+
+|              | type | description                         | default | required |
+| -------------- | ------ | ------------------------------------- | --------- | ---------- |
+| splitMode    | `String`<br />   | Split                               | "row"   | False    |
+| fullScreen<br /> | `Boolean`     | Dashboard description               | True    | False    |
+| header<br />     | `Dict`     | Dashboard header options            | <br />      | False    |
+| body.boxes   | `Dict`     | Options of the 3 main screen splits |         | True     |
