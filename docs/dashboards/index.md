@@ -1,10 +1,10 @@
 ---
 layout: default
-nav_order: 1
+nav_order: 2
 # permalink: /
 # parent: Home
 permalink: /dashboards
-title: Custom Dashboards Docs
+title: Custom Dashboards
 markdown: Kramdown
 has_children: true
 kramdown:
