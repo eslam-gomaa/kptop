@@ -79,6 +79,21 @@ Optional
 Dict
 {: .label .label-blue }
 
+
+> **Example**
+```yaml
+left:
+  enable: true
+  size: 190
+  ratio: 1
+  split_mode: column
+  split:
+    left_a:
+      size: 0
+      ratio: 1
+```
+
+
 |            | type | description                             | default | required |
 | ------------ | ------ | ----------------------------------------- | --------- | ---------- |
 | enable     | `Boolean`<br />   | Whether to enable the screen split mode | False   | False    |
@@ -88,7 +103,7 @@ Dict
 | split      | `Dict`     | Furthur split                           |         | True     |
 
 
-#### .split
+#### [left || middle || right].split
 
 Optional
 {: .label .label-green }
