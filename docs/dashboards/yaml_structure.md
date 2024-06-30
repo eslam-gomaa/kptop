@@ -36,6 +36,8 @@ Create monitoring dasboards on the terminal easily with a simple yaml file !
 <br>
 
 
-```yaml
-
-```
+|               | type                             | description                                          | default | required |
+| --------------- | ---------------------------------- | ------------------------------------------------------ | --------- | ---------- |
+| name          | Default label<br />{: .label }<br /> | variable name ,, also used for the CLI argument name |         | True     |
+| description<br /> | `String`                                 | devault value for the variable                       |         | <br />       |
+| layout<br />      | `Dict`                                 | CLI argument options for the variable                | <br />      |          |
