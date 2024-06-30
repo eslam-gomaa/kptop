@@ -13,9 +13,10 @@ kramdown:
   syntax_highlighter: coderay
 ---
 
-# Kube-Prometheus-Top [ kptop ]
+# Kube-Prometheus-Top [ KPtop ]
 {: .fs-9 }
 
+<br>
 
 A Python tool that offers beautiful CLI monitoring based on Prometheus metrics, with Kubernetes integration through PodPortForward
 
@@ -38,7 +39,7 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** ['prometheus_endpoint', 'pod_portForward'] | <br />      | Yes      |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** ['`prometheus_endpoint`', '`pod_portForward`'] | <br />      | Yes      |
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
@@ -47,7 +48,7 @@ There are 2 options to connect KPtop to Prometheus:
     - Suitable if Prometheus is Not exposed (Only rechable with K8s cluster access)
 
 
-#### `prometheus_endpoint` ENVs
+### `prometheus_endpoint` ENVs
 
 | ENV | Description                                                     | Default | Required |
 | ----- | ----------------------------------------------------------------- | --------- | ---------- |
@@ -60,7 +61,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 <br>
 
-#### `pod_portForward` ENVs
+### `pod_portForward` ENVs
 
 | ENV | Description                                            | Default | Required |
 | ----- | -------------------------------------------------------- | --------- | ---------- |
@@ -72,7 +73,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 <br>
 
-#### General ENVs
+### General ENVs
 
 | ENV                                  | Description                                                  | Default               | Required |
 | ------------------------------------ | ------------------------------------------------------------ | --------------------- | -------- |
