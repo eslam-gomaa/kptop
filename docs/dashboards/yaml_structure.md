@@ -31,7 +31,7 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 # Dashboard YAML structure
 {: .fs-9 }
 
-Create monitoring dasboards on the terminal easily with a simple yaml file !
+Create monitoring dasboards on the terminal easily with simple yaml files !
 
 <br>
 
@@ -122,7 +122,7 @@ Dict
 ## Variables
 
 Optional
-{: .label .label-red }
+{: .label .label-green }
 
 List
 {: .label .label-blue }
@@ -137,7 +137,7 @@ List
 ### cliArgument
 
 Optional
-{: .label .label-red }
+{: .label .label-green }
 
 Dict
 {: .label .label-blue }
