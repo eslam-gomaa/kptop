@@ -69,3 +69,20 @@ Dict
 | fullScreen<br /> | `Boolean`     | Dashboard description               | True    | False    |
 | header<br />     | `Dict`     | Dashboard header options            | <br />      | False    |
 | body.boxes   | `Dict`     | Options of the 3 main screen splits |         | True     |
+
+
+### left || middle || right
+
+Optional
+{: .label .label-red }
+
+Dict
+{: .label .label-green }
+
+|            | type | description                             | default | required |
+| ------------ | ------ | ----------------------------------------- | --------- | ---------- |
+| enable     | `Boolean`<br />   | Whether to enable the screen split mode | False   | False    |
+| size<br />     | `Integer`     | Layout Size                             | True    | False    |
+| ratio<br />    | `Dict`     | Layout Ratio                            | <br />      | False    |
+| split_mode | `Dict`     | Split option, Options: `column` , `row`              | "row"   | False    |
+| split      | `Dict`     | Furthur split                           |         | True     |
