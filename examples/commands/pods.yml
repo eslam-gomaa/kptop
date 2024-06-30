@@ -68,4 +68,3 @@ command:
       headersUppercase: true
       autoConvertValue: true
       showTableIndex: false
-      updateIntervalSeconds: 3
