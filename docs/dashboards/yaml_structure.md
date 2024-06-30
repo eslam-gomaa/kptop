@@ -60,7 +60,7 @@ Required
 {: .label .label-yellow }
 
 Dict
-{: .label .label-green }
+{: .label .label-blue }
 
 
 |              | type | description                         | default | required |
@@ -77,7 +77,7 @@ Optional
 {: .label .label-green }
 
 Dict
-{: .label .label-green }
+{: .label .label-blue }
 
 |            | type | description                             | default | required |
 | ------------ | ------ | ----------------------------------------- | --------- | ---------- |
