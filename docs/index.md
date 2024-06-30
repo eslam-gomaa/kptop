@@ -1,10 +1,10 @@
 ---
 # default, page
 layout: default
-# nav_order: 0
-# description: KPtop Documentation
-# permalink: /
-# title: Home
+nav_order: 0
+description: KPtop Documentation
+permalink: /
+title: Home
 # has_children: false
 markdown: Kramdown
 kramdown:
@@ -39,7 +39,7 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** ['`prometheus_endpoint`', '`pod_portForward`'] | <br />      | Yes      |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** [`prometheus_endpoint`, `pod_portForward`] | <br />      | Yes      |
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
@@ -121,7 +121,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 Add the ENVs and you're good to go.
 
-_*Examples*_
+_**Example**_
 
 ```bash
 export KPTOP_CONNECTION_METHOD="pod_portForward"
