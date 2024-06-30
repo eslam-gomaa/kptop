@@ -151,6 +151,10 @@ export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
 
 ## Run dashboards / commands !
 
+### [Dashboards Doc](./dashboards/)
+### [Commands Doc](./commands/)
+
+
 ```bash
 kptop --list-dashboards
 ```
