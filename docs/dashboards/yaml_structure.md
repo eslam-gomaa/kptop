@@ -116,3 +116,34 @@ Dict
 | SPLIT-NAME | `Dict`<br />   | **User Input - ​**             | False   | False    |
 | size<br />     | `Integer`     | Layout Size  | 0       | False    |
 | ratio<br />    | `Integer`     | Layout Ratio | 1       | False    |
+
+---
+
+## Variables
+
+Optional
+{: .label .label-red }
+
+List
+{: .label .label-blue }
+
+|               | type | description                                          | default | required |
+| --------------- | ------ | ------------------------------------------------------ | --------- | ---------- |
+| name          | `String`     | variable name ,, also used for the CLI argument name |         | True     |
+| default<br />     | `String`     | devault value for the variable                       |         | True     |
+| cliArgument<br /> | `Dict`     | CLI argument options for the variable                | <br />      | False    |
+
+
+### cliArgument
+
+Optional
+{: .label .label-red }
+
+Dict
+{: .label .label-blue }
+
+|            | type | description                                        | default | required |
+| ------------ | ------ | ---------------------------------------------------- | --------- | ---------- |
+| enable     | `Boolean`     | Enable CLI argument for the variable               |         | True     |
+| short<br />    | `String`     | short for the argument                             |         | True     |
+| required<br /> | `Boolean`     | Wether the argument is required to run the command | False   | False    |
