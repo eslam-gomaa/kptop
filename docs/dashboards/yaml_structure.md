@@ -127,6 +127,24 @@ Optional
 List
 {: .label .label-blue }
 
+
+> **Example**
+```yaml
+variables:
+  - name: namespace
+    default: .*
+    cliArgument:
+      enable: true
+      short: -n
+      required: false
+  - name: pod
+    default: .*
+    cliArgument:
+      enable: true
+      short: -po
+      required: false
+```
+
 |               | type | description                                          | default | required |
 | --------------- | ------ | ------------------------------------------------------ | --------- | ---------- |
 | name          | `String`     | variable name ,, also used for the CLI argument name |         | True     |
@@ -147,3 +165,50 @@ Dict
 | enable     | `Boolean`     | Enable CLI argument for the variable               |         | True     |
 | short<br />    | `String`     | short for the argument                             |         | True     |
 | required<br /> | `Boolean`     | Wether the argument is required to run the command | False   | False    |
+
+---
+
+## Visualization
+
+Required
+{: .label .label-yellow }
+
+List
+{: .label .label-blue }
+
+
+> **Example**
+```yaml
+visualization:
+  - name: Pods Memory Usage
+    enable: true
+    box: right_a
+    type: asciiGraph
+    metricUnit: mb
+    # Sorting is important if you expect lots of results
+    asciiGraphMetric: >
+      sort_desc(sum(container_memory_usage_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod) / 1024 / 1024)
+    custom_key: "🥕 {{pod}}"
+    asciiGraphOptions:
+      height: 0
+      width: 80
+      maxHeight: 17
+      maxWidth: 45
+      updateIntervalSeconds: 2
+```
+
+|                        | type | description                                                                                                                            | default                   | required |
+| ------------------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------- |
+| name                   | `String`     | Name of graph                                                                                                                          |                           | True     |
+| enable<br />               | `Boolean`     | Enable the display of the graph                                                                                                        | True                      | False    |
+| box<br />                  | `Boolean`     | The layout box to display the graph in,<br />*Example*: `right` , `right_a` , `left_b`                                                                                      | <br />                        | True     |
+| type                   |      | Graph data type - Options: [`asciiGraph`, `progressBarList`, `simpleTable`, `advancedTable`]                                                                                                    |                           | True     |
+| metricUnit             | `String`     | the metirc value unit - Options: [`None`, `byte`, `mb`, `gb`, `tb`, `seconds`, `percentage`]                                                                                        |                           |          |
+| custom_key             | `String`     | custom key for the metric result key, <br />*Example: ​*​`🥕 {{pod}}`  would be translated to `🥕 POD-NAME` <br />                                                                   | Metric default result key |          |
+| asciiGraphOptions      | `Dict`     | Graph options with `asciiGraph` data type                                                                                                          |                           | False    |
+| progressBarListOptions | `Dict`     | Graph options with `progressBarList` data type                                                                                                          |                           | False    |
+| simpleTableOptions     | `Dict`     | Graph options with `simpleTable` data type                                                                                                          |                           | False    |
+| advancedTableOptions   | `Dict`     | Graph options with `advancedTable` data type                                                                                                          |                           | False    |
+| advancedTableColumns   | `Dict`     | **Required with ​**​`**advancedTable**`​**​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
+| progressBarListMetrics | `Dict`     | **Required with ​**​`**progressBarList**`​**​ Data type**<br />Two Prometheus metrics, "usage" & "total" , to calculate and display the percentage of each result item and display as a progressBar |                           | True     |
+| asciiGraphMetric       | `String`     | **Required with ​**​`**asciiGraph**`​**​ Data type**<br />A single Prometheus Metric, where each result item is a line on the graph                                                            |                           | True     |
