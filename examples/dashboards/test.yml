@@ -153,7 +153,7 @@ dashboard:
       box: left_b
       type: simpleTable
       metricUnit: byte
-      metric: |
+      simpleTableMetric: |
         sum(container_memory_usage_bytes{namespace="$namespace", pod=~"$pod"}) by (pod, namespace, karpenter_sh_capacity_type, topology_kubernetes_io_zone,node_kubernetes_io_instance_type)
       # custom_key: |
       #   f"{labels['pod']}"
