@@ -62,7 +62,7 @@ command:
         metric: |
           sum(time() - kube_pod_start_time{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
         metricUnit: seconds
-    custom_key: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
+    customKey: "{{pod}}" # "{{pod}} - {{topology_ebs_csi_aws_com_zone}}"
     advancedTableOptions:
       tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
       headersUppercase: true
