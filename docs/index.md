@@ -28,7 +28,7 @@ Allowing you to create your own custom CLI dashboards & CLI commands with custom
 <br>
 
 # Motivation
-Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data.
+Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data. ✊
 
 
 
