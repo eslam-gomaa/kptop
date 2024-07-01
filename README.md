@@ -25,12 +25,6 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 <br>
 
-> ### 📌 Try out the new beta features 
-> - [kptop_0.0.7 (Introducing K8s Pod port-forward connection method))](https://github.com/eslam-gomaa/kptop/releases/tag/v0.0.7)
->     - [Environment variables](https://github.com/eslam-gomaa/kptop/tree/v0.0.7#environment-variables)
-
-<br>
-
 
 ## [KPtop Documentation](https://eslam-gomaa.github.io/kptop) 🍉
 
