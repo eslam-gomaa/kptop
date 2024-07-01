@@ -52,7 +52,7 @@ Dict
 | name          | `String`<br />   | Dashboard name                                        |         | True     |
 | description<br /> | `String`     | Dashboard description                                 |         | False    |
 | layout<br />      | `Dict`     | The dashbaord layout structure                        | <br />      | True     |
-| variables     | `List`     | CLI argument options for the variable                 |         | False    |
+| variables     | `List`     | CList of variables with optional CLI arguments                 |         | False    |
 | visualization | `List`     | List of graphs to display on the defined layout boxes |         | True     |
 
 ---
@@ -213,7 +213,7 @@ visualization:
 | simpleTableOptions     | `Dict`     | Graph options with `simpleTable` data type                                                                                                          |                           | False    |
 | advancedTableOptions   | `Dict`     | Graph options with `advancedTable` data type                                                                                                          |                           | False    |
 | simpleTableMetric      | `String`     | **Required with ​`simpleTable`​ Data type**<br />A single Prometheus Metric, where each result item is a row in the table and each label is a column.                                 |                           | True     |
-| advancedTableColumns   | `Dict`     | **Required with ​​`advancedTable`​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
+| advancedTableColumns   | `List`     | **Required with ​​`advancedTable`​ Data type**<br />List of metrics, where each metric represent a column on the table                                                                   |                           | True     |
 | progressBarListMetrics | `Dict`     | **Required with ​`progressBarList`​ Data type**<br />Two Prometheus metrics, "usage" & "total" , to calculate and display the percentage of each result item and display as a progressBar |                           | True     |
 | asciiGraphMetric       | `String`     | **Required with ​`asciiGraph`​ Data type**<br />A single Prometheus Metric, where each result item is a line on the graph                                                            |                           | True     |
 
@@ -295,7 +295,7 @@ Dict
 Required
 {: .label .label-yellow }
 
-Dict
+List
 {: .label .label-blue }
 
 |                      | type | description                                                                                                                                   | default | required |
