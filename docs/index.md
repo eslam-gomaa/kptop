@@ -38,7 +38,7 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 
 ## Environment Variables
-<a id=env</a>
+<a id=env /a>
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
@@ -93,7 +93,7 @@ There are 2 options to connect KPtop to Prometheus:
 ---
 
 # CLI Arguments
-<a id=cli</a>
+<a id=cli /a>
 
 
 | ENV                         | Description                                                  |
