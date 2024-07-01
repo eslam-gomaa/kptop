@@ -117,7 +117,7 @@ Dict
 | ----------------------------- | ------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- |
 | type<br />                      | `String`<br />   | Data type<br />Options: [`advancedTable`]                                               |                                                                 | True     |
 | advancedTableColumns<br />      | `List`     | **Required with ​**​`advancedTable`​**​ Data type**<br />List of metrics, where each metric represent a column on the table |                                                                 | True     |
-| custom_key                  | `String`     | custom key for the metric result key, <br />*Example: ​*​`🥕 \{\{pod\}\}`  would be translated to `🥕 POD-NAME` <br /> | default labels result (string composed of summed labels .. ex. `sum(metric) by (pod, namespace)` | False    |
+| custom_key                  | `String`     | custom key for the metric result key, <br /><br /> | default labels result string composed of summed labels .. ex. `sum(metric) by (pod, namespace)` | False    |
 | executeadvancedTableOptions | `Dict`     | Graph options with `advancedTable` data type                                        |                                                                 | False    |
 
 
