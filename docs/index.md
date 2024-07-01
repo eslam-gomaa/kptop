@@ -35,7 +35,7 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 
 ## Environment Variables
-<a id=env|</a|
+<a id=env|</a>
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
@@ -59,7 +59,7 @@ There are 2 options to connect KPtop to Prometheus:
 | `KPTOP_INSECURE`    | Verify SSL certificate                                          | False   | No       |
 
 
-|<br>
+<br>
 
 ### `pod_portForward` ENVs
 
@@ -71,7 +71,7 @@ There are 2 options to connect KPtop to Prometheus:
 | `KUBECONFIG`    | custom K8s kube config file                            | *default path*        | No       |
 
 
-|<br>
+<br>
 
 ### General ENVs
 
@@ -85,12 +85,12 @@ There are 2 options to connect KPtop to Prometheus:
 
 
 
-|<br>
+<br>
 
 ---
 
 # CLI Arguments
-<a id=cli|</a|
+<a id=cli|</a>
 
 
 | ENV                         | Description                                                  |
@@ -105,7 +105,7 @@ There are 2 options to connect KPtop to Prometheus:
 | `--vhelp` ,  `-vh`          | Print the arguments including "the variables arguments defined in your command yaml file" |
 
 
-|<br>
+<br>
 
 ---
 
@@ -117,7 +117,7 @@ There are 2 options to connect KPtop to Prometheus:
 
 ## Example
 
-|<br>
+<br>
 
 Add the ENVs and you're good to go.
 
@@ -138,7 +138,7 @@ export KPTOP_PROMETHEUS_SERVER="http://prometheus.home-lab.com"
 ```
 
 
-|<br>
+<br>
 
 ## [2] Configure the location of your dashboards & commands
 
@@ -179,7 +179,7 @@ kptop --dashboard pods
 
 ![alt text](./images/dashboard-pods.png)
 
-|<br>
+<br>
 
 [**Example dashboard > pvcs.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards/pvcs.yml)
 
@@ -190,7 +190,7 @@ kptop --dashboard pvcs
 ![alt text](./images/dashboard-pvcs.png)
 
 
-|<br>
+<br>
 
 [**Example dashboard > strimzi-kafka-test.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards/strimzi-kafka-test.yml)
 
@@ -246,7 +246,7 @@ kafka-test-cruise-control-ui-569ccc5897-8jqdq      ?                  ?         
 kafka-test-cruise-control-ui-569ccc5897-zl987      ?                  ?                ?               ?             ip-0-0-33-177.eu-west-1.compute.internal   amd64   c5.large         eu-west-1a  on-demand
 ```
 
-|<br>
+<br>
 
 ---
 
@@ -255,4 +255,4 @@ Logging
 Default log file location is "`/tmp/kptop.log`"
 
 
-|<br>
+<br>
