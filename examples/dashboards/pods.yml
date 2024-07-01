@@ -84,10 +84,10 @@ dashboard:
       type: progressBarList
       metricUnit: mb
       progressBarListMetrics:
-        total_value_metric: |
+        totalValueMetric: |
           # Memory limits
           sum(container_spec_memory_limit_bytes{namespace=~"$namespace", pod=~"$pod", pod!=""}) by (pod)
-        usage_value_metric: |
+        usageValueMetric: |
           # memory usage sorted by higher usage
           sort_desc(sum(container_memory_usage_bytes{namespace=~".*", pod=~".*", pod!=""}) by (pod))
       customKey: "{{pod}}"
