@@ -15,6 +15,12 @@ class dashboardYamlLoader:
             'seconds',
             'percentage'
         ]
+        self.allowed_data_types = [
+            'asciiGraph',
+            'progressBarList',
+            'simpleTable',
+            'advancedTable',
+        ]
 
     def validate_dashboard_schema(self, dashboard_yaml_data):
         schema_dct = {
@@ -271,7 +277,7 @@ class dashboardYamlLoader:
                             'type': 'list',
                             'schema': {
                                 'type': 'dict',
-                                'allow_unknown': True,
+                                'allow_unknown': False,
                                 'schema': {
                                     'name': {
                                         'type': 'string',
@@ -289,12 +295,7 @@ class dashboardYamlLoader:
                                     'type': {
                                         'type': 'string',
                                         'required': True,
-                                        'allowed': [
-                                            'asciiGraph',
-                                            'progressBarList',
-                                            'simpleTable',
-                                            'advancedTable',
-                                        ]
+                                        'allowed': self.allowed_data_types
                                     },
                                     'metricUnit': {
                                         'type': 'string',
@@ -302,10 +303,19 @@ class dashboardYamlLoader:
                                         'default': 'None',
                                         'allowed': self.allowed_metric_unit_types
                                     },
-                                    'metric': {
-                                        'type': 'string'
+                                    'asciiGraphMetric': {
+                                        'type': 'string',
+                                        'required': False
                                     },
-                                    'custom_key': {
+                                    'progressBarListMetrics': {
+                                        'type': 'dict',
+                                        'required': False
+                                    },
+                                    'simpleTableMetric': {
+                                        'type': 'string',
+                                        'required': False
+                                    },
+                                    'customKey': {
                                         'type': 'string',
                                         'default': '',
                                         'required': False,
@@ -564,18 +574,6 @@ class dashboardYamlLoader:
             "data": None,
             "fail_reason": ""
         }
-
-
-
-        # Check if the yaml file exists in the dashboards directory
-        ## If so, return the file path
-        ### The dashboard dir is taken as ENV
-        # yaml_file = dashboard_name
-        # # Check if the file does NOT exist
-        # if not os.path.isfile(yaml_file):
-        #     out['fail_reason'] = f"Dashboard File '{yaml_file}' does NOT exist"
-        #     return out
-
         # Read the file
         try:
             # with open(yaml_file, 'r') as file:
