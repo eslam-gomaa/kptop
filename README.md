@@ -155,8 +155,8 @@ export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
 
 ## Run dashboards / commands !
 
-### [Dashboards Doc](./dashboards/index.md)
-### [Commands Doc](./commands/index.md)
+### [Dashboards Doc](https://eslam-gomaa.github.io/kptop/dashboards)
+### [Commands Doc](https://eslam-gomaa.github.io/kptop/commands)
 
 
 ```bash
@@ -171,36 +171,36 @@ pvcs           29-06-2024 12:33:02  29-06-2024 12:33:02
 strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
-[**Example dashboard > pods.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards/pods.yml)
+[**Example dashboard > pods.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/pods.yml)
 
 
 ```bash
 kptop --dashboard pods
 ```
 
-![alt text](./images/dashboard-pods.png)
+![alt text](./docs/images/dashboard-pods.png)
 
 <br>
 
-[**Example dashboard > pvcs.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards/pvcs.yml)
+[**Example dashboard > pvcs.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/pvcs.yml)
 
 ```bash
 kptop --dashboard pvcs
 ```
 
-![alt text](./images/dashboard-pvcs.png)
+![alt text](./docs/images/dashboard-pvcs.png)
 
 
 <br>
 
-[**Example dashboard > strimzi-kafka-test.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards/strimzi-kafka-test.yml)
+[**Example dashboard > strimzi-kafka-test.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/strimzi-kafka-test.yml)
 
 ```bash
 kptop --dashboard strimzi-kafka-test -n kafka
 ```
 
 
-![alt text](./images/dashboard-strimzi-kafka-test.png)
+![alt text](./docs/images/dashboard-strimzi-kafka-test.png)
 
 
 ---
@@ -218,7 +218,7 @@ pods-wide  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
 
-[**Example command > pods-wide.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/commands/pods-wide.yml)
+[**Example command > pods-wide.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/commands/pods-wide.yml)
 
 ```bash
 kptop --command pods-wide -n kafka
