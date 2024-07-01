@@ -253,7 +253,7 @@ kafka-test-cruise-control-ui-569ccc5897-zl987      ?                  ?         
 
 ---
 
-Logging
+# Logging
 
 Default log file location is "`/tmp/kptop.log`"
 
