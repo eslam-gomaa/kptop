@@ -574,18 +574,6 @@ class dashboardYamlLoader:
             "data": None,
             "fail_reason": ""
         }
-
-
-
-        # Check if the yaml file exists in the dashboards directory
-        ## If so, return the file path
-        ### The dashboard dir is taken as ENV
-        # yaml_file = dashboard_name
-        # # Check if the file does NOT exist
-        # if not os.path.isfile(yaml_file):
-        #     out['fail_reason'] = f"Dashboard File '{yaml_file}' does NOT exist"
-        #     return out
-
         # Read the file
         try:
             # with open(yaml_file, 'r') as file:
