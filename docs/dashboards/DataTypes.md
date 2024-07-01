@@ -63,7 +63,7 @@ Using "`customKey`", allows you to control items names that show up colored righ
 - "`metricUnit`" will added as it is beside the original metric value, Hence make sure that the metric returns the data in required unit to be visualized. ex: kb, mb, gb .. etc.
 
 
-- [asciigraphoptions | Yaml Structure](./yaml_structure.md#asciigraphoptions)
+- [asciigraphoptions > Yaml Structure](./yaml_structure.md#asciigraphoptions)
 
 
 <br>
@@ -101,8 +101,8 @@ Using "`customKey`", allows you to control items names "Progress Bars Names"
     updateIntervalSeconds: 5
 ```
 
-- [progressBarListMetrics | Yaml Structure](./yaml_structure.md#progressbarlistmetrics)
-- [progressBarListOptions | Yaml Structure](./yaml_structure.md#progressbarlistoptions)
+- [progressBarListMetrics > Yaml Structure](./yaml_structure.md#progressbarlistmetrics)
+- [progressBarListOptions > Yaml Structure](./yaml_structure.md#progressbarlistoptions)
 
 
 <br>
@@ -136,6 +136,9 @@ Runs a single Prometheus metric, and forms a table with all the result items as 
 
 {: .highlight }
 Table columns order is NOT garanteed with "simpleTable" Type
+
+- [simpleTableOptions > Yaml Structure](./yaml_structure.md#simpletableoptions)
+
 
 
 <br>
@@ -214,3 +217,6 @@ Using "`customKey`", allows you to control the values names of the "NAME" column
 > Note
 >
 > The advancedTableColumns columns order define the Table columns order
+
+- [advancedTableColumns > Yaml Structure](./yaml_structure.md#advancedtablecolumns)
+- [advancedTableOptions > Yaml Structure](./yaml_structure.md#advancedtableoptions)
