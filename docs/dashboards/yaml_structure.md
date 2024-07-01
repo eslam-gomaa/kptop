@@ -33,7 +33,7 @@ jtd.addEvent(toggleDarkMode, 'click', function(){
 
 
 
-[**Full dashboards Examples Directory**](../../examples/dashboards)
+[**Full dashboards Examples Directory**](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards)
 
 
 <br>
