@@ -38,11 +38,11 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 
 ## Environment Variables
-<a id=env|</a>
+<a id=env</a>
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br /|**options:** [`prometheus_endpoint`, `pod_portForward`] | <br /|      | Yes      |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br /|**options:** [`prometheus_endpoint`, `pod_portForward`] | True  |
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
@@ -93,7 +93,7 @@ There are 2 options to connect KPtop to Prometheus:
 ---
 
 # CLI Arguments
-<a id=cli|</a>
+<a id=cli</a>
 
 
 | ENV                         | Description                                                  |
@@ -157,8 +157,8 @@ export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
 
 ## Run dashboards / commands !
 
-### [Dashboards Doc](./dashboards/)
-### [Commands Doc](./commands/)
+### [Dashboards Doc](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards)
+### [Commands Doc](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/commands)
 
 
 ```bash
