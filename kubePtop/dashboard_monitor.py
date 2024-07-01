@@ -51,56 +51,6 @@ class customDashboardMonitoring(PrometheusAPI):
 
         return query
 
-    # def build_parser(self, variables):
-    #     parser = argparse.ArgumentParser(description='Process some CLI arguments.')
-    #     for var in variables:
-    #         if var['cliArgument']['enable']:
-    #             if var['name'] == 'vhelp':
-    #                 parser.add_argument(
-    #                     f"--{var['name']}",
-    #                     var['cliArgument']['short'],
-    #                     required=var['cliArgument']['required'],
-    #                     action='store_true',
-    #                     help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
-    #                 )
-    #             else:
-    #                 parser.add_argument(
-    #                     f"--{var['name']}",
-    #                     var['cliArgument']['short'],
-    #                     required=var['cliArgument']['required'],
-    #                     default=var['default'],
-    #                     help=var['cliArgument'].get('description', f'Specify the {var["name"]} variable value - default: "{var["default"]}"')
-    #                 )
-    #     return parser
-
-    # def build_variables(self, inital_args, variables):
-    #     # Combine default CLI args and dashboard variables
-    #     all_variables = inital_args + variables
-
-    #     # Rebuild the parser with all variables
-    #     final_parser = self.build_parser(all_variables)
-
-    #     # Parse all arguments with the final parser, ignoring unknown args
-    #     final_args, unknown_args = final_parser.parse_known_args()
-    #     rich.print("Parsed arguments:", final_args)
-    #     rich.print("Unknown arguments:", unknown_args)
-
-    #     # Store the arguments in the variables dictionary
-    #     args_dict = vars(final_args)
-    #     if args_dict.get('vhelp'):
-    #         final_parser.print_help()
-    #         return
-
-    #     for arg, value in args_dict.items():
-    #         self.variables[arg] = value
-
-    #     for arg, value in args_dict.items():
-    #         if value == 'ALL':
-    #             value = ".*"
-    #         self.variables[arg] = value
-
-    #     return final_args
-
     def build_custom_dashboard(self, dashboard_data, dashboard_variables, print_layout=False):
 
         # Build the Layout structure
