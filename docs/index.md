@@ -22,10 +22,13 @@ A Python tool that offers beautiful CLI monitoring based on Prometheus metrics, 
 
 Allowing you to create your own custom CLI dashboards & CLI commands with custom layouts, variables, CLI arguments !
 
+**KPtop has been refactored to work as a general CLI monitoring tool, deprecating all hardcoded metrics & dashboards. 🚀**
+
+
 <br>
 
 # Motivation
-Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data.
+Prometheus is widely used with different kinds of metrics - Let's make CLI monitoring more powerful with Prometheus data. ✊
 
 
 
@@ -39,9 +42,9 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br />**options:** [`prometheus_endpoint`, `pod_portForward`] | <br />      | Yes      |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br>|**options:** [`prometheus_endpoint`, `pod_portForward`] | True  |
 
-There are 2 options to connect KPtop to Prometheus:
+> There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
     - Suitable if Prometheus is exposed (with an ingress for example)
 2. With 'K8s pod port-forward' (Through K8s API-Server)
@@ -119,7 +122,6 @@ There are 2 options to connect KPtop to Prometheus:
 
 <br>
 
-Add the ENVs and you're good to go.
 
 _**Example**_
 
@@ -130,7 +132,7 @@ export KPTOP_PROMETHEUS_POD_PORT="9090"
 export KPTOP_PROMETHEUS_POD_NAMESPACE="monitoring"
 ```
 
-> Or
+| Or
 
 ```bash
 export KPTOP_CONNECTION_METHOD="prometheus_endpoint"
@@ -154,8 +156,8 @@ export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
 
 ## Run dashboards / commands !
 
-### [Dashboards Doc](./dashboards/)
-### [Commands Doc](./commands/)
+### [Dashboards Doc](./dashboards/index.md)
+### [Commands Doc](./commands/index.md)
 
 
 ```bash
@@ -170,7 +172,7 @@ pvcs           29-06-2024 12:33:02  29-06-2024 12:33:02
 strimzi-kafka  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
-> [Example dashboard | pods.yml](../examples/commands/pods-wide.yml)
+[**Example dashboard > pods.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/pods.yml)
 
 
 ```bash
@@ -181,7 +183,7 @@ kptop --dashboard pods
 
 <br>
 
-> [Example dashboard | pods.yml](../examples/commands/pods-wide.yml)
+[**Example dashboard > pvcs.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/pvcs.yml)
 
 ```bash
 kptop --dashboard pvcs
@@ -191,6 +193,18 @@ kptop --dashboard pvcs
 
 
 <br>
+
+[**Example dashboard > strimzi-kafka-test.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/dashboards/strimzi-kafka-test.yml)
+
+```bash
+kptop --dashboard strimzi-kafka-test -n kafka
+```
+
+
+![alt text](./images/dashboard-strimzi-kafka-test.png)
+
+
+---
 
 
 ```bash
@@ -205,7 +219,7 @@ pods-wide  29-06-2024 12:33:02  29-06-2024 12:33:02
 ```
 
 
-> [Example command | pods-wide.yml](../examples/commands/pods-wide.yml)
+[**Example command > pods-wide.yml**](https://github.com/eslam-gomaa/kptop/blob/v0.0.11/examples/commands/pods-wide.yml)
 
 ```bash
 kptop --command pods-wide -n kafka
@@ -238,7 +252,7 @@ kafka-test-cruise-control-ui-569ccc5897-zl987      ?                  ?         
 
 ---
 
-Logging
+# Logging
 
 Default log file location is "`/tmp/kptop.log`"
 
