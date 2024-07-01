@@ -122,7 +122,6 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 <br>
 
-Add the ENVs and you're good to go.
 
 _**Example**_
 
@@ -157,8 +156,8 @@ export KPTOP_DEFAULT_COMMANDS_DIRECTORY="/Users/YOU/kptop/examples/dashboards"
 
 ## Run dashboards / commands !
 
-### [Dashboards Doc](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/dashboards)
-### [Commands Doc](https://github.com/eslam-gomaa/kptop/blob/v0.0.10/examples/commands)
+### [Dashboards Doc](./dashboards/index.md)
+### [Commands Doc](./commands/index.md)
 
 
 ```bash
