@@ -22,6 +22,9 @@ A Python tool that offers beautiful CLI monitoring based on Prometheus metrics, 
 
 Allowing you to create your own custom CLI dashboards & CLI commands with custom layouts, variables, CLI arguments !
 
+**KPtop has been refactored to work as a general CLI monitoring tool, deprecating all hardcoded metrics & dashboards. 🚀**
+
+
 <br>
 
 # Motivation
