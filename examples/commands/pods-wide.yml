@@ -62,7 +62,7 @@ command:
         metricUnit: byte
         valueFromLabel: karpenter_sh_capacity_type
 
-    custom_key: "{{pod}}"
+    customKey: "{{pod}}"
     advancedTableOptions:
       tableType: plain # https://github.com/astanin/python-tabulate?tab=readme-ov-file#table-format
       headersUppercase: true
