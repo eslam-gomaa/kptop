@@ -42,7 +42,7 @@ Prometheus is widely used with different kinds of metrics - Let's make CLI monit
 
 | ENV | Description                                                                          | Default | Required |
 | ----- | -------------------------------------------------------------------------------------- | --------- | ---------- |
-| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br /|**options:** [`prometheus_endpoint`, `pod_portForward`] | True  |
+| `KPTOP_CONNECTION_METHOD`    | The way to connect to Prometheus server<br>|**options:** [`prometheus_endpoint`, `pod_portForward`] | True  |
 
 There are 2 options to connect KPtop to Prometheus:
 1. With a Prometheus server endpoint
